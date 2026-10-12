@@ -33,7 +33,7 @@
     -webkit-tap-highlight-color: transparent;
     overscroll-behavior: none;
   }
-  canvas#game { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+  canvas#bgc, canvas#game { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
 
   /* ---------- HUD ---------- */
   #hud { position: fixed; inset: 0; pointer-events: none; }
@@ -237,6 +237,7 @@
 </style>
 </head>
 <body>
+<canvas id="bgc"></canvas>
 <canvas id="game"></canvas>
 
 <div id="hud">
@@ -264,6 +265,7 @@
     <div class="opt"><span>Музыка</span><button class="switch" id="swMusic" aria-pressed="true" aria-label="Музыка"><i></i></button></div>
     <div class="opt"><span>Вибрация</span><button class="switch" id="swVibro" aria-pressed="true" aria-label="Вибрация"><i></i></button></div>
     <div class="opt"><span>Подсказки</span><button class="switch" id="swHints" aria-pressed="true" aria-label="Подсказки"><i></i></button></div>
+    <div class="opt"><span>Лёгкий режим</span><button class="switch" id="swLite" aria-pressed="false" aria-label="Лёгкий режим"><i></i></button></div>
     <div class="sect"><span>Тема</span><b id="themeName">Классика</b></div>
     <div class="themes" id="themes" role="group" aria-label="Выбор темы"></div>
     <div class="opt-note">Тема также меняется сама, когда вы полностью очищаете поле</div>
@@ -746,11 +748,13 @@ function vib(ms) { if (settings.vibro && navigator.vibrate) { try { navigator.vi
 const $ = id => document.getElementById(id);
 const cv = $('game');
 const ctx = cv.getContext('2d');
+const bgc = $('bgc');                 // отдельный слой фона: перерисовывается только при смене темы/размера
+const bctx = bgc.getContext('2d', { alpha: false });
 const scoreEl = $('scoreVal'), bestEl = $('bestVal'), bestBox = $('bestBox');
 const gearBtn = $('gearBtn'), hintEl = $('hint');
 const comboBadge = $('comboBadge'), comboNum = $('comboNum'), pips = [...comboBadge.querySelectorAll('.pips i')];
 const settingsOv = $('settingsOv'), overOv = $('overOv'), reviveOv = $('reviveOv');
-const swSound = $('swSound'), swMusic = $('swMusic'), swVibro = $('swVibro'), swHints = $('swHints');
+const swSound = $('swSound'), swMusic = $('swMusic'), swVibro = $('swVibro'), swHints = $('swHints'), swLite = $('swLite');
 
 /* =====================================================================
    Состояние
@@ -768,7 +772,8 @@ let recent = [];                        // были ли линии в посл�
 let reviveUsed = false;
 let state = 'play';                     // 'play' | 'revive' | 'over'
 let overT0 = 0, paused = false;
-const settings = { sound: true, music: true, vibro: true, hints: true };
+// lite — лёгкий режим для слабых телефонов; liteChecked — автопроверка FPS уже проводилась
+const settings = { sound: true, music: true, vibro: true, hints: true, lite: false, liteChecked: false };
 
 let themeIdx = 0;
 const themeFx = { prev: 0, t0: -1e9 };
@@ -1334,6 +1339,8 @@ function restore() {
     settings.music = s.settings.music !== false;
     settings.vibro = s.settings.vibro !== false;
     settings.hints = s.settings.hints !== false;
+    settings.lite = !!s.settings.lite;
+    settings.liteChecked = !!s.settings.liteChecked;
   }
   if (Number.isInteger(s.theme) && s.theme >= 0 && s.theme < THEMES.length) themeIdx = s.theme;
   const g = s.game;
@@ -1360,8 +1367,11 @@ function restore() {
    ===================================================================== */
 function layout() {
   W = window.innerWidth; H = window.innerHeight;
-  dpr = Math.min(window.devicePixelRatio || 1, 3);
+  // ×3 на глаз почти не отличается от ×2, а пикселей в 2.25 раза больше
+  dpr = Math.min(window.devicePixelRatio || 1, settings.lite ? 1.5 : 2);
   cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+  bgc.width = cv.width; bgc.height = cv.height;
+  bgDirty = true; lastDraw = 0;
   const HUD = 0.46, TRAY = 0.48;
   board = Math.min(Math.min(W, 560) * 0.88, (H - 20) / (1 + HUD + TRAY));
   board = Math.max(N * 16, Math.floor(board / N) * N);
@@ -1453,13 +1463,20 @@ function drawPieceShadow(sh, cx, cy, cs, ox, oy, a) {
   for (const [dx, dy] of sh.cells) { rrPath(ctx, x0 + dx * cs, y0 + dy * cs, cs, cs, cs * 0.12); ctx.fill(); }
 }
 
+// Поле вместе с тенью рисуется один раз в картинку (тень — самая дорогая операция)
+function boardMargin() { return Math.ceil(cell * 1.1); }
 function getBoardImage(ti) {
   let img = boardCache.get(ti);
   if (img) return img;
-  const th = THEMES[ti], size = board + framePad * 2;
-  img = makeCanvas(size * dpr, size * dpr);
+  const th = THEMES[ti], size = board + framePad * 2, m = boardMargin();
+  img = makeCanvas((size + m * 2) * dpr, (size + m * 2) * dpr);
   const g = img.getContext('2d');
   g.scale(dpr, dpr);
+  g.save();
+  g.shadowColor = 'rgba(0,0,0,0.38)'; g.shadowBlur = cell * 0.7 * dpr; g.shadowOffsetY = cell * 0.18 * dpr;
+  g.fillStyle = th.edge; rrPath(g, m, m, size, size, cell * 0.24); g.fill();
+  g.restore();
+  g.translate(m, m);
   g.fillStyle = th.edge; rrPath(g, 0, 0, size, size, cell * 0.24); g.fill();
   g.fillStyle = th.board; rrPath(g, framePad, framePad, board, board, cell * 0.12); g.fill();
   const ins = Math.max(1, cell * 0.045), r = cell * 0.14, s = cell - 2 * ins;
@@ -1695,7 +1712,7 @@ const TEXT_STYLES = {
 function spawnClearFx(a) {
   const col = COLORS[a.color];
   const cx = boardX + (a.x + 0.5) * cell, cy = boardY + (a.y + 0.5) * cell;
-  const n = a.quiet ? 2 : 4;
+  const n = a.quiet || settings.lite ? 2 : 4;
   for (let i = 0; i < n; i++) {
     const ang = Math.random() * Math.PI * 2, sp = rand(1.2, 4.2) * cell;
     particles.push({
@@ -1705,7 +1722,7 @@ function spawnClearFx(a) {
       life: 0, max: rand(450, 850), rot: Math.random() * 6, vr: rand(-10, 10),
     });
   }
-  if (!a.quiet && Math.random() < 0.7) {
+  if (!a.quiet && !settings.lite && Math.random() < 0.7) {
     particles.push({
       k: 'spark', x: cx + rand(-0.4, 0.4) * cell, y: cy + rand(-0.4, 0.4) * cell,
       vx: rand(-0.6, 0.6) * cell, vy: -rand(0.5, 1.6) * cell, g: 0.05,
@@ -1720,7 +1737,7 @@ function allClearBurst(t0) {
   rings.push({ x: cx, y: cy, t0: t0 + 150, dur: 900, r0: cell * 0.5, r1: board * 0.9, w: cell * 0.2, color: '#fff2a8' });
   flashes.push({ board: true, start: t0 });
   const palette = ['#ff5a5a', '#ffb02e', '#ffe14a', '#4ee06a', '#3ed2ff', '#5b8bff', '#b06bff', '#ffffff'];
-  for (let i = 0; i < 90; i++) {
+  for (let i = 0, n = settings.lite ? 40 : 90; i < n; i++) {
     const ang = Math.random() * Math.PI * 2, sp = rand(3, 11) * cell;
     particles.push({
       k: 'confetti', x: cx, y: cy, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp - cell * 4, g: 0.55, drag: 0.965,
@@ -1734,7 +1751,7 @@ function allClearBurst(t0) {
 /* =====================================================================
    Кадр
    ===================================================================== */
-let lastNow = performance.now();
+let lastNow = performance.now(), lastDraw = 0, bgDirty = true, bgTrans = false;
 function frame(now) {
   requestAnimationFrame(frame);
   const dt = Math.min(0.05, (now - lastNow) / 1000);
@@ -1758,9 +1775,26 @@ function frame(now) {
     }
   }
 
+  autoLite(now, dt);
+
+  // Фон — на отдельном слое: перерисовываем только при изменениях и во время смены темы
+  const tp = themeProgress(now);
+  if (bgDirty || tp < 1 || bgTrans) { drawBackground(now); bgTrans = tp < 1; bgDirty = false; }
+
+  // Лёгкий режим: если на экране ничего не движется — кадр не перерисовываем
+  if (!isActive(now) && now - lastDraw < 250) return;
+  lastDraw = now;
+
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  ctx.imageSmoothingQuality = 'high';
-  drawBackground(now, dt);
+  ctx.clearRect(0, 0, W, H);
+  if (!settings.lite) {
+    if (tp < 1) {
+      ctx.save();
+      ctx.beginPath(); ctx.arc(boardX + board / 2, boardY + board / 2, Math.max(0.1, themeRadius(tp)), 0, Math.PI * 2); ctx.clip();
+      drawDecor(themeIdx, now, dt);
+      ctx.restore();
+    } else drawDecor(themeIdx, now, dt);
+  }
 
   let sx = 0, sy = 0;
   if (shake.amp) {
@@ -1786,59 +1820,91 @@ function frame(now) {
   drawTexts(now);
 }
 
-function drawBackground(now, dt) {
+function themeRadius(tp) {
+  const cx = boardX + board / 2, cy = boardY + board / 2;
+  return Math.hypot(Math.max(cx, W - cx), Math.max(cy, H - cy)) * easeInOutCubic(tp);
+}
+// Рисует слой фона (отдельный canvas под игрой)
+function drawBackground(now) {
   const tp = themeProgress(now);
+  bctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   if (tp < 1) {
     // Смена темы: новая тема раскрывается кругом от центра поля
-    ctx.drawImage(getBgImage(themeFx.prev), 0, 0, W, H);
-    drawDecor(themeFx.prev, now, dt);
-    const cx = boardX + board / 2, cy = boardY + board / 2;
-    const R = Math.hypot(Math.max(cx, W - cx), Math.max(cy, H - cy)) * easeInOutCubic(tp);
-    ctx.save();
-    ctx.beginPath(); ctx.arc(cx, cy, Math.max(0.1, R), 0, Math.PI * 2); ctx.clip();
-    ctx.drawImage(getBgImage(themeIdx), 0, 0, W, H);
-    drawDecor(themeIdx, now, dt);
-    ctx.restore();
-    ctx.save();
-    ctx.globalCompositeOperation = 'lighter';
-    ctx.strokeStyle = `rgba(255,255,255,${0.55 * (1 - tp)})`;
-    ctx.lineWidth = cell * 0.25 * (1 - tp) + 1;
-    ctx.beginPath(); ctx.arc(cx, cy, Math.max(0.1, R), 0, Math.PI * 2); ctx.stroke();
-    ctx.restore();
+    const cx = boardX + board / 2, cy = boardY + board / 2, R = Math.max(0.1, themeRadius(tp));
+    bctx.drawImage(getBgImage(themeFx.prev), 0, 0, W, H);
+    bctx.save();
+    bctx.beginPath(); bctx.arc(cx, cy, R, 0, Math.PI * 2); bctx.clip();
+    bctx.drawImage(getBgImage(themeIdx), 0, 0, W, H);
+    bctx.restore();
+    bctx.save();
+    bctx.globalCompositeOperation = 'lighter';
+    bctx.strokeStyle = `rgba(255,255,255,${0.55 * (1 - tp)})`;
+    bctx.lineWidth = cell * 0.25 * (1 - tp) + 1;
+    bctx.beginPath(); bctx.arc(cx, cy, R, 0, Math.PI * 2); bctx.stroke();
+    bctx.restore();
   } else {
-    ctx.drawImage(getBgImage(themeIdx), 0, 0, W, H);
-    drawDecor(themeIdx, now, dt);
+    bctx.drawImage(getBgImage(themeIdx), 0, 0, W, H);
   }
+}
+
+// Есть ли на экране что-то движущееся (в лёгком режиме неподвижные кадры пропускаем)
+function isActive(now) {
+  if (!settings.lite) return true;     // анимированный фон рисуется постоянно
+  if (drag || hint || shake.amp || particles.length || sparkles.length || texts.length) return true;
+  if (clearAnims.length || flashes.length || rings.length || placeAnims.size) return true;
+  if (comboGlow > 0.02 || themeProgress(now) < 1) return true;
+  if (state === 'over' && now < overT0 + N * 60 + 300) return true;
+  for (const h of hand) if (h && (h.ret || now < h.t0 + 450)) return true;
+  return false;
+}
+
+// Автопроверка: если первые секунды игры идут ниже ~40 FPS — включаем лёгкий режим
+const perf = { start: 0, samples: [] };
+function autoLite(now, dt) {
+  if (settings.lite || settings.liteChecked || document.hidden || paused) return;
+  if (!perf.start) perf.start = now;
+  const t = now - perf.start;
+  if (t < 1500) return;
+  perf.samples.push(dt * 1000);
+  if (t < 5000) return;
+  const s = perf.samples.sort((a, b) => a - b), med = s[s.length >> 1];
+  settings.liteChecked = true;
+  if (med > 24) {
+    settings.lite = true;
+    layout(); syncSwitches();
+    addText('Лёгкий режим', boardX + board / 2, boardY + board * 0.5, 'praise', 0);
+  }
+  save();
 }
 
 function drawBoard(now, dt) {
   const fx = boardX - framePad, fy = boardY - framePad, fs = board + framePad * 2;
-  ctx.save();
-  ctx.shadowColor = 'rgba(0,0,0,0.38)'; ctx.shadowBlur = cell * 0.7; ctx.shadowOffsetY = cell * 0.18;
-  ctx.fillStyle = THEMES[themeIdx].edge;
-  rrPath(ctx, fx, fy, fs, fs, cell * 0.24); ctx.fill();
-  ctx.restore();
+  const m = boardMargin();
   const tp = themeProgress(now);
   if (tp < 1) {
-    ctx.drawImage(getBoardImage(themeFx.prev), fx, fy, fs, fs);
+    ctx.drawImage(getBoardImage(themeFx.prev), fx - m, fy - m, fs + m * 2, fs + m * 2);
     ctx.globalAlpha = easeInOutCubic(tp);
   }
-  ctx.drawImage(getBoardImage(themeIdx), fx, fy, fs, fs);
+  ctx.drawImage(getBoardImage(themeIdx), fx - m, fy - m, fs + m * 2, fs + m * 2);
   ctx.globalAlpha = 1;
 
-  // Свечение рамки во время комбо
+  // Свечение рамки во время комбо — несколько полупрозрачных обводок вместо дорогого размытия
   const target = combo >= 2 && state === 'play' ? 1 : 0;
   comboGlow += (target - comboGlow) * Math.min(1, dt * 5);
   if (comboGlow > 0.02) {
     const lv = comboLevel(Math.max(2, combo)), pulse = 0.75 + 0.25 * Math.sin(now / 170);
+    const base = Math.max(2, cell * 0.07), spread = cell * (0.09 + 0.02 * Math.min(combo, 10)) * pulse;
     ctx.save();
+    ctx.strokeStyle = lv.glow;
+    for (let k = 3; k >= 1; k--) {
+      ctx.globalAlpha = comboGlow * 0.14;
+      ctx.lineWidth = base + k * spread;
+      rrPath(ctx, fx + 1, fy + 1, fs - 2, fs - 2, cell * 0.24); ctx.stroke();
+    }
     ctx.globalAlpha = comboGlow;
-    ctx.shadowColor = lv.glow;
-    ctx.shadowBlur = cell * (0.35 + 0.1 * Math.min(combo, 10)) * pulse;
     ctx.strokeStyle = rgba(lv.glow, 0.95);
-    ctx.lineWidth = Math.max(2, cell * 0.07);
+    ctx.lineWidth = base;
     rrPath(ctx, fx + 1, fy + 1, fs - 2, fs - 2, cell * 0.24); ctx.stroke();
-    ctx.stroke();
     ctx.restore();
   }
 
@@ -1954,7 +2020,6 @@ function drawHintTarget(now) {
   ctx.globalAlpha = fade * (0.55 + 0.45 * pulse);
   ctx.strokeStyle = '#ffffff';
   ctx.lineWidth = Math.max(2, cell * 0.06);
-  ctx.shadowColor = '#ffffff'; ctx.shadowBlur = cell * 0.3;
   for (const [dx, dy] of sh.cells) {
     rrPath(ctx, boardX + (hint.gx + dx) * cell + 3, boardY + (hint.gy + dy) * cell + 3, cell - 6, cell - 6, cell * 0.14);
     ctx.stroke();
@@ -2025,7 +2090,7 @@ function drawSparkles(now, dt) {
 // Огненный режим: при комбо от 5 по краям поля поднимаются искры
 function spawnEmbers(dt) {
   if (combo < 5 || state !== 'play') return;
-  const rate = Math.min(60, 12 + (combo - 5) * 4);
+  const rate = Math.min(60, 12 + (combo - 5) * 4) * (settings.lite ? 0.35 : 1);
   let n = rate * dt;
   const lv = comboLevel(combo);
   while (n > 0) {
@@ -2153,6 +2218,12 @@ function drawTexts(now) {
     const x = Math.min(Math.max(t.x, lo + w / 2 + m), hi - w / 2 - m);
     ctx.translate(x, y); ctx.scale(sc, sc);
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
+    // мягкое свечение — широкой полупрозрачной обводкой (размытие на телефонах слишком дорогое)
+    ctx.globalAlpha = a * 0.3;
+    ctx.lineWidth = size * 0.5;
+    ctx.strokeStyle = st.glow;
+    ctx.strokeText(t.str, 0, 0);
+    ctx.globalAlpha = a;
     ctx.lineWidth = size * 0.24;
     ctx.strokeStyle = 'rgba(10,15,50,0.35)';
     ctx.strokeText(t.str, 0, size * 0.1);
@@ -2160,7 +2231,6 @@ function drawTexts(now) {
     ctx.strokeText(t.str, 0, 0);
     const gr = ctx.createLinearGradient(0, -size * 0.45, 0, size * 0.45);
     st.fill.forEach((c, i) => gr.addColorStop(i / (st.fill.length - 1), c));
-    ctx.shadowColor = st.glow; ctx.shadowBlur = size * 0.45;
     ctx.fillStyle = gr;
     ctx.fillText(t.str, 0, 0);
     ctx.restore();
@@ -2175,6 +2245,7 @@ function syncSwitches() {
   swMusic.setAttribute('aria-pressed', settings.music);
   swVibro.setAttribute('aria-pressed', settings.vibro);
   swHints.setAttribute('aria-pressed', settings.hints);
+  swLite.setAttribute('aria-pressed', settings.lite);
 }
 function openSettings() { if (drag) return; paused = true; hint = null; syncSwitches(); settingsOv.hidden = false; sfx('tap'); }
 function closeSettings() { paused = false; settingsOv.hidden = true; resetIdle(); sfx('tap'); }
@@ -2190,6 +2261,10 @@ swMusic.addEventListener('click', () => {
 });
 swVibro.addEventListener('click', () => { settings.vibro = !settings.vibro; syncSwitches(); save(); vib(30); sfx('tap'); });
 swHints.addEventListener('click', () => { settings.hints = !settings.hints; syncSwitches(); save(); sfx('tap'); });
+swLite.addEventListener('click', () => {
+  settings.lite = !settings.lite; settings.liteChecked = true;
+  layout(); syncSwitches(); save(); sfx('tap');
+});
 $('btnRevive').addEventListener('click', () => { ensureAudio(); revive(); });
 $('btnGiveUp').addEventListener('click', () => { ensureAudio(); sfx('tap'); giveUp(); });
 $('btnAgain').addEventListener('click', () => { ensureAudio(); sfx('tap'); overOv.hidden = true; newGame(); });
@@ -2238,7 +2313,7 @@ window.__bb = {
   get grid() { return grid; }, get hand() { return hand; }, get score() { return score; }, get state() { return state; },
   get combo() { return combo; }, get theme() { return themeIdx; }, get hint() { return hint; }, get reviveUsed() { return reviveUsed; },
   get layout() { return { boardX, boardY, cell, trayY, trayH, colX, colW }; },
-  place, SHAPES, THEMES, newGame, changeTheme, SoundEngine, generateHand, computeHint, helpLevel, revive, giveUp,
+  place, SHAPES, THEMES, newGame, changeTheme, SoundEngine, generateHand, computeHint, helpLevel, revive, giveUp, frame,
 };
 })();
 </script>
