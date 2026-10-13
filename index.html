@@ -221,7 +221,54 @@
     box-shadow: 0 0 0 2px var(--ed), 0 3px 6px rgba(0,0,0,.3);
   }
   .theme-sw .mini i { border-radius: 2px; background: var(--cl); }
-  .theme-sw .mini i.blk { box-shadow: inset 0 2px 0 rgba(255,255,255,.45), inset 0 -2px 0 rgba(0,0,0,.25); }
+  .theme-sw .mini i.blk { background: var(--k); box-shadow: inset 0 2px 0 rgba(255,255,255,.45), inset 0 -2px 0 rgba(0,0,0,.25); }
+  /* миниатюры особых блоков и песка */
+  .mini.st-neon i.blk { background: rgba(0,0,0,.5); box-shadow: inset 0 0 0 1.5px var(--k), 0 0 5px var(--k); border-radius: 3px; }
+  .mini.st-candy i.blk { border-radius: 40%; background: radial-gradient(ellipse at 50% 25%, rgba(255,255,255,.75) 0 30%, transparent 32%), var(--k); box-shadow: inset 0 -2px 0 rgba(0,0,0,.2); }
+  .mini.st-glass i.blk { background: linear-gradient(135deg, transparent 38%, rgba(255,255,255,.45) 46% 56%, transparent 64%), var(--k); opacity: .82; box-shadow: inset 0 0 0 1px rgba(255,255,255,.75); }
+  .mini.st-gem i.blk { background: radial-gradient(circle at 35% 35%, rgba(255,255,255,.7) 0 12%, transparent 30%), var(--k); box-shadow: inset 0 0 0 2px rgba(0,0,0,.22), inset 0 0 0 4px rgba(255,255,255,.25); }
+  .mini.st-sand { gap: 0; }
+  .mini.st-sand i { border-radius: 0; }
+  .mini.st-sand i.blk { background: radial-gradient(circle, rgba(255,255,255,.3) 0 .6px, transparent 1px) 0 0 / 3px 3px, var(--k); box-shadow: none; }
+  /* закрытые темы: замок и цена */
+  .theme-sw .price {
+    position: absolute; left: 50%; top: 5px; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 2px; padding: 2px 6px 2px 4px; border-radius: 999px;
+    background: rgba(0,0,0,.6); color: #fff; font-size: 11px; font-weight: 900; line-height: 1; white-space: nowrap;
+  }
+  .theme-sw .price svg { width: 10px; height: 10px; flex: none; }
+  .theme-sw.locked .mini { filter: saturate(.55) brightness(.6); }
+  .theme-sw.locked.can .price {
+    background: linear-gradient(180deg, #fff27a, #f5a312); color: #5a3a00;
+    box-shadow: 0 0 10px rgba(251,222,0,.75); animation: canPulse 1.1s ease-in-out infinite;
+  }
+  @keyframes canPulse { 50% { transform: translateX(-50%) scale(1.12); } }
+  .theme-sw.confirm { box-shadow: 0 4px 0 rgba(0,0,0,.25), inset 0 0 0 3px var(--gold), 0 0 18px rgba(251,222,0,.8); }
+  .theme-sw.confirm .nm { color: var(--gold); }
+  .theme-sw.nope { animation: nope .4s; }
+  @keyframes nope { 20% { transform: translateX(-5px); } 40% { transform: translateX(5px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(2px); } }
+  /* у особых тем по миниатюре пробегает блик */
+  .theme-sw.premium::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 1;
+    background: linear-gradient(115deg, transparent 38%, rgba(255,255,255,.32) 50%, transparent 62%) 0 0 / 260% 100%;
+    animation: swShine 3s linear infinite;
+  }
+  @keyframes swShine { from { background-position: 130% 0; } to { background-position: -130% 0; } }
+  .wallet {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    margin: -3px 0 10px; font-size: 15px; font-weight: 800;
+  }
+  .wallet svg { width: 21px; height: 21px; flex: none; filter: drop-shadow(0 2px 0 rgba(0,0,0,.25)); }
+  .wallet b { color: var(--gold); font-size: 19px; font-weight: 900; text-shadow: 0 2px 0 rgba(0,0,0,.25); }
+  .over-unlock {
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+    margin-top: 10px; padding: 7px 12px; border-radius: 12px;
+    background: rgba(0,0,0,.16); font-size: 15px; font-weight: 800; line-height: 1.3;
+  }
+  .over-unlock[hidden] { display: none; }
+  .over-unlock svg { width: 22px; height: 22px; flex: none; }
+  .over-unlock b { color: var(--gold); }
+  .over-unlock.can { background: linear-gradient(180deg, rgba(255,225,74,.3), rgba(245,163,18,.3)); box-shadow: inset 0 0 0 2px var(--gold); }
   .theme-sw .nm {
     position: absolute; left: 0; right: 0; bottom: 5px;
     font-size: 11px; font-weight: 900; color: #fff; white-space: nowrap;
@@ -335,8 +382,9 @@
     <div class="opt"><span>Подсказки</span><button class="switch" id="swHints" aria-pressed="true" aria-label="Подсказки"><i></i></button></div>
     <div class="opt"><span>Лёгкий режим</span><button class="switch" id="swLite" aria-pressed="false" aria-label="Лёгкий режим"><i></i></button></div>
     <div class="sect"><span>Тема</span><b id="themeName">Классика</b></div>
+    <div class="wallet"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#coin"/></svg><span>Копилка <span id="walletMode">«Классики»</span>:</span><b id="walletVal">0</b></div>
     <div class="themes" id="themes" role="group" aria-label="Выбор темы"></div>
-    <div class="opt-note">Тема также меняется сама, когда вы полностью очищаете поле</div>
+    <div class="opt-note" id="themeNote"></div>
     <button class="btn btn-orange" id="btnRestart">Начать заново</button>
     <button class="btn btn-green" id="btnResume">Продолжить</button>
   </div>
@@ -366,6 +414,7 @@
       <span><span id="statLinesLbl">Линий</span>: <b id="statLines">0</b></span>
       <span>Макс. комбо: <b id="statCombo">0</b></span>
     </div>
+    <div class="over-unlock" id="overUnlock" hidden><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#coin"/></svg><span id="overUnlockText"></span></div>
     <button class="btn btn-green" id="btnAgain">Играть снова</button>
   </div>
 </div>
@@ -397,6 +446,20 @@
       <path d="M16 2 C18 10 27 13 27 25 C27 33 22 38 16 38 C10 38 5 33 5 25 C5 18 10 15 11 9 C13 13 14 15 16 16 C17 11 16 6 16 2 Z" fill="url(#flameGrad)" stroke="#b8360c" stroke-width="2" stroke-linejoin="round"/>
       <path d="M16 20 C18 24 21 26 21 30 C21 33.5 18.8 35.5 16 35.5 C13.2 35.5 11 33.5 11 30 C11 27 13.5 25 16 20 Z" fill="#fff6c4"/>
     </symbol>
+    <linearGradient id="coinGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff27a"/>
+      <stop offset=".6" stop-color="#fbc400"/>
+      <stop offset="1" stop-color="#e89400"/>
+    </linearGradient>
+    <symbol id="coin" viewBox="0 0 32 32">
+      <circle cx="16" cy="16" r="14" fill="url(#coinGrad)" stroke="#b07000" stroke-width="2.5"/>
+      <circle cx="16" cy="16" r="9.5" fill="none" stroke="#c98a00" stroke-width="1.5" opacity=".7"/>
+      <path d="M16 9.6l1.9 3.9 4.3.6-3.1 3 .7 4.3-3.8-2-3.8 2 .7-4.3-3.1-3 4.3-.6z" fill="#fff6c4"/>
+    </symbol>
+    <symbol id="lock" viewBox="0 0 24 24">
+      <path d="M7 11V8a5 5 0 0 1 10 0v3" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+      <rect x="4" y="10" width="16" height="12" rx="3" fill="currentColor"/>
+    </symbol>
     <symbol id="heart" viewBox="0 0 64 58">
       <path d="M32 54 C14 41 4 31 4 19 C4 10 11 4 19 4 C25 4 29.5 7.5 32 12 C34.5 7.5 39 4 45 4 C53 4 60 10 60 19 C60 31 50 41 32 54 Z" fill="url(#heartGrad)" stroke="#9e1435" stroke-width="3" stroke-linejoin="round"/>
       <ellipse cx="19" cy="17" rx="6" ry="4" fill="#fff" opacity=".55" transform="rotate(-25 19 17)"/>
@@ -425,7 +488,11 @@ const COLORS = [
 const GREY = 7;
 
 /* =====================================================================
-   Темы. Новая тема открывается, когда игрок полностью очищает поле.
+   Темы. Тема сменяется сама, когда игрок полностью очищает поле.
+   Первые 8 тем бесплатные и общие для обоих режимов. Особые темы
+   (mode + cost) покупаются за очки из копилки своего режима:
+   blocks — вид блоков классики, sand — цвета песка (красный, жёлтый,
+   зелёный, синий, оранжевый, фиолетовый), sandFx — эффект песка.
    ===================================================================== */
 const THEMES = [
   { name: 'Классика', bg: ['#3f56a9', '#4d65b7', '#5b78c7'], glow: '#9dbaff', board: '#242c54', edge: '#1a2147', cell: '#2a3463',
@@ -444,6 +511,36 @@ const THEMES = [
     panel: ['#c4472a', '#8a2616', '#ffab7a', '#4a0f08'], ui: '#ffd0a8', decor: 'embers' },
   { name: 'Арктика', bg: ['#4f83c2', '#86b5e4', '#d3ebfa'], glow: '#ffffff', board: '#1d3354', edge: '#142641', cell: '#243e63',
     panel: ['#6fa6dc', '#4a7fbd', '#d9efff', '#25497a'], ui: '#ffffff', decor: 'snow' },
+  // ---- Особые темы классики ----
+  { id: 'neon', mode: 'classic', cost: 2000, blocks: 'neon', name: 'Неон',
+    bg: ['#0b0221', '#1a0638', '#2d0b4e'], glow: '#ff3df2', board: '#0d0420', edge: '#2a0c4d', cell: '#150833',
+    panel: ['#6a2bb8', '#40177a', '#ff5cf0', '#1f0a3d'], ui: '#ffb8fb', decor: 'synthwave' },
+  { id: 'sakura', mode: 'classic', cost: 5000, blocks: 'candy', name: 'Сакура',
+    bg: ['#ffd1e3', '#f4a3c4', '#c088d4'], glow: '#ffffff', board: '#5a2747', edge: '#43183a', cell: '#6b3357',
+    panel: ['#f59bc1', '#d06f9f', '#ffe0ee', '#8a3466'], ui: '#ffffff', decor: 'petals' },
+  { id: 'aurora', mode: 'classic', cost: 10000, blocks: 'glass', name: 'Сияние',
+    bg: ['#01060f', '#04192b', '#08303a'], glow: '#5dffc4', board: '#06131f', edge: '#020a12', cell: '#0b1f2e',
+    panel: ['#1f8f86', '#13615e', '#7dffd8', '#08302f'], ui: '#b8fff0', decor: 'aurora' },
+  { id: 'royal', mode: 'classic', cost: 20000, blocks: 'gem', name: 'Роскошь',
+    bg: ['#160818', '#341040', '#4a1850'], glow: '#ffd36b', board: '#1a0f14', edge: '#c9a03a', cell: '#26151d',
+    panel: ['#a8792b', '#6e4a17', '#ffe08a', '#3a2408'], ui: '#ffe9b0', decor: 'glitter' },
+  // ---- Особые темы песка ----
+  { id: 'desert', mode: 'sand', cost: 10000, name: 'Пустыня',
+    sand: ['#d23f33', '#f2c64e', '#5fa344', '#2a9fb8', '#ee7d2a', '#9152b8'],
+    bg: ['#f8b66e', '#ec8a55', '#b8564a'], glow: '#ffe0a0', board: '#3b2318', edge: '#2a170f', cell: '#47291c',
+    panel: ['#e0894f', '#b35f34', '#ffd2a6', '#5e2a14'], ui: '#ffe6c4', decor: 'dunes' },
+  { id: 'cyber', mode: 'sand', cost: 25000, sandFx: 'glow', name: 'Кибер',
+    sand: ['#ff2e7e', '#ffe83d', '#3dff7a', '#2ee6ff', '#ff8a1f', '#b14dff'],
+    bg: ['#05010f', '#120428', '#230a3d'], glow: '#2ee6ff', board: '#07020f', edge: '#1e0a38', cell: '#0c0418',
+    panel: ['#2b6fd6', '#1b3f8f', '#5ff0ff', '#0b1a4a'], ui: '#bff8ff', decor: 'synthwave' },
+  { id: 'galaxy', mode: 'sand', cost: 50000, sandFx: 'twinkle', name: 'Галактика',
+    sand: ['#ff4f9a', '#ffd166', '#45e0b5', '#4d8cff', '#ff8f4d', '#b77bff'],
+    bg: ['#0a0418', '#2a0b3d', '#0b2a4a'], glow: '#b48cff', board: '#0a0820', edge: '#05040f', cell: '#120f2e',
+    panel: ['#6a4ad0', '#43308f', '#c2b0ff', '#1e1456'], ui: '#e2d8ff', decor: 'galaxy' },
+  { id: 'jewels', mode: 'sand', cost: 100000, sandFx: 'shine', name: 'Сокровища',
+    sand: ['#e0213f', '#f2c230', '#19b36b', '#2563eb', '#e8803a', '#9b3fd6'],
+    bg: ['#1a0a00', '#3d1d05', '#6b3a0a'], glow: '#ffcf5a', board: '#140a04', edge: '#c9962e', cell: '#1f120a',
+    panel: ['#c08a2a', '#7f5514', '#ffe08a', '#3d2606'], ui: '#fff0c2', decor: 'glitter' },
 ];
 
 const N = 8;
@@ -490,6 +587,12 @@ const easeOutBack = t => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math
 const rand = (a, b) => a + Math.random() * (b - a);
 function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = (Math.random() * (i + 1)) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; }
 function rgba(hex, a) { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16 & 255},${n >> 8 & 255},${n & 255},${a})`; }
+function mixHex(a, b, t) {
+  const x = parseInt(a.slice(1), 16), y = parseInt(b.slice(1), 16);
+  const ch = s => Math.round(lerp(x >> s & 255, y >> s & 255, t));
+  return '#' + ((1 << 24) | (ch(16) << 16) | (ch(8) << 8) | ch(0)).toString(16).slice(1);
+}
+const fmtNum = n => Math.round(n).toLocaleString('ru-RU');
 function makeCanvas(w, h) { const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(w)); c.height = Math.max(1, Math.round(h)); return c; }
 function rrPath(g, x, y, w, h, r) {
   r = Math.min(r, w / 2, h / 2);
@@ -851,6 +954,10 @@ const settings = { sound: true, music: true, vibro: true, hints: true, lite: fal
 let mode = 'classic';                   // 'classic' | 'sand'
 
 let themeIdx = 0;
+const themeByMode = { classic: 0, sand: 0 };   // у каждого режима своя выбранная тема
+const wallet = { classic: 0, sand: 0 };        // копилка очков для покупки тем
+const owned = new Set();                       // id купленных тем
+let banked = 0;                                // сколько очков текущей партии уже положено в копилку
 const themeFx = { prev: 0, t0: -1e9 };
 const THEME_DUR = 1500;
 
@@ -1163,7 +1270,7 @@ function place(i, gx, gy) {
       addText('All Clear!', boardX + board / 2, boardY + board * 0.55, 'gold', 300);
       allClearBurst(now + 120);
       sfx('allClear'); vib(70);
-      setTimeout(() => changeTheme((themeIdx + 1) % THEMES.length), 450);
+      setTimeout(() => changeTheme(nextTheme()), 450);
     }
   } else {
     movesSinceClear++;
@@ -1187,7 +1294,23 @@ function place(i, gx, gy) {
   save();
 }
 
+// Новые очки партии сразу кладутся в копилку режима
+function earn() {
+  const d = score - banked;
+  banked = score;
+  if (d <= 0) return;
+  const before = wallet[mode];
+  wallet[mode] += d;
+  for (let i = 0; i < THEMES.length; i++) {
+    const c = THEMES[i].cost;
+    if (c && themeAvail(i) && !themeOwned(i) && before < c && wallet[mode] >= c) {
+      addText('Тема доступна!', boardX + board / 2, boardY + boardH * 0.8, 'gold', 700);
+      break;
+    }
+  }
+}
 function checkBest() {
+  earn();
   if (score <= best) return;
   if (!newBestShown && startBest > 0) {
     newBestShown = true;
@@ -1317,6 +1440,18 @@ function showOver() {
   $('overBest').textContent = best;
   $('statLines').textContent = linesTotal;
   $('statCombo').textContent = maxCombo;
+  // ближайшая закрытая тема этого режима
+  let next = -1;
+  THEMES.forEach((th, i) => { if (th.cost && themeAvail(i) && !themeOwned(i) && (next < 0 || th.cost < THEMES[next].cost)) next = i; });
+  const ou = $('overUnlock');
+  ou.hidden = next < 0;
+  if (next >= 0) {
+    const th = THEMES[next], need = th.cost - wallet[mode];
+    ou.classList.toggle('can', need <= 0);
+    $('overUnlockText').innerHTML = need <= 0
+      ? `Хватает на тему «${th.name}»! Откройте её в настройках`
+      : `Копилка: <b>${fmtNum(wallet[mode])}</b>. До темы «${th.name}» ещё <b>${fmtNum(need)}</b>`;
+  }
   overOv.hidden = false;
   if (record) sfx('record');
   const el = $('overScore'), t0 = performance.now(), target = score;
@@ -1336,7 +1471,7 @@ function newGame() {
     if (grid[i] >= 0) clearAnims.push({ x: i % N, y: (i / N) | 0, color: wasOver ? GREY : grid[i], start: now + Math.random() * 260, spawned: false, quiet: true });
   }
   grid.fill(-1); placeAnims.clear();
-  score = 0; displayScore = 0; scoreEl.textContent = '0';
+  score = 0; banked = 0; displayScore = 0; scoreEl.textContent = '0';
   combo = 0; movesSinceClear = 0; newBestShown = false; startBest = best;
   linesTotal = 0; maxCombo = 0; recent = []; reviveUsed = false;
   state = 'play'; overT0 = 0; drag = null;
@@ -1360,45 +1495,112 @@ function applyThemeDom() {
   document.body.style.background = th.bg[1];
   $('metaTheme').setAttribute('content', th.bg[0]);
   $('themeName').textContent = th.name;
-  themesEl.querySelectorAll('.theme-sw').forEach((b, i) => {
-    b.classList.toggle('on', i === themeIdx);
-    b.setAttribute('aria-pressed', i === themeIdx);
+  themesEl.querySelectorAll('.theme-sw').forEach(b => {
+    const on = +b.dataset.i === themeIdx;
+    b.classList.toggle('on', on);
+    b.setAttribute('aria-pressed', on);
   });
+}
+function themeAvail(i, m = mode) { const th = THEMES[i]; return !!th && (!th.mode || th.mode === m); }
+function themeOwned(i) { const th = THEMES[i]; return !!th && (!th.cost || owned.has(th.id)); }
+function themeOk(i, m = mode) { return themeAvail(i, m) && themeOwned(i); }
+function nextTheme() {
+  for (let k = 1; k < THEMES.length; k++) { const i = (themeIdx + k) % THEMES.length; if (themeOk(i)) return i; }
+  return themeIdx;
+}
+// Ставит тему без звука и надписей; anim — плавная смена кругом от центра поля
+function setTheme(next, anim) {
+  themeFx.prev = themeIdx;
+  themeFx.t0 = anim ? performance.now() : -1e9;
+  themeIdx = next; themeByMode[mode] = next;
+  for (const k of [...bgCache.keys()]) if (k !== themeIdx && k !== themeFx.prev) bgCache.delete(k);
+  bgDirty = true;
+  applyThemeDom();
+  if (mode === 'sand') { sandRetex(); sand.dirty = true; }
 }
 // manual — тема выбрана в настройках (без надписи на поле)
 function changeTheme(next, manual) {
-  if (next === themeIdx) return;
-  themeFx.prev = themeIdx;
-  themeFx.t0 = performance.now();
-  themeIdx = next;
-  for (const k of [...bgCache.keys()]) if (k !== themeIdx && k !== themeFx.prev) bgCache.delete(k);
-  applyThemeDom();
+  if (next === themeIdx || !themeOk(next)) return;
+  setTheme(next, true);
   sfx('themeShift');
-  if (!manual) addText('Тема: ' + THEMES[next].name, boardX + board / 2, boardY + board * 0.7, 'gold', 500);
+  if (!manual) addText('Тема: ' + THEMES[next].name, boardX + board / 2, boardY + boardH * 0.7, 'gold', 500);
   save();
 }
-// Миниатюры тем в настройках: фон темы + маленькое поле с парой блоков
-const themesEl = $('themes');
-function buildThemePicker() {
-  const MINI = [-1, -1, -1, -1, -1, 5, 0, 2, 3];
+// Миниатюры тем в настройках: фон темы + маленькое поле с парой блоков.
+// Показываем общие темы и особые темы текущего режима.
+const themesEl = $('themes'), themeNote = $('themeNote');
+const THEME_NOTE = 'Очки из каждой игры копятся — за них открываются особые темы. Тема меняется и сама, когда вы полностью очищаете поле';
+let confirmIdx = -1;
+function renderThemePicker() {
+  const MINI = [-1, -1, -1, -1, -1, 5, 0, 2, 3], MINI_SAND = [-1, -1, -1, 3, -1, -1, 0, 1, 2];
+  themesEl.textContent = '';
+  confirmIdx = -1;
+  themeNote.textContent = THEME_NOTE;
   THEMES.forEach((th, i) => {
+    if (!themeAvail(i)) return;
     const b = document.createElement('button');
-    b.type = 'button'; b.className = 'theme-sw';
+    b.type = 'button'; b.className = 'theme-sw'; b.dataset.i = i;
     b.setAttribute('aria-label', 'Тема ' + th.name);
     b.style.cssText = `--a:${th.bg[0]};--b:${th.bg[1]};--c:${th.bg[2]};--bd:${th.board};--ed:${th.edge};--cl:${th.cell}`;
     const mini = document.createElement('span');
-    mini.className = 'mini';
-    for (const c of MINI) {
+    mini.className = 'mini' + (th.sand ? ' st-sand' : th.blocks ? ' st-' + th.blocks : '');
+    for (const c of th.sand ? MINI_SAND : MINI) {
       const cel = document.createElement('i');
-      if (c >= 0) { cel.className = 'blk'; cel.style.background = COLORS[c].c; }
+      if (c >= 0) { cel.className = 'blk'; cel.style.setProperty('--k', th.sand ? th.sand[c] : COLORS[c].c); }
       mini.appendChild(cel);
     }
     const nm = document.createElement('span');
     nm.className = 'nm'; nm.textContent = th.name;
     b.append(mini, nm);
-    b.addEventListener('click', () => { changeTheme(i, true); sfx('tap'); });
+    if (th.cost) b.classList.add('premium');
+    if (!themeOwned(i)) {
+      b.classList.add('locked');
+      if (wallet[mode] >= th.cost) b.classList.add('can');
+      const pr = document.createElement('span');
+      pr.className = 'price';
+      pr.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><use href="#lock"/></svg>' + fmtK(th.cost);
+      b.appendChild(pr);
+      b.setAttribute('aria-label', `Тема ${th.name}, открыть за ${th.cost} очков`);
+    }
+    b.addEventListener('click', () => onThemeTap(i, b));
     themesEl.appendChild(b);
   });
+  $('walletVal').textContent = fmtNum(wallet[mode]);
+  $('walletMode').textContent = mode === 'sand' ? '«Песка»' : '«Классики»';
+  applyThemeDom();
+}
+function onThemeTap(i, b) {
+  const th = THEMES[i];
+  if (themeOwned(i)) { changeTheme(i, true); sfx('tap'); return; }
+  const need = th.cost - wallet[mode];
+  if (need > 0) {
+    b.classList.remove('nope'); void b.offsetWidth; b.classList.add('nope');
+    themeNote.textContent = `Для темы «${th.name}» не хватает ${fmtNum(need)} очков. Они копятся в каждой игре режима «${mode === 'sand' ? 'Песок' : 'Классика'}».`;
+    sfx('bad'); vib(20);
+    return;
+  }
+  if (confirmIdx !== i) {
+    // первое нажатие — спрашиваем подтверждение
+    themesEl.querySelectorAll('.confirm').forEach(x => { x.classList.remove('confirm'); x.querySelector('.nm').textContent = THEMES[+x.dataset.i].name; });
+    confirmIdx = i;
+    b.classList.add('confirm');
+    b.querySelector('.nm').textContent = 'Открыть?';
+    themeNote.textContent = `Открыть тему «${th.name}» за ${fmtNum(th.cost)} очков? Нажмите ещё раз.`;
+    sfx('tap');
+    return;
+  }
+  wallet[mode] -= th.cost;
+  owned.add(th.id);
+  renderThemePicker();
+  closeSettings();
+  changeTheme(i, true);
+  const now = performance.now();
+  addText('Новая тема!', boardX + board / 2, boardY + boardH * 0.4, 'gold', 350);
+  addText(th.name, boardX + board / 2, boardY + boardH * 0.53, 'praise', 550);
+  allClearBurst(now + 250);
+  setTimeout(() => sfx('record'), 300);
+  vib(60);
+  save();
 }
 function themeProgress(now) { return clamp01((now - themeFx.t0) / THEME_DUR); }
 
@@ -1420,7 +1622,10 @@ function snapClassic() {
 function save() {
   try {
     const c = mode === 'classic' ? snapClassic() : stash.classic || { best: 0, game: null };
-    localStorage.setItem(LS_KEY, JSON.stringify({ best: c.best, settings, theme: themeIdx, game: c.game }));
+    localStorage.setItem(LS_KEY, JSON.stringify({
+      best: c.best, settings, theme: themeByMode.classic, themeSand: themeByMode.sand,
+      wallet, owned: [...owned], game: c.game,
+    }));
     const sd = mode === 'sand' ? snapSand() : stash.sand;
     if (sd) localStorage.setItem(SAND_KEY, JSON.stringify(sd));
   } catch (_) {}
@@ -1438,7 +1643,21 @@ function restore() {
     settings.liteChecked = !!s.settings.liteChecked;
     settings.mode = s.settings.mode === 'sand' ? 'sand' : 'classic';
   }
-  if (Number.isInteger(s.theme) && s.theme >= 0 && s.theme < THEMES.length) themeIdx = s.theme;
+  if (s.wallet) {
+    wallet.classic = Math.max(0, +s.wallet.classic || 0);
+    wallet.sand = Math.max(0, +s.wallet.sand || 0);
+  } else {
+    // первый запуск версии с копилкой: стартовый капитал — рекорды режимов
+    const sd = readSandStore();
+    wallet.classic = Math.max(0, +s.best || 0);
+    wallet.sand = Math.max(0, +(sd && sd.best) || 0);
+  }
+  if (Array.isArray(s.owned)) s.owned.forEach(id => { if (typeof id === 'string') owned.add(id); });
+  const valid = (i, m) => Number.isInteger(i) && themeOk(i, m);
+  themeByMode.classic = valid(s.theme, 'classic') ? s.theme : 0;
+  // раньше тема была общей — песок наследует её, если своей ещё нет
+  themeByMode.sand = valid(s.themeSand, 'sand') ? s.themeSand : valid(s.theme, 'sand') ? s.theme : 0;
+  themeIdx = themeByMode.classic;
   return applyClassic(s);
 }
 // Загружает партию классики из снимка { best, game }; false — если партии нет
@@ -1452,7 +1671,7 @@ function applyClassic(s) {
     const h = (g.hand || [])[k];
     return Array.isArray(h) && SHAPES[h[0]] && h[1] >= 0 && h[1] < 7 ? { s: h[0], c: h[1], t0: 0, fit: true, ret: null } : null;
   });
-  score = Math.max(0, +g.score || 0); displayScore = score;
+  score = Math.max(0, +g.score || 0); displayScore = score; banked = score;
   combo = +g.combo || 0; movesSinceClear = +g.msc || 0; newBestShown = !!g.nbs;
   linesTotal = +g.lines || 0; maxCombo = +g.mc || 0;
   reviveUsed = !!g.ru;
@@ -1476,10 +1695,13 @@ function layout() {
   bgDirty = true; lastDraw = 0;
   const HUD = 0.46, TRAY = 0.48, ASPECT = mode === 'sand' ? SROWS / SCOLS : 1;
   board = Math.min(Math.min(W, 560) * 0.88, (H - 20) / (ASPECT + HUD + TRAY));
-  // в песке ширина кратна числу песчинок — каждая песчинка ровно в целое число пикселей
-  board = mode === 'sand' ? Math.max(SCOLS * 2, Math.floor(board / SCOLS) * SCOLS) : Math.max(N * 16, Math.floor(board / N) * N);
+  if (mode === 'sand') {
+    // песчинка — целое число пикселей экрана, если ради этого поле уменьшится не больше чем на 5%
+    const q = Math.floor(board * dpr / SCOLS) * SCOLS / dpr;
+    board = Math.max(SCOLS, q >= board * 0.95 ? q : Math.floor(board));
+  } else board = Math.max(N * 16, Math.floor(board / N) * N);
   boardH = board * ASPECT;
-  cell = board / N;                     // в песке это размер блока фигуры (SB песчинок)
+  cell = board / (mode === 'sand' ? SBW : N);   // в песке это размер блока фигуры (SB песчинок)
   framePad = Math.max(4, Math.round(cell * 0.12));
   colW = Math.min(W, board / 0.88);
   colX = (W - colW) / 2;
@@ -1489,7 +1711,8 @@ function layout() {
   boardX = Math.round((W - board) / 2);
   boardY = Math.round(hudY + hudH);
   trayY = boardY + boardH + framePad;
-  trayCell = Math.min(cell * 0.56, (colW / 3 * 0.9) / 5);
+  // в песке блоки на поле мельче, а фигуры в лотке — того же размера, что и в классике
+  trayCell = Math.min(board / N * 0.56, (colW / 3 * 0.9) / 5);
   blockCache.clear(); boardCache.clear(); bgCache.clear();
 
   const row1 = hudY + hudH * 0.15;
@@ -1529,8 +1752,78 @@ function updateHint() {
 /* =====================================================================
    Пререндер: блоки, поле, фон
    ===================================================================== */
-function renderBlock(col, s) {
+// Особые блоки тем классики
+const BLOCK_STYLES = {
+  // тёмная «трубка» со светящейся кромкой
+  neon(g, col, s) {
+    const p = Math.max(1, s * 0.05), w = s - 2 * p, r = s * 0.2;
+    g.fillStyle = mixHex(col.c, '#000000', 0.8); rrPath(g, p, p, w, w, r); g.fill();
+    const ig = g.createRadialGradient(s / 2, s / 2, s * 0.12, s / 2, s / 2, s * 0.66);
+    ig.addColorStop(0, rgba(col.c, 0)); ig.addColorStop(1, rgba(col.c, 0.6));
+    g.fillStyle = ig; rrPath(g, p, p, w, w, r); g.fill();
+    const lw = Math.max(2, s * 0.09), q = p + lw / 2;
+    g.lineWidth = lw; g.strokeStyle = col.c; rrPath(g, q, q, s - 2 * q, s - 2 * q, r * 0.85); g.stroke();
+    g.lineWidth = Math.max(1, s * 0.035); g.strokeStyle = mixHex(col.t, '#ffffff', 0.55); g.stroke();
+    g.fillStyle = 'rgba(255,255,255,0.6)'; rrPath(g, s * 0.25, s * 0.22, s * 0.22, s * 0.07, s * 0.035); g.fill();
+  },
+  // глянцевый леденец
+  candy(g, col, s) {
+    const p = Math.max(1, s * 0.04), w = s - 2 * p, r = s * 0.3;
+    const gr = g.createLinearGradient(0, p, 0, s - p);
+    gr.addColorStop(0, col.t); gr.addColorStop(0.42, col.c); gr.addColorStop(1, col.b);
+    g.fillStyle = gr; rrPath(g, p, p, w, w, r); g.fill();
+    g.lineWidth = Math.max(1, s * 0.03); g.strokeStyle = 'rgba(0,0,0,0.2)'; g.stroke();
+    g.fillStyle = 'rgba(255,255,255,0.62)';
+    g.beginPath(); g.ellipse(s * 0.5, s * 0.27, s * 0.3, s * 0.12, 0, 0, Math.PI * 2); g.fill();
+    g.fillStyle = 'rgba(255,255,255,0.4)';
+    g.beginPath(); g.arc(s * 0.74, s * 0.7, s * 0.06, 0, Math.PI * 2); g.fill();
+  },
+  // полупрозрачное стекло с бликом
+  glass(g, col, s) {
+    const p = Math.max(1, s * 0.04), w = s - 2 * p, r = s * 0.14;
+    const gr = g.createLinearGradient(0, 0, s, s);
+    gr.addColorStop(0, rgba(col.t, 0.85)); gr.addColorStop(0.5, rgba(col.c, 0.62)); gr.addColorStop(1, rgba(col.b, 0.8));
+    g.fillStyle = gr; rrPath(g, p, p, w, w, r); g.fill();
+    g.save(); g.clip();
+    g.fillStyle = 'rgba(255,255,255,0.32)';
+    g.beginPath(); g.moveTo(0, s * 0.6); g.lineTo(s * 0.6, 0); g.lineTo(s * 0.78, 0); g.lineTo(0, s * 0.78); g.closePath(); g.fill();
+    g.fillStyle = 'rgba(255,255,255,0.16)';
+    g.beginPath(); g.moveTo(0, s * 0.88); g.lineTo(s * 0.88, 0); g.lineTo(s * 0.94, 0); g.lineTo(0, s * 0.94); g.closePath(); g.fill();
+    g.restore();
+    const lw = Math.max(1.5, s * 0.05);
+    g.lineWidth = lw; g.strokeStyle = rgba(col.t, 0.95); rrPath(g, p + lw / 2, p + lw / 2, w - lw, w - lw, r); g.stroke();
+  },
+  // гранёный самоцвет
+  gem(g, col, s) {
+    const b = Math.round(s * 0.26);
+    const poly = (pts, fill) => {
+      g.beginPath(); g.moveTo(pts[0][0], pts[0][1]);
+      for (let i = 1; i < pts.length; i++) g.lineTo(pts[i][0], pts[i][1]);
+      g.closePath(); g.fillStyle = fill; g.fill();
+    };
+    const lin = (x0, y0, x1, y1, a, c) => { const q = g.createLinearGradient(x0, y0, x1, y1); q.addColorStop(0, a); q.addColorStop(1, c); return q; };
+    poly([[0, 0], [s, 0], [s - b, b], [b, b]], lin(0, 0, 0, b, mixHex(col.t, '#ffffff', 0.35), col.t));
+    poly([[0, 0], [b, b], [b, s - b], [0, s]], lin(0, 0, b, 0, col.t, col.l));
+    poly([[s, 0], [s, s], [s - b, s - b], [s - b, b]], lin(s, 0, s - b, 0, col.b, col.r));
+    poly([[0, s], [s, s], [s - b, s - b], [b, s - b]], lin(0, s, 0, s - b, mixHex(col.b, '#000000', 0.25), col.b));
+    const tg = g.createRadialGradient(s * 0.4, s * 0.38, 0, s * 0.5, s * 0.5, s * 0.36);
+    tg.addColorStop(0, mixHex(col.t, '#ffffff', 0.45)); tg.addColorStop(1, col.c);
+    g.fillStyle = tg; g.fillRect(b, b, s - 2 * b, s - 2 * b);
+    g.strokeStyle = 'rgba(255,255,255,0.3)'; g.lineWidth = Math.max(1, s * 0.02);
+    g.beginPath();
+    g.moveTo(0, 0); g.lineTo(b, b); g.moveTo(s, 0); g.lineTo(s - b, b);
+    g.moveTo(0, s); g.lineTo(b, s - b); g.moveTo(s, s); g.lineTo(s - b, s - b);
+    g.rect(b, b, s - 2 * b, s - 2 * b); g.stroke();
+    g.fillStyle = '#ffffff';
+    drawStar(s * 0.36, s * 0.36, s * 0.14, g);
+    g.globalAlpha = 0.7; drawStar(s * 0.68, s * 0.66, s * 0.06, g); g.globalAlpha = 1;
+    const lw = Math.max(1, s * 0.022);
+    g.strokeStyle = 'rgba(0,0,0,0.3)'; g.lineWidth = lw; g.strokeRect(lw / 2, lw / 2, s - lw, s - lw);
+  },
+};
+function renderBlock(col, s, style) {
   const c = makeCanvas(s, s), g = c.getContext('2d');
+  if (BLOCK_STYLES[style]) { BLOCK_STYLES[style](g, col, s); return c; }
   const b = Math.max(2, Math.round(s * 0.135));
   const poly = (pts, fill) => {
     g.beginPath(); g.moveTo(pts[0][0], pts[0][1]);
@@ -1557,10 +1850,10 @@ function renderBlock(col, s) {
   return c;
 }
 function getBlock(c, size) {
-  const px = Math.max(4, Math.round(size * dpr));
-  const key = c * 100000 + px;
+  const px = Math.max(4, Math.round(size * dpr)), style = THEMES[themeIdx].blocks || '';
+  const key = style + c + '_' + px;
   let img = blockCache.get(key);
-  if (!img) { img = renderBlock(COLORS[c], px); blockCache.set(key, img); }
+  if (!img) { img = renderBlock(COLORS[c], px, style); blockCache.set(key, img); }
   return img;
 }
 function drawBlock(c, x, y, s, scale = 1) {
@@ -1624,6 +1917,7 @@ function getBgImage(ti) {
   const lg = g.createLinearGradient(0, 0, 0, H);
   lg.addColorStop(0, th.bg[0]); lg.addColorStop(0.5, th.bg[1]); lg.addColorStop(1, th.bg[2]);
   g.fillStyle = lg; g.fillRect(0, 0, W, H);
+  drawBgScenery(g, th);
   const cx = boardX + board / 2, cy = boardY + boardH / 2;
   const rg = g.createRadialGradient(cx, cy, board * 0.1, cx, cy, board * 1.05);
   rg.addColorStop(0, rgba(th.glow, 0.3)); rg.addColorStop(1, rgba(th.glow, 0));
@@ -1634,6 +1928,41 @@ function getBgImage(ti) {
   g.fillStyle = vg; g.fillRect(0, 0, W, H);
   bgCache.set(ti, img);
   return img;
+}
+
+// Неподвижные детали фона особых тем (рисуются один раз в картинку фона)
+function drawBgScenery(g, th) {
+  const U = Math.min(W, H);
+  if (th.decor === 'dunes') {
+    // солнце и три слоя барханов
+    const sx = W * 0.8, sy = H * 0.07, sr = U * 0.07;
+    const sg = g.createRadialGradient(sx, sy, 0, sx, sy, sr * 5);
+    sg.addColorStop(0, 'rgba(255,250,220,0.95)'); sg.addColorStop(0.2, 'rgba(255,232,170,0.5)'); sg.addColorStop(1, 'rgba(255,200,120,0)');
+    g.fillStyle = sg; g.fillRect(0, 0, W, H);
+    g.fillStyle = '#fff6dc'; g.beginPath(); g.arc(sx, sy, sr, 0, Math.PI * 2); g.fill();
+    [[0.7, '#d9794a', 0.045], [0.8, '#b35a3c', 0.04], [0.9, '#843a2e', 0.035]].forEach(([y0, col, amp], k) => {
+      g.fillStyle = col; g.beginPath(); g.moveTo(0, H);
+      for (let x = 0; x <= W + 8; x += 8) g.lineTo(x, H * y0 + Math.sin(x / W * 5 + k * 1.7) * H * amp + Math.sin(x / W * 11 + k) * H * amp * 0.3);
+      g.lineTo(W, H); g.closePath(); g.fill();
+    });
+  } else if (th.decor === 'galaxy') {
+    // туманности
+    g.save(); g.globalCompositeOperation = 'lighter';
+    const cols = ['#ff4fd8', '#7a5cff', '#2fb8ff', '#ff8a5c', '#9d4dff', '#3dd6c4'];
+    for (let k = 0; k < 7; k++) {
+      const x = W * rand(0, 1), y = H * rand(0, 1), r = Math.max(W, H) * rand(0.2, 0.42);
+      const ng = g.createRadialGradient(x, y, 0, x, y, r);
+      ng.addColorStop(0, rgba(cols[k % cols.length], 0.2)); ng.addColorStop(1, rgba(cols[k % cols.length], 0));
+      g.fillStyle = ng; g.fillRect(0, 0, W, H);
+    }
+    g.restore();
+  } else if (th.decor === 'synthwave') {
+    // светящийся горизонт на уровне центра поля
+    const hz = boardY + boardH / 2;
+    const hg = g.createLinearGradient(0, hz - H * 0.3, 0, hz + H * 0.3);
+    hg.addColorStop(0, rgba(th.glow, 0)); hg.addColorStop(0.5, rgba(th.glow, 0.28)); hg.addColorStop(1, rgba(th.glow, 0));
+    g.fillStyle = hg; g.fillRect(0, 0, W, H);
+  }
 }
 
 function getGlow(color) {
@@ -1649,7 +1978,9 @@ function getGlow(color) {
 }
 
 /* ---------- Анимированный декор фона ---------- */
-const DECOR_COUNT = { squares: 16, bokeh: 14, bubbles: 20, fireflies: 24, stars: 70, embers: 32, snow: 55 };
+const DECOR_COUNT = { squares: 16, bokeh: 14, bubbles: 20, fireflies: 24, stars: 70, embers: 32, snow: 55,
+  synthwave: 30, petals: 26, aurora: 50, glitter: 34, dunes: 30, galaxy: 80 };
+let shootStar = null;                   // падающая звезда темы «Галактика»
 function getDecor(ti) {
   let arr = decorSets.get(ti);
   if (!arr) {
@@ -1666,9 +1997,46 @@ function drawDecor(ti, now, dt) {
   const U = Math.min(W, H * 0.75), ts = now / 1000;
   const wrapUp = d => { if (d.y < -0.08) { d.y = 1.08; d.x = Math.random(); } };
   const wrapDown = d => { if (d.y > 1.08) { d.y = -0.08; d.x = Math.random(); } };
+  const twinkle = d => {
+    ctx.globalAlpha = 0.25 + 0.6 * (0.5 + 0.5 * Math.sin(ts * 1.6 * d.sp + d.ph)) * d.s;
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath(); ctx.arc(d.x * W, d.y * H, 0.5 + 1.2 * d.s, 0, Math.PI * 2); ctx.fill();
+  };
   ctx.save();
+  if (kind === 'synthwave') drawSynthGrid(th, ts);
+  else if (kind === 'aurora') drawAurora(ts);
+  else if (kind === 'galaxy') drawShootingStar(ts, dt, U);
   for (const d of arr) {
     switch (kind) {
+      case 'synthwave': case 'aurora': case 'galaxy':
+        twinkle(d);
+        break;
+      case 'petals': {
+        d.y += dt * 0.04 * d.sp; d.r += dt * (d.s - 0.5) * 2.5; wrapDown(d);
+        const x = d.x * W + Math.sin(ts * 0.8 * d.sp + d.ph) * U * 0.05, sz = U * (0.011 + 0.013 * d.s);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.translate(x, d.y * H); ctx.rotate(d.r); ctx.scale(1, 0.45 + 0.55 * Math.abs(Math.sin(ts * 1.8 * d.sp + d.ph)));
+        ctx.globalAlpha = 0.8;
+        ctx.fillStyle = d.s > 0.55 ? '#fff2f7' : '#ff9fc6';
+        ctx.beginPath(); ctx.moveTo(0, -sz); ctx.quadraticCurveTo(sz, 0, 0, sz); ctx.quadraticCurveTo(-sz, 0, 0, -sz); ctx.fill();
+        break;
+      }
+      case 'glitter': {
+        d.y += dt * 0.012 * d.sp; wrapDown(d);
+        const tw = Math.pow(Math.max(0, Math.sin(ts * 2.2 * d.sp + d.ph)), 3);
+        const x = d.x * W, y = d.y * H, r = U * (0.006 + 0.01 * d.s) * (0.4 + tw);
+        ctx.globalAlpha = 0.2 + 0.8 * tw;
+        ctx.drawImage(getGlow('#ffd36b'), x - r * 2.5, y - r * 2.5, r * 5, r * 5);
+        ctx.fillStyle = '#fff6d0'; drawStar(x, y, r * 1.7);
+        break;
+      }
+      case 'dunes': {
+        // пылинки, которые несёт ветер
+        d.x += dt * 0.025 * d.sp; if (d.x > 1.05) { d.x = -0.05; d.y = Math.random(); }
+        ctx.globalAlpha = 0.2 + 0.35 * d.s; ctx.fillStyle = '#fff1d0';
+        ctx.beginPath(); ctx.arc(d.x * W, d.y * H + Math.sin(ts * 1.5 * d.sp + d.ph) * U * 0.012, 0.8 + 1.8 * d.s, 0, Math.PI * 2); ctx.fill();
+        break;
+      }
       case 'squares': {
         d.y -= dt * 0.012 * d.sp; d.r += dt * 0.25 * (d.s - 0.5); wrapUp(d);
         const sz = U * (0.035 + 0.06 * d.s);
@@ -1736,6 +2104,55 @@ function drawDecor(ti, now, dt) {
     }
   }
   ctx.restore();
+}
+// Неоновая сетка: пол и потолок бегут навстречу от горизонта в центре поля
+function drawSynthGrid(th, ts) {
+  const hz = boardY + boardH / 2, ph = (ts * 0.22) % 1;
+  ctx.strokeStyle = th.glow; ctx.lineWidth = 1.3;
+  for (const dir of [1, -1]) {
+    const span = dir > 0 ? H - hz : hz;
+    for (let k = 0; k < 10; k++) {
+      const z = (k + ph) / 10, y = hz + dir * span * z * z;
+      ctx.globalAlpha = 0.45 * z;
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+    }
+    ctx.globalAlpha = 0.2;
+    ctx.beginPath();
+    for (let i = -12; i <= 12; i++) { ctx.moveTo(W / 2 + i * W * 0.02, hz); ctx.lineTo(W / 2 + i * W * 0.17, dir > 0 ? H : 0); }
+    ctx.stroke();
+  }
+}
+// Северное сияние: волнистые светящиеся занавеси в верхней части экрана
+function drawAurora(ts) {
+  ctx.globalCompositeOperation = 'lighter';
+  const PTS = 24, ys = new Float32Array(PTS + 1);
+  for (const [col, yb, ph, a] of [['#3dffb0', 0.2, 0, 0.32], ['#8a5cff', 0.3, 2.1, 0.26], ['#2fd4ff', 0.13, 4.2, 0.22]]) {
+    const base = H * yb, amp = H * 0.05, h = H * 0.17;
+    for (let i = 0; i <= PTS; i++) ys[i] = base + Math.sin(i * 0.45 + ts * 0.35 + ph) * amp + Math.sin(i * 0.17 - ts * 0.21 + ph) * amp * 0.6;
+    const gr = ctx.createLinearGradient(0, base - h - amp, 0, base + amp);
+    gr.addColorStop(0, rgba(col, 0)); gr.addColorStop(0.75, rgba(col, a * 0.5)); gr.addColorStop(1, rgba(col, a));
+    ctx.fillStyle = gr; ctx.globalAlpha = 0.8 + 0.2 * Math.sin(ts * 0.7 + ph);
+    ctx.beginPath();
+    for (let i = 0; i <= PTS; i++) { const x = W * i / PTS; i ? ctx.lineTo(x, ys[i]) : ctx.moveTo(x, ys[i]); }
+    for (let i = PTS; i >= 0; i--) ctx.lineTo(W * i / PTS, ys[i] - h);
+    ctx.closePath(); ctx.fill();
+  }
+  ctx.globalCompositeOperation = 'source-over';
+}
+function drawShootingStar(ts, dt, U) {
+  if (!shootStar || ts - shootStar.t > 1) {
+    shootStar = Math.random() < dt * 0.3 ? { t: ts, x: rand(0.1, 0.8) * W, y: rand(0, 0.35) * H, a: rand(0.35, 0.75) } : null;
+    if (!shootStar) return;
+  }
+  const p = (ts - shootStar.t) / 0.8;
+  if (p > 1) return;
+  const dx = Math.cos(shootStar.a), dy = Math.sin(shootStar.a), d = U * 0.9 * p, len = U * 0.22;
+  const hx = shootStar.x + dx * d, hy = shootStar.y + dy * d;
+  const gr = ctx.createLinearGradient(hx, hy, hx - dx * len, hy - dy * len);
+  gr.addColorStop(0, 'rgba(255,255,255,0.9)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.globalAlpha = Math.sin(Math.PI * p);
+  ctx.strokeStyle = gr; ctx.lineWidth = 2; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(hx, hy); ctx.lineTo(hx - dx * len, hy - dy * len); ctx.stroke();
 }
 
 /* =====================================================================
@@ -1852,7 +2269,7 @@ function allClearBurst(t0) {
   const cx = boardX + board / 2, cy = boardY + boardH / 2;
   rings.push({ x: cx, y: cy, t0, dur: 1000, r0: cell, r1: Math.hypot(W, H) * 0.65, w: cell * 0.35, color: '#ffffff' });
   rings.push({ x: cx, y: cy, t0: t0 + 150, dur: 900, r0: cell * 0.5, r1: board * 0.9, w: cell * 0.2, color: '#fff2a8' });
-  flashes.push({ board: true, start: t0 });
+  if (mode === 'classic') flashes.push({ board: true, start: t0 });   // в песке вспышки не рисуются
   const palette = ['#ff5a5a', '#ffb02e', '#ffe14a', '#4ee06a', '#3ed2ff', '#5b8bff', '#b06bff', '#ffffff'];
   for (let i = 0, n = settings.lite ? 40 : 90; i < n; i++) {
     const ang = Math.random() * Math.PI * 2, sp = rand(3, 11) * cell;
@@ -2267,10 +2684,10 @@ function drawDrag(now) {
   drawPiece(sh, drag.h.c, drag.cx, drag.cy, drag.cs);
 }
 
-function drawStar(x, y, r) {
-  ctx.beginPath();
-  ctx.moveTo(x, y - r); ctx.quadraticCurveTo(x, y, x + r, y); ctx.quadraticCurveTo(x, y, x, y + r);
-  ctx.quadraticCurveTo(x, y, x - r, y); ctx.quadraticCurveTo(x, y, x, y - r); ctx.fill();
+function drawStar(x, y, r, g = ctx) {
+  g.beginPath();
+  g.moveTo(x, y - r); g.quadraticCurveTo(x, y, x + r, y); g.quadraticCurveTo(x, y, x, y + r);
+  g.quadraticCurveTo(x, y, x - r, y); g.quadraticCurveTo(x, y, x, y - r); g.fill();
 }
 function drawParticles(now, dt) {
   const grav = cell * 24;
@@ -2364,7 +2781,8 @@ function drawTexts(now) {
    полосу — это комбо: цепная реакция в рамках одного хода.
    ===================================================================== */
 const SB = 10;                        // песчинок на сторону одного блока фигуры
-const SCOLS = 8 * SB, SROWS = 10 * SB; // поле 8×10 блоков
+const SBW = 10, SBH = 13;             // поле 10×13 блоков
+const SCOLS = SBW * SB, SROWS = SBH * SB;
 const SDANGER = 14;                   // красная линия: песок выше неё после оседания — конец игры
 const SAND_KEY = 'blockblast.sand.v1';
 const SAND_COLOR_IDX = [0, 2, 3, 5, 1, 6];   // красный, жёлтый, зелёный, синий, + оранжевый, фиолетовый с уровнями
@@ -2380,6 +2798,31 @@ SAND_COLOR_IDX.forEach((ci, k) => {
   [g.t, g.c, g.r, g.b].forEach((h, s) => { SAND_GREY[k * 4 + s] = packRGBA(h); });
 });
 const SAND_WHITE = packRGBA('#ffffff');
+// Палитра песка текущей темы (у особых тем песка — свои цвета)
+const sandPalCache = new Map();
+function sandPal() {
+  const th = THEMES[themeIdx];
+  if (!th.sand) return SAND_PAL;
+  let p = sandPalCache.get(themeIdx);
+  if (!p) {
+    p = new Uint32Array(th.sand.length * 4);
+    th.sand.forEach((hex, k) => [mixHex(hex, '#ffffff', 0.42), hex, mixHex(hex, '#000000', 0.14), mixHex(hex, '#000000', 0.3)]
+      .forEach((h, s) => { p[k * 4 + s] = packRGBA(h); }));
+    sandPalCache.set(themeIdx, p);
+  }
+  return p;
+}
+// Цвета песчинки k для осколков: { c — основной, t — светлый }
+function sandColor(k) {
+  const th = THEMES[themeIdx];
+  return th.sand ? { c: th.sand[k - 1], t: mixHex(th.sand[k - 1], '#ffffff', 0.42) } : COLORS[SAND_COLOR_IDX[k - 1]];
+}
+// Эффект песка текущей темы (в лёгком режиме и после проигрыша — без эффектов)
+const CANVAS_FILTER = 'filter' in CanvasRenderingContext2D.prototype;
+function sandFx() {
+  const fx = settings.lite || state === 'over' ? null : THEMES[themeIdx].sandFx || null;
+  return fx === 'glow' && !CANVAS_FILTER ? null : fx;   // без ctx.filter свечение не размыть
+}
 
 // Профиль столбцов каждой фигуры в песчинках: верх, низ и высота столбика
 const SHAPE_COLS = SHAPES.map(sh => {
@@ -2404,6 +2847,7 @@ const sand = {
   hand: [null, null, null],
   level: 0, chain: 0, phase: 'idle', clearT0: 0, clearCells: null,
   img: makeCanvas(SCOLS, SROWS), pix: null, imgData: null, ictx: null, dirty: true,
+  glow: makeCanvas(SCOLS + 8, SROWS + 8), tw: [],   // свечение песка и искорки (эффекты тем)
 };
 sand.ictx = sand.img.getContext('2d');
 sand.imgData = sand.ictx.createImageData(SCOLS, SROWS);
@@ -2439,11 +2883,17 @@ function makeSandPiece(s, k) {
     const v = y === 0 || x === 0 ? 0 : y === SB - 1 || x === SB - 1 ? 3 : Math.random() < 0.78 ? 1 : 2;
     shades[(cy * SB + y) * pw + cx * SB + x] = v;
   }
-  const tex = makeCanvas(pw, ph), tc = tex.getContext('2d'), id = tc.createImageData(pw, ph), p32 = new Uint32Array(id.data.buffer);
-  for (let i = 0; i < shades.length; i++) if (shades[i] !== 255) p32[i] = SAND_PAL[(k - 1) * 4 + shades[i]];
-  tc.putImageData(id, 0, 0);
-  return { s, k, shades, tex, t0: 0, ret: null, fit: true };
+  return { s, k, shades, tex: sandTex(s, shades, k), t0: 0, ret: null, fit: true };
 }
+function sandTex(s, shades, k) {
+  const sh = SHAPES[s], pw = sh.w * SB, ph = sh.h * SB, pal = sandPal();
+  const tex = makeCanvas(pw, ph), tc = tex.getContext('2d'), id = tc.createImageData(pw, ph), p32 = new Uint32Array(id.data.buffer);
+  for (let i = 0; i < shades.length; i++) if (shades[i] !== 255) p32[i] = pal[(k - 1) * 4 + shades[i]];
+  tc.putImageData(id, 0, 0);
+  return tex;
+}
+// после смены темы перекрашиваем фигуры в лотке
+function sandRetex() { for (const h of sand.hand) if (h) h.tex = sandTex(h.s, h.shades, h.k); }
 
 /* ---------- Физика: песчинка падает вниз, иначе скатывается по диагонали ---------- */
 function sandStep() {
@@ -2632,7 +3082,7 @@ function sandApplyClear(now) {
     const p = cells[i], x = p % SCOLS, y = (p - x) / SCOLS;
     sx += x; sy += y;
     if (i % every === 0) {
-      const col = COLORS[SAND_COLOR_IDX[g[p] - 1]], ang = Math.random() * Math.PI * 2, sp = rand(1, 3.5) * cell;
+      const col = sandColor(g[p]), ang = Math.random() * Math.PI * 2, sp = rand(1, 3.5) * cell;
       particles.push({
         k: 'shard', x: boardX + (x + 0.5) * gs, y: boardY + (y + 0.5) * gs,
         vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp - cell * 2.5, g: 1,
@@ -2666,7 +3116,7 @@ function sandMoveEnd(now) {
     addText('All Clear!', boardX + board / 2, boardY + boardH * 0.45, 'gold', 150);
     addText('+' + bonus, boardX + board / 2, boardY + boardH * 0.58, 'score', 300);
     allClearBurst(now + 60); sfx('allClear'); vib(70);
-    setTimeout(() => changeTheme((themeIdx + 1) % THEMES.length), 450);
+    setTimeout(() => changeTheme(nextTheme()), 450);
     checkBest(); sandCheckLevel();
   }
   sand.chain = 0;
@@ -2704,12 +3154,12 @@ function sandNewGame() {
   // старый песок разлетается
   for (let p = 0, k = 0; p < g.length; p++) {
     if (!g[p] || k++ % 40) continue;
-    const x = p % SCOLS, y = (p - x) / SCOLS, col = COLORS[SAND_COLOR_IDX[g[p] - 1]];
+    const x = p % SCOLS, y = (p - x) / SCOLS, col = sandColor(g[p]);
     particles.push({ k: 'shard', x: boardX + x * gs, y: boardY + y * gs, vx: rand(-2, 2) * cell, vy: -rand(1, 3) * cell, g: 1,
       s: gs * 1.6, c: state === 'over' ? '#8690a8' : col.c, life: 0, max: rand(400, 700), rot: 0, vr: rand(-8, 8) });
   }
-  g.fill(0); sand.shade.fill(0); sand.dirty = true;
-  score = 0; displayScore = 0; scoreEl.textContent = '0';
+  g.fill(0); sand.shade.fill(0); sand.dirty = true; sand.tw.length = 0;
+  score = 0; banked = 0; displayScore = 0; scoreEl.textContent = '0';
   newBestShown = false; startBest = best; linesTotal = 0; maxCombo = 0; reviveUsed = false;
   sand.level = 0; sand.chain = 0; sand.phase = 'idle'; sand.clearCells = null;
   state = 'play'; overT0 = 0; drag = null;
@@ -2729,7 +3179,7 @@ function sandRevive() {
     const p = y * SCOLS + x;
     if (!g[p]) continue;
     if ((x + y) % 23 === 0) {
-      const col = COLORS[SAND_COLOR_IDX[g[p] - 1]];
+      const col = sandColor(g[p]);
       particles.push({ k: 'shard', x: boardX + x * gs, y: boardY + y * gs, vx: rand(-2, 2) * cell, vy: -rand(1, 3) * cell, g: 1,
         s: gs * 1.6, c: col.c, life: 0, max: rand(400, 800), rot: 0, vr: rand(-8, 8) });
     }
@@ -2761,7 +3211,7 @@ function snapSand() {
   return {
     best,
     game: state !== 'over' ? {
-      cells, hand: sand.hand.map(h => h ? [h.s, h.k] : null),
+      cells, w: SCOLS, hand: sand.hand.map(h => h ? [h.s, h.k] : null),
       score, level: sand.level, sb: startBest, nbs: newBestShown, lines: linesTotal, mc: maxCombo, ru: reviveUsed,
     } : null,
   };
@@ -2770,17 +3220,21 @@ function readSandStore() { try { return JSON.parse(localStorage.getItem(SAND_KEY
 function loadSand(snap) {
   best = Math.max(0, +(snap && snap.best) || 0);
   const g = snap && snap.game;
-  if (!g || typeof g.cells !== 'string' || g.cells.length !== SCOLS * SROWS) { sand.grid.fill(0); state = 'play'; sandNewGame(); return; }
+  // сохранение с поля другого размера (раньше было 80×100) переносим в низ поля по центру
+  const ow = g && (+g.w || 80), oh = g && typeof g.cells === 'string' ? g.cells.length / ow : 0;
+  if (!g || !Number.isInteger(oh) || oh < 1 || ow > SCOLS || oh > SROWS) { sand.grid.fill(0); state = 'play'; sandNewGame(); return; }
+  sand.grid.fill(0); sand.shade.fill(0); sand.tw.length = 0;
+  const ox = (SCOLS - ow) >> 1, oy = SROWS - oh;
   for (let i = 0; i < g.cells.length; i++) {
-    const v = g.cells.charCodeAt(i) - 40, c = v >> 2;
-    sand.grid[i] = c >= 1 && c <= SAND_COLOR_IDX.length ? c : 0;
-    sand.shade[i] = v & 3;
+    const v = g.cells.charCodeAt(i) - 40, c = v >> 2, x = i % ow, j = (oy + (i - x) / ow) * SCOLS + ox + x;
+    sand.grid[j] = c >= 1 && c <= SAND_COLOR_IDX.length ? c : 0;
+    sand.shade[j] = v & 3;
   }
   sand.hand = [0, 1, 2].map(k => {
     const h = (g.hand || [])[k];
     return Array.isArray(h) && SHAPES[h[0]] && h[1] >= 1 && h[1] <= SAND_COLOR_IDX.length ? makeSandPiece(h[0], h[1]) : null;
   });
-  score = Math.max(0, +g.score || 0); displayScore = score;
+  score = Math.max(0, +g.score || 0); displayScore = score; banked = score;
   sand.level = Math.max(0, Math.min(LEVELS.length - 1, +g.level || 0));
   startBest = g.sb != null ? +g.sb : best; newBestShown = !!g.nbs;
   linesTotal = +g.lines || 0; maxCombo = +g.mc || 0; reviveUsed = !!g.ru;
@@ -2854,8 +3308,8 @@ function getSandBoardImage(ti) {
   // едва заметная сетка блоков
   g.strokeStyle = 'rgba(255,255,255,0.04)'; g.lineWidth = 1;
   g.beginPath();
-  for (let i = 1; i < 8; i++) { const x = framePad + Math.round(i * cell) + 0.5; g.moveTo(x, framePad); g.lineTo(x, framePad + boardH); }
-  for (let i = 1; i < 10; i++) { const y = framePad + Math.round(i * cell) + 0.5; g.moveTo(framePad, y); g.lineTo(framePad + board, y); }
+  for (let i = 1; i < SBW; i++) { const x = framePad + Math.round(i * cell) + 0.5; g.moveTo(x, framePad); g.lineTo(x, framePad + boardH); }
+  for (let i = 1; i < SBH; i++) { const y = framePad + Math.round(i * cell) + 0.5; g.moveTo(framePad, y); g.lineTo(framePad + board, y); }
   g.stroke();
   const hg = g.createLinearGradient(0, 0, 0, fh);
   hg.addColorStop(0, 'rgba(255,255,255,0.28)'); hg.addColorStop(0.05, 'rgba(255,255,255,0.04)'); hg.addColorStop(1, 'rgba(255,255,255,0)');
@@ -2867,13 +3321,55 @@ function getSandBoardImage(ti) {
 function sandRender(now) {
   if (!sand.dirty) return;
   sand.dirty = false;
-  const g = sand.grid, sh = sand.shade, px = sand.pix, pal = state === 'over' ? SAND_GREY : SAND_PAL;
+  const g = sand.grid, sh = sand.shade, px = sand.pix, pal = state === 'over' ? SAND_GREY : sandPal();
   for (let i = 0; i < g.length; i++) { const v = g[i]; px[i] = v ? pal[(v - 1) * 4 + sh[i]] : 0; }
   if (sand.phase === 'clearing' && sand.clearCells) {
     const on = ((now - sand.clearT0) / 70 | 0) % 2 === 0;   // исчезающая полоса мигает белым
     if (on) for (const p of sand.clearCells) px[p] = SAND_WHITE;
   }
-  sand.ictx.putImageData(sand.imgData, 0, 0);
+  const ic = sand.ictx, fx = sandFx();
+  ic.putImageData(sand.imgData, 0, 0);
+  if (fx === 'shine') {
+    // по песку пробегает диагональный блик (рисуется только поверх песчинок)
+    const a = sandShinePos(now), w = 26;
+    if (a !== null) {
+      const gr = ic.createLinearGradient(a / 2, a / 2, (a + w) / 2, (a + w) / 2);
+      gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(0.5, 'rgba(255,255,240,0.7)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+      ic.globalCompositeOperation = 'source-atop';
+      ic.fillStyle = gr; ic.fillRect(0, 0, SCOLS, SROWS);
+      ic.globalCompositeOperation = 'source-over';
+    }
+  } else if (fx === 'glow') {
+    // размытая копия песка — неоновое свечение
+    const gc = sand.glow.getContext('2d');
+    gc.clearRect(0, 0, sand.glow.width, sand.glow.height);
+    gc.filter = 'blur(2px)';
+    gc.drawImage(sand.img, 4, 4);
+    gc.filter = 'none';
+  }
+}
+// Положение блика (x + y в песчинках) или null между пробегами
+function sandShinePos(now) {
+  const T = 3400, RUN = 1500, t = now % T;
+  return t < RUN ? -30 + (SCOLS + SROWS + 30) * (t / RUN) : null;
+}
+// Искорки на песке (тема «Галактика»)
+function drawSandTwinkles(now, dt, gs) {
+  const tw = sand.tw, g = sand.grid;
+  if (Math.random() < dt * 16) {
+    for (let a = 0; a < 40; a++) { const p = (Math.random() * g.length) | 0; if (g[p]) { tw.push({ p, t0: now, r: rand(0.8, 1.5) }); break; } }
+  }
+  ctx.save();
+  ctx.globalCompositeOperation = 'lighter';
+  ctx.fillStyle = '#ffffff';
+  for (let k = tw.length - 1; k >= 0; k--) {
+    const t = tw[k], q = (now - t.t0) / 650;
+    if (q >= 1 || !g[t.p]) { tw.splice(k, 1); continue; }   // песчинка могла осыпаться
+    const x = t.p % SCOLS, y = (t.p - x) / SCOLS, s = Math.sin(q * Math.PI);
+    ctx.globalAlpha = s;
+    drawStar(boardX + (x + 0.5) * gs, boardY + (y + 0.5) * gs, gs * 2.4 * t.r * s);
+  }
+  ctx.restore();
 }
 function drawSandPiece(h, cx, cy, cs) {
   const sh = SHAPES[h.s], w = sh.w * cs, hh = sh.h * cs;
@@ -2887,12 +3383,20 @@ function sandDraw(now, dt) {
   ctx.translate(sx, sy);
   const m = boardMargin();
   ctx.drawImage(getSandBoardImage(themeIdx), boardX - framePad - m, boardY - framePad - m, board + (framePad + m) * 2, boardH + (framePad + m) * 2);
+  const fx = sandFx(), gs = board / SCOLS, ly = boardY + SDANGER * gs;
+  if (fx === 'shine' && (sandShinePos(now) !== null || sandShinePos(now - 50) !== null)) sand.dirty = true;
   sandRender(now);
   ctx.imageSmoothingEnabled = false;
   ctx.drawImage(sand.img, boardX, boardY, board, boardH);
   ctx.imageSmoothingEnabled = true;
+  if (fx === 'glow') {
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.globalAlpha = 0.6;
+    ctx.drawImage(sand.glow, boardX - 4 * gs, boardY - 4 * gs, (SCOLS + 8) * gs, (SROWS + 8) * gs);
+    ctx.restore();
+  } else if (fx === 'twinkle') drawSandTwinkles(now, dt, gs);
   // красная линия; когда песок близко — тревожная подсветка
-  const gs = board / SCOLS, ly = boardY + SDANGER * gs;
   const near = state === 'play' && sand.phase === 'idle' && sandTopRow() < SDANGER + 16;
   if (near) {
     ctx.fillStyle = `rgba(255,40,40,${0.1 + 0.07 * Math.sin(now / 150)})`;
@@ -2956,6 +3460,8 @@ function switchMode(m, initial) {
   drag = null; hint = null; epoch++;
   if (mode === 'classic') stash.classic = snapClassic(); else stash.sand = snapSand();
   mode = m; settings.mode = m;
+  const t = themeOk(themeByMode[m]) ? themeByMode[m] : 0;   // у каждого режима своя тема
+  if (t !== themeIdx) setTheme(t, !initial);
   clearAnims = []; flashes = []; particles = []; sparkles = []; texts = []; rings = [];
   placeAnims.clear(); shake.amp = 0;
   overOv.hidden = true; reviveOv.hidden = true;
@@ -2975,6 +3481,7 @@ function updateModeUi() {
   sandBar.classList.toggle('hidden', !sandMode);
   if (sandMode) comboBadge.classList.add('hidden');
   $('modeName').textContent = sandMode ? 'Песок' : 'Классика';
+  renderThemePicker();
   document.querySelectorAll('.mode-card').forEach(b => {
     const on = b.dataset.mode === mode;
     b.classList.toggle('on', on); b.setAttribute('aria-pressed', on);
@@ -3003,7 +3510,7 @@ function syncSwitches() {
   swHints.setAttribute('aria-pressed', settings.hints);
   swLite.setAttribute('aria-pressed', settings.lite);
 }
-function openSettings() { if (drag) return; paused = true; hint = null; syncSwitches(); settingsOv.hidden = false; sfx('tap'); }
+function openSettings() { if (drag) return; paused = true; hint = null; syncSwitches(); renderThemePicker(); settingsOv.hidden = false; sfx('tap'); }
 function closeSettings() { paused = false; settingsOv.hidden = true; resetIdle(); sfx('tap'); }
 gearBtn.addEventListener('click', () => { ensureAudio(); openSettings(); });
 $('btnResume').addEventListener('click', closeSettings);
@@ -3044,7 +3551,6 @@ document.addEventListener('visibilitychange', () => {
    Старт
    ===================================================================== */
 layout();
-buildThemePicker();
 if (restore()) {
   refreshFit();
   if (!hand.some(h => h && h.fit)) triggerNoMoves();
@@ -3076,7 +3582,7 @@ window.__bb = {
   get combo() { return combo; }, get theme() { return themeIdx; }, get hint() { return hint; }, get reviveUsed() { return reviveUsed; },
   get layout() { return { boardX, boardY, cell, trayY, trayH, colX, colW }; },
   place, SHAPES, THEMES, newGame, changeTheme, SoundEngine, generateHand, computeHint, helpLevel, revive, giveUp, frame,
-  get mode() { return mode; }, sand, switchMode, sandPlace, sandFindSpans, sandComputeTops, sandMaxY, sandCanClear, sandLabel,
+  get mode() { return mode; }, sand, switchMode, wallet, owned, renderThemePicker, save, setTheme, sandPlace, sandFindSpans, sandComputeTops, sandMaxY, sandCanClear, sandLabel,
   SHAPE_COLS, SCOLS, SROWS, SDANGER,
 };
 })();
