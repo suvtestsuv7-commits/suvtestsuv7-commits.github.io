@@ -227,7 +227,7 @@
   .mini.st-candy i.blk { border-radius: 40%; background: radial-gradient(ellipse at 50% 25%, rgba(255,255,255,.75) 0 30%, transparent 32%), var(--k); box-shadow: inset 0 -2px 0 rgba(0,0,0,.2); }
   .mini.st-glass i.blk { background: linear-gradient(135deg, transparent 38%, rgba(255,255,255,.45) 46% 56%, transparent 64%), var(--k); opacity: .82; box-shadow: inset 0 0 0 1px rgba(255,255,255,.75); }
   .mini.st-gem i.blk { background: radial-gradient(circle at 35% 35%, rgba(255,255,255,.7) 0 12%, transparent 30%), var(--k); box-shadow: inset 0 0 0 2px rgba(0,0,0,.22), inset 0 0 0 4px rgba(255,255,255,.25); }
-  .mini.st-volt i.blk { background: radial-gradient(circle, #fff 0 14%, var(--k) 46%, rgba(0,0,0,.55) 100%); box-shadow: inset 0 0 0 1.5px rgba(191,233,255,.7), 0 0 4px var(--k); }
+  .mini.st-magma i.blk { background: radial-gradient(circle at 50% 75%, #fff3b0 0 12%, var(--k) 55%, #3a1209 100%); box-shadow: inset 0 0 0 1.5px #2a0c08, 0 0 5px #ff7a2a; }
   .mini.st-pixel, .mini.st-pixel i { border-radius: 0; }
   .mini.st-pixel i.blk { box-shadow: inset 2px 2px 0 rgba(255,255,255,.4), inset -2px -2px 0 rgba(0,0,0,.35); }
   .mini.st-sand { gap: 0; }
@@ -571,15 +571,15 @@ const THEMES = [
     bg: ['#1a0a00', '#3d1d05', '#6b3a0a'], glow: '#ffcf5a', board: '#140a04', edge: '#c9962e', cell: '#1f120a',
     panel: ['#c08a2a', '#7f5514', '#ffe08a', '#3d2606'], ui: '#fff0c2', decor: 'glitter' },
   // ---- Секретные темы классики (открываются кодом; fx — свои эффекты очистки, надписей и звуков) ----
-  { id: 'max', mode: 'classic', code: 'макс', blocks: 'volt', fx: 'storm', name: 'Макс',
-    bg: ['#03071a', '#0b1838', '#1a2f5c'], glow: '#4fc3ff', board: '#070d22', edge: '#1f3d7a', cell: '#0d1630',
-    panel: ['#2a5bd7', '#1a3a94', '#7fd4ff', '#0b1c4f'], ui: '#bfe9ff', decor: 'storm' },
+  { id: 'max', mode: 'classic', code: 'макс', blocks: 'magma', fx: 'fire', name: 'Макс',
+    bg: ['#0d0302', '#2b0905', '#5c1607'], glow: '#ff6a2a', board: '#170705', edge: '#3d1008', cell: '#230c08',
+    panel: ['#d2552a', '#952c14', '#ffbb7a', '#4a1006'], ui: '#ffd9b0', decor: 'dragon' },
   { id: 'matvey', mode: 'classic', code: 'матвей', blocks: 'pixel', fx: 'pixel', square: true, name: 'Матвей',
     bg: ['#4fb8ff', '#86d4ff', '#c4eeff'], glow: '#ffffff', board: '#5e4027', edge: '#3a2412', cell: '#74512f',
     panel: ['#5aa83a', '#3f7f27', '#a8e07a', '#244d14'], ui: '#ffffff', decor: 'pixelsky' },
 ];
 const PIXEL_FONT = "'Press Start 2P', 'Courier New', monospace";
-// Эффекты текущей темы (только в классике): 'storm' | 'pixel' | undefined
+// Эффекты текущей темы (только в классике): 'fire' | 'pixel' | undefined
 function curFx() { return mode === 'classic' ? THEMES[themeIdx].fx : undefined; }
 
 const N = 8;
@@ -893,17 +893,26 @@ class SoundEngine {
       // 8-битное арпеджио (ноты аккорда до мажора — в тон музыке)
       chordOn(72 + 12 * Math.min(1, Math.floor(step / 7)), COMBO_CHORDS[step % 7], lines >= 2 ? 1 : 0)
         .forEach((n, i) => this.osc('square', midi(n), t + 0.03 + i * 0.055, 0.11, this.out(0.035, 0.06), { attack: 0.002 }));
-    } else if (kind === 'storm') {
-      // электрический треск, при большой очистке — раскат грома
-      this.noise(t, 0.22, this.out(0.11, 0.2), { type: 'highpass', f: 3200, attack: 0.001 });
-      this.osc('sawtooth', 1800, t, 0.12, this.out(0.025, 0.1), { to: 300, attack: 0.001 });
-      if (lines >= 2) this.noise(t + 0.06, 1.3, this.out(0.2, 0.45), { type: 'lowpass', f: 420, to: 70, attack: 0.03 });
+    } else if (kind === 'fire') {
+      // «вжух» пламени и треск углей
+      this.noise(t, 0.55, this.out(0.13, 0.3), { type: 'bandpass', f: 280, to: 2200, q: 0.7, attack: 0.04 });
+      for (let k = 0; k < 7; k++) this.noise(t + 0.05 + Math.random() * 0.45, 0.025, this.out(0.07, 0.05), { type: 'highpass', f: 2400, attack: 0.001 });
+      // большая очистка — рык дракона
+      if (lines >= 2) this.roar(t + 0.05, Math.min(1, 0.6 + lines * 0.15));
     }
+  }
+  roar(t, vol) {
+    const c = this.ctx, fl = c.createBiquadFilter();
+    fl.type = 'lowpass'; fl.Q.value = 2;
+    fl.frequency.setValueAtTime(300, t); fl.frequency.linearRampToValueAtTime(1100, t + 0.15); fl.frequency.exponentialRampToValueAtTime(180, t + 0.9);
+    fl.connect(this.out(0.16 * vol, 0.35));
+    for (const f of [82, 87, 123]) this.osc('sawtooth', f, t, 0.9, fl, { to: f * 0.72, toT: 0.9, attack: 0.06 });
+    this.noise(t, 0.8, this.out(0.07 * vol, 0.3), { type: 'bandpass', f: 500, to: 160, q: 0.9, attack: 0.05 });
   }
   fxPlace(kind) {
     const t = this.now;
     if (kind === 'pixel') this.osc('square', 660, t, 0.06, this.out(0.03), { to: 990, toT: 0.03, attack: 0.001 });
-    else if (kind === 'storm') this.noise(t, 0.08, this.out(0.05, 0.05), { type: 'highpass', f: 5000, attack: 0.001 });
+    else if (kind === 'fire') this.noise(t, 0.05, this.out(0.05, 0.05), { type: 'highpass', f: 3000, attack: 0.001 });
   }
 
   /* ---------- Фоновая музыка: тихий лоу-фай эмбиент ---------- */
@@ -1920,23 +1929,35 @@ const BLOCK_STYLES = {
     g.strokeStyle = 'rgba(0,0,0,0.3)'; g.lineWidth = lw; g.strokeRect(lw / 2, lw / 2, s - lw, s - lw);
   },
 };
-// «Макс»: металлическая рамка, светящееся ядро цвета блока и молния
-BLOCK_STYLES.volt = (g, col, s) => {
-  const p = Math.max(1, s * 0.03), w = s - 2 * p, r = s * 0.13;
-  const fg = g.createLinearGradient(0, 0, s, s);
-  fg.addColorStop(0, '#c9d6ea'); fg.addColorStop(0.45, '#5d6b85'); fg.addColorStop(1, '#283247');
+// «Макс»: раскалённый камень — обугленная рамка, ядро цвета блока, снизу жарче, тёмные трещины
+BLOCK_STYLES.magma = (g, col, s) => {
+  const p = Math.max(1, s * 0.03), w = s - 2 * p, r = s * 0.14;
+  const fg = g.createLinearGradient(0, 0, 0, s);
+  fg.addColorStop(0, '#5a3226'); fg.addColorStop(1, '#1a0805');
   g.fillStyle = fg; rrPath(g, p, p, w, w, r); g.fill();
-  const b = s * 0.15, cw = s - 2 * b;
-  const cg = g.createRadialGradient(s * 0.5, s * 0.46, 0, s * 0.5, s * 0.5, cw * 0.72);
-  cg.addColorStop(0, mixHex(col.t, '#ffffff', 0.6)); cg.addColorStop(0.45, col.c); cg.addColorStop(1, mixHex(col.b, '#000000', 0.35));
+  const b = s * 0.13, cw = s - 2 * b;
+  const cg = g.createLinearGradient(0, b, 0, s - b);
+  cg.addColorStop(0, mixHex(col.b, '#000000', 0.3)); cg.addColorStop(0.55, col.c); cg.addColorStop(1, mixHex(col.c, '#ffd27a', 0.45));
   g.fillStyle = cg; rrPath(g, b, b, cw, cw, r * 0.6); g.fill();
-  g.lineWidth = Math.max(1, s * 0.03); g.strokeStyle = rgba(mixHex(col.t, '#ffffff', 0.5), 0.9); g.stroke();
-  // молния
-  const P = [[0.57, 0.2], [0.33, 0.55], [0.48, 0.55], [0.42, 0.81], [0.68, 0.43], [0.53, 0.43], [0.62, 0.2]];
-  g.beginPath(); P.forEach(([x, y], i) => i ? g.lineTo(x * s, y * s) : g.moveTo(x * s, y * s)); g.closePath();
-  g.fillStyle = 'rgba(255,255,255,0.9)'; g.fill();
-  g.lineWidth = Math.max(1, s * 0.02); g.strokeStyle = rgba(col.b, 0.6); g.stroke();
-  g.fillStyle = 'rgba(255,255,255,0.7)'; rrPath(g, s * 0.1, s * 0.07, s * 0.24, s * 0.05, s * 0.025); g.fill();
+  g.save(); g.clip();
+  // жар снизу: оранжевое свечение, будто блок только что из огня
+  const rg = g.createRadialGradient(s / 2, s - b, 0, s / 2, s - b, cw * 0.7);
+  rg.addColorStop(0, 'rgba(255,170,60,0.55)'); rg.addColorStop(1, 'rgba(255,120,30,0)');
+  g.fillStyle = rg; g.fillRect(0, 0, s, s);
+  // трещины: узор зависит только от цвета, поэтому одинаков на любом размере
+  let seed = parseInt(col.c.slice(1), 16) || 3;
+  const rnd = () => (seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff;
+  g.strokeStyle = 'rgba(35,8,3,0.55)'; g.lineWidth = Math.max(1, s * 0.035); g.lineJoin = 'round';
+  for (let k = 0; k < 2; k++) {
+    let x = b + cw * (0.15 + 0.7 * rnd()), y = b;
+    g.beginPath(); g.moveTo(x, y);
+    for (let j = 0; j < 3; j++) { x += cw * (rnd() - 0.5) * 0.45; y += cw * (0.15 + 0.15 * rnd()); g.lineTo(x, y); }
+    g.stroke();
+  }
+  g.restore();
+  g.lineWidth = Math.max(1, s * 0.025); g.strokeStyle = rgba(mixHex(col.t, '#ffcf7a', 0.5), 0.8);
+  rrPath(g, b, b, cw, cw, r * 0.6); g.stroke();
+  g.fillStyle = 'rgba(255,255,255,0.45)'; rrPath(g, b * 1.25, b * 1.2, s * 0.2, s * 0.06, s * 0.03); g.fill();
 };
 // «Матвей»: пиксельный блок 8×8 со «шерстяной» текстурой (узор одинаковый на любом размере)
 BLOCK_STYLES.pixel = (g, col, s) => {
@@ -2090,13 +2111,28 @@ function drawBgScenery(g, th) {
       g.fillStyle = ng; g.fillRect(0, 0, W, H);
     }
     g.restore();
-  } else if (th.decor === 'storm') {
-    // тяжёлые тучи сверху
-    for (let k = 0; k < 9; k++) {
-      const x = W * (k / 8) + rand(-0.05, 0.05) * W, y = H * rand(0.0, 0.1), r = U * rand(0.18, 0.3);
-      const cg = g.createRadialGradient(x, y, 0, x, y, r);
-      cg.addColorStop(0, 'rgba(70,92,140,0.55)'); cg.addColorStop(1, 'rgba(70,92,140,0)');
-      g.fillStyle = cg; g.fillRect(0, 0, W, H);
+  } else if (th.decor === 'dragon') {
+    // зарево за драконом и сам дракон-силуэт
+    const d = dragonGeom();
+    const gx = d.x + 55 * d.k, gy = d.y + 28 * d.k, gr = 70 * d.k;
+    const zg = g.createRadialGradient(gx, gy, 0, gx, gy, gr);
+    zg.addColorStop(0, 'rgba(255,120,40,0.45)'); zg.addColorStop(1, 'rgba(255,80,20,0)');
+    g.fillStyle = zg; g.fillRect(0, 0, W, H);
+    g.save(); g.translate(d.x, d.y); g.scale(d.k, d.k);
+    g.fillStyle = '#1c0503'; dragonPath(g, true); g.fill();     // дальнее крыло
+    g.fillStyle = '#0c0201'; dragonPath(g, false); g.fill();
+    g.restore();
+    // скалы внизу с трещинами лавы
+    const base = H * 0.9;
+    g.fillStyle = '#120403'; g.beginPath(); g.moveTo(0, H);
+    for (let x = 0, k = 0; x <= W + 20; x += U * 0.06, k++) g.lineTo(x, base - (k % 2 ? U * 0.05 : 0) - Math.abs(Math.sin(k * 1.9)) * U * 0.05);
+    g.lineTo(W, H); g.closePath(); g.fill();
+    g.strokeStyle = 'rgba(255,120,30,0.55)'; g.lineWidth = 2;
+    for (let k = 0; k < 6; k++) {
+      let x = W * (k + 0.5) / 6, y = H;
+      g.beginPath(); g.moveTo(x, y);
+      for (let j = 0; j < 4; j++) { x += rand(-1, 1) * U * 0.03; y -= U * rand(0.015, 0.03); g.lineTo(x, y); }
+      g.stroke();
     }
   } else if (th.decor === 'pixelsky') {
     // пиксельное солнце и холмы из травы и земли
@@ -2122,6 +2158,42 @@ function drawBgScenery(g, th) {
   }
 }
 
+// Дракон летит вправо; рисуется в коробке 100×60, место и масштаб — от размера экрана
+function dragonGeom() {
+  const S = Math.min(W * 0.62, H * 0.36);
+  return { x: W * 0.03, y: H * 0.012, k: S / 100 };
+}
+const DRAGON_MOUTH = [97, 21], DRAGON_EYE = [87, 15.5];
+function dragonPath(g, farWing) {
+  g.beginPath();
+  if (farWing) {
+    // второе крыло — чуть позади и левее
+    g.moveTo(40, 31); g.lineTo(38, 9); g.lineTo(24, 2);
+    g.quadraticCurveTo(28, 12, 26, 18); g.quadraticCurveTo(32, 18, 32, 25); g.quadraticCurveTo(36, 25, 36, 31);
+    g.closePath();
+    return;
+  }
+  g.moveTo(2, 50);
+  g.quadraticCurveTo(15, 36, 32, 34);                  // верх хвоста к спине
+  g.lineTo(42, 31);
+  g.lineTo(50, 6); g.lineTo(66, 0);                     // переднее крыло
+  g.quadraticCurveTo(60, 10, 61, 17); g.quadraticCurveTo(55, 16, 54, 23); g.quadraticCurveTo(50, 23, 52, 30);
+  g.lineTo(62, 30);
+  g.quadraticCurveTo(70, 26, 74, 16);                   // шея
+  g.lineTo(71, 5); g.lineTo(78, 13);                    // рог
+  g.lineTo(80, 8); g.lineTo(83, 13);                    // второй рог
+  g.lineTo(88, 13); g.lineTo(97, 17); g.lineTo(98, 20); // голова и морда
+  g.lineTo(89, 21); g.lineTo(95, 24.5); g.lineTo(84, 25.5);   // открытая пасть
+  g.quadraticCurveTo(77, 28, 75, 36);                   // горло
+  g.quadraticCurveTo(67, 44, 57, 42);                   // грудь
+  g.lineTo(59, 50); g.lineTo(55, 50); g.lineTo(52, 42); // передняя лапа
+  g.quadraticCurveTo(45, 44, 39, 42);
+  g.lineTo(41, 52); g.lineTo(36, 52); g.lineTo(33, 41); // задняя лапа
+  g.quadraticCurveTo(18, 42, 7, 54);                    // низ хвоста
+  g.lineTo(0, 57); g.lineTo(1, 49);                     // кончик-«пика»
+  g.closePath();
+}
+
 function getGlow(color) {
   let img = glowCache.get(color);
   if (img) return img;
@@ -2136,9 +2208,9 @@ function getGlow(color) {
 
 /* ---------- Анимированный декор фона ---------- */
 const DECOR_COUNT = { squares: 16, bokeh: 14, bubbles: 20, fireflies: 24, stars: 70, embers: 32, snow: 55,
-  synthwave: 30, petals: 26, aurora: 50, glitter: 34, dunes: 30, galaxy: 80, storm: 70, pixelsky: 6 };
+  synthwave: 30, petals: 26, aurora: 50, glitter: 34, dunes: 30, galaxy: 80, dragon: 40, pixelsky: 6 };
 let shootStar = null;                   // падающая звезда темы «Галактика»
-let skyBolt = null;                     // молния на фоне темы «Макс»
+const dragon = { fire: [], next: 0, until: 0 };   // огненное дыхание дракона (тема «Макс»)
 function getDecor(ti) {
   let arr = decorSets.get(ti);
   if (!arr) {
@@ -2164,7 +2236,7 @@ function drawDecor(ti, now, dt) {
   if (kind === 'synthwave') drawSynthGrid(th, ts);
   else if (kind === 'aurora') drawAurora(ts);
   else if (kind === 'galaxy') drawShootingStar(ts, dt, U);
-  else if (kind === 'storm') { drawRain(arr, dt, U); drawSkyBolt(ts, dt); ctx.restore(); return; }
+  else if (kind === 'dragon') { drawFloorFlames(ts); drawDragonFire(ts, dt, U); }
   for (const d of arr) {
     switch (kind) {
       case 'synthwave': case 'aurora': case 'galaxy':
@@ -2187,6 +2259,21 @@ function drawDecor(ti, now, dt) {
         ctx.globalAlpha = 0.2 + 0.8 * tw;
         ctx.drawImage(getGlow('#ffd36b'), x - r * 2.5, y - r * 2.5, r * 5, r * 5);
         ctx.fillStyle = '#fff6d0'; drawStar(x, y, r * 1.7);
+        break;
+      }
+      case 'dragon': {
+        if (d.s < 0.65) {
+          // угольки поднимаются
+          d.y -= dt * 0.05 * d.sp; wrapUp(d);
+          const x = d.x * W + Math.sin(ts * 2 * d.sp + d.ph) * U * 0.02, sz = U * (0.006 + 0.014 * d.s);
+          ctx.globalAlpha = (0.45 + 0.55 * Math.abs(Math.sin(ts * 4 * d.sp + d.ph))) * Math.min(1, d.y * 1.5);
+          ctx.drawImage(getGlow(d.s < 0.3 ? '#ffd25a' : '#ff7a2a'), x - sz, d.y * H - sz, sz * 2, sz * 2);
+        } else {
+          // хлопья пепла падают
+          d.y += dt * 0.02 * d.sp; d.r += dt * 1.5; wrapDown(d);
+          ctx.globalAlpha = 0.35; ctx.fillStyle = '#8a7a74';
+          ctx.fillRect(d.x * W + Math.sin(ts * d.sp + d.ph) * U * 0.03, d.y * H, 1.5 + 2 * (d.s - 0.65) * 3, 1.5 + Math.abs(Math.sin(d.r)) * 2);
+        }
         break;
       }
       case 'pixelsky': {
@@ -2312,43 +2399,52 @@ function drawAurora(ts) {
   }
   ctx.globalCompositeOperation = 'source-over';
 }
-// Косой дождь одной линией на все капли
-function drawRain(arr, dt, U) {
-  ctx.strokeStyle = '#a8d8ff'; ctx.lineWidth = 1; ctx.globalAlpha = 0.28;
+// Языки пламени вдоль нижнего края экрана (одним контуром, светлым наложением)
+function flameTongue(x, base, w, h, sway) {
+  ctx.moveTo(x - w / 2, base);
+  ctx.quadraticCurveTo(x - w * 0.3, base - h * 0.55, x + sway, base - h);
+  ctx.quadraticCurveTo(x + w * 0.3, base - h * 0.55, x + w / 2, base);
+  ctx.closePath();
+}
+function drawFloorFlames(ts) {
+  const n = 12, fw = W / n;
+  const gr = ctx.createLinearGradient(0, H, 0, H * 0.82);
+  gr.addColorStop(0, 'rgba(255,214,90,0.55)'); gr.addColorStop(0.45, 'rgba(255,110,30,0.32)'); gr.addColorStop(1, 'rgba(255,60,20,0)');
+  ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 1; ctx.fillStyle = gr;
   ctx.beginPath();
-  for (const d of arr) {
-    d.y += dt * (0.9 + 0.7 * d.sp); d.x -= dt * 0.18;
-    if (d.y > 1.05) { d.y = -0.05; d.x = Math.random() * 1.2; }
-    const x = d.x * W, y = d.y * H, len = U * (0.03 + 0.035 * d.s);
-    ctx.moveTo(x, y); ctx.lineTo(x - len * 0.22, y + len);
+  for (let i = 0; i < n; i++) {
+    const h = H * (0.07 + 0.05 * (0.5 + 0.5 * Math.sin(ts * 3.1 + i * 1.7)) + 0.02 * Math.sin(ts * 7.3 + i));
+    flameTongue((i + 0.5) * fw, H, fw * 1.5, h, Math.sin(ts * 2.3 + i * 0.9) * fw * 0.35);
   }
-  ctx.stroke();
+  ctx.fill();
+  ctx.globalCompositeOperation = 'source-over';
 }
-// Ломаная молнии сверху вниз с ответвлением
-function boltPath(x, y0, y1, jx) {
-  const pts = [[x, y0]];
-  for (let y = y0; y < y1;) { y += (y1 - y0) * rand(0.06, 0.13); x += rand(-jx, jx); pts.push([x, Math.min(y, y1)]); }
-  return pts;
-}
-function strokePts(pts) { ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke(); }
-// Молния на фоне раз в несколько секунд: вспышка неба + разряд
-function drawSkyBolt(ts, dt) {
-  if (!skyBolt || ts - skyBolt.t > 0.7) {
-    skyBolt = Math.random() < dt * 0.28 ? (() => {
-      const x = W * (Math.random() < 0.5 ? rand(0.04, 0.3) : rand(0.7, 0.96)), y1 = H * rand(0.45, 0.85);
-      const main = boltPath(x, 0, y1, W * 0.035), k = 2 + (Math.random() * (main.length - 3) | 0);
-      return { t: ts, main, branch: boltPath(main[k][0], main[k][1], main[k][1] + H * rand(0.12, 0.25), W * 0.04) };
-    })() : null;
-    if (!skyBolt) return;
+// Дракон раз в 6–9 секунд выдыхает пламя; глаз светится всегда, при выдохе — ярче
+function drawDragonFire(ts, dt, U) {
+  const d = dragonGeom(), f = dragon.fire;
+  const mx = d.x + DRAGON_MOUTH[0] * d.k, my = d.y + DRAGON_MOUTH[1] * d.k;
+  if (!dragon.next || dragon.next > ts + 10) dragon.next = ts + 2.5;
+  if (ts > dragon.next) { dragon.until = ts + 1.2; dragon.next = ts + rand(6, 9); }
+  const breathing = ts < dragon.until;
+  if (breathing) for (let n = dt * 70; n > 0; n--) if (Math.random() < n) {
+    const a = 0.3 + rand(-0.16, 0.16), sp = U * rand(0.55, 0.9);
+    f.push({ x: mx, y: my, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 0, max: rand(0.7, 1.1) });
   }
-  const p = (ts - skyBolt.t) / 0.7;
-  const fl = p < 0.12 ? 1 : p < 0.22 ? 0.25 : p < 0.32 ? 0.85 : Math.max(0, 1 - (p - 0.32) / 0.68);
-  ctx.globalAlpha = 0.16 * fl; ctx.fillStyle = '#cfe8ff'; ctx.fillRect(0, 0, W, H);
-  ctx.lineJoin = 'round'; ctx.lineCap = 'round';
-  ctx.globalAlpha = 0.3 * fl; ctx.strokeStyle = '#4fc3ff'; ctx.lineWidth = 9;
-  strokePts(skyBolt.main); strokePts(skyBolt.branch);
-  ctx.globalAlpha = fl; ctx.strokeStyle = '#f0faff'; ctx.lineWidth = 2.4;
-  strokePts(skyBolt.main); ctx.lineWidth = 1.4; strokePts(skyBolt.branch);
+  ctx.globalCompositeOperation = 'lighter';
+  for (let i = f.length - 1; i >= 0; i--) {
+    const p = f[i];
+    p.life += dt;
+    if (p.life >= p.max) { f.splice(i, 1); continue; }
+    p.x += p.vx * dt; p.y += p.vy * dt; p.vy -= U * 0.15 * dt;   // пламя понемногу поднимается
+    const q = p.life / p.max, sz = U * (0.015 + 0.06 * q);
+    ctx.globalAlpha = (1 - q) * 0.8;
+    ctx.drawImage(getGlow(q < 0.3 ? '#ffe9a0' : q < 0.6 ? '#ff9a2a' : '#ff3d1a'), p.x - sz, p.y - sz, sz * 2, sz * 2);
+  }
+  const ex = d.x + DRAGON_EYE[0] * d.k, ey = d.y + DRAGON_EYE[1] * d.k;
+  const er = d.k * (breathing ? 6 : 3.5) * (0.85 + 0.15 * Math.sin(ts * 3));
+  ctx.globalAlpha = 1;
+  ctx.drawImage(getGlow('#ffcf4a'), ex - er, ey - er, er * 2, er * 2);
+  ctx.globalCompositeOperation = 'source-over';
 }
 function drawShootingStar(ts, dt, U) {
   if (!shootStar || ts - shootStar.t > 1) {
@@ -2470,15 +2566,18 @@ function spawnClearFx(a) {
     }
     return;
   }
-  if (fx === 'storm' && !a.quiet) {
-    // электрические искры
+  if (fx === 'fire' && !a.quiet) {
+    // угли летят вверх, следом поднимается дым
     for (let i = 0, n = settings.lite ? 1 : 3; i < n; i++) {
-      const ang = Math.random() * Math.PI * 2, sp = rand(1, 3.5) * cell;
       particles.push({
-        k: 'zap', x: cx, y: cy, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp, g: 0.1,
-        s: cell * rand(0.25, 0.45), c: Math.random() < 0.5 ? '#bfe9ff' : col.t, life: 0, max: rand(250, 450), rot: 0, vr: 0,
+        k: 'ember', x: cx + rand(-0.4, 0.4) * cell, y: cy, vx: rand(-0.8, 0.8) * cell, vy: -rand(1.5, 3.5) * cell, g: -0.03,
+        s: cell * rand(0.12, 0.22), c: Math.random() < 0.5 ? '#ffd25a' : '#ff7a2a', life: 0, max: rand(500, 900), rot: 0, vr: 0,
       });
     }
+    if (!settings.lite && Math.random() < 0.6) particles.push({
+      k: 'smoke', x: cx, y: cy, vx: rand(-0.3, 0.3) * cell, vy: -rand(0.8, 1.4) * cell, g: -0.01,
+      s: cell * rand(0.35, 0.5), c: '#000000', life: 0, max: rand(700, 1000), rot: 0, vr: 0,
+    });
   }
   const n = a.quiet || settings.lite ? 2 : 4;
   for (let i = 0; i < n; i++) {
@@ -2502,11 +2601,12 @@ function spawnClearFx(a) {
 // Эффект установки фигуры у секретных тем
 function placeFx(fx, sh, gx, gy) {
   if (settings.lite) return;
-  if (fx === 'storm') {
+  if (fx === 'fire') {
+    // от раскалённой фигуры отлетают искры
     for (let k = 0; k < 3; k++) {
       const [dx, dy] = sh.cells[(Math.random() * sh.cells.length) | 0];
-      particles.push({ k: 'zap', x: boardX + (gx + dx + 0.5) * cell, y: boardY + (gy + dy + 0.5) * cell,
-        vx: rand(-1, 1) * cell, vy: rand(-1, 1) * cell, g: 0, s: cell * 0.3, c: '#bfe9ff', life: 0, max: 220, rot: 0, vr: 0 });
+      particles.push({ k: 'ember', x: boardX + (gx + dx + rand(0.2, 0.8)) * cell, y: boardY + (gy + dy + 0.3) * cell,
+        vx: rand(-0.6, 0.6) * cell, vy: -rand(1, 2) * cell, g: -0.02, s: cell * rand(0.08, 0.14), c: '#ffb347', life: 0, max: rand(350, 600), rot: 0, vr: 0 });
     }
   } else if (fx === 'pixel') {
     // пыль из-под нижних блоков фигуры
@@ -2523,13 +2623,14 @@ function allClearBurst(t0) {
   rings.push({ x: cx, y: cy, t0, dur: 1000, r0: cell, r1: Math.hypot(W, H) * 0.65, w: cell * 0.35, color: '#ffffff' });
   rings.push({ x: cx, y: cy, t0: t0 + 150, dur: 900, r0: cell * 0.5, r1: board * 0.9, w: cell * 0.2, color: '#fff2a8' });
   if (mode === 'classic') flashes.push({ board: true, start: t0 });   // в песке вспышки не рисуются
-  if (curFx() === 'storm') for (let y = 0; y < N; y++) flashes.push({ row: y, start: t0 + y * 45 });   // молнии по всем рядам
-  const pix = curFx() === 'pixel';
-  const palette = ['#ff5a5a', '#ffb02e', '#ffe14a', '#4ee06a', '#3ed2ff', '#5b8bff', '#b06bff', '#ffffff'];
+  const fx = curFx(), pix = fx === 'pixel', fire = fx === 'fire';
+  if (fire) for (let y = N - 1; y >= 0; y--) flashes.push({ row: y, start: t0 + (N - 1 - y) * 55 });   // огонь поднимается снизу вверх
+  const palette = fire ? ['#ffe9a0', '#ffd25a', '#ff9a2a', '#ff5a1f']
+    : ['#ff5a5a', '#ffb02e', '#ffe14a', '#4ee06a', '#3ed2ff', '#5b8bff', '#b06bff', '#ffffff'];
   for (let i = 0, n = settings.lite ? 40 : 90; i < n; i++) {
     const ang = Math.random() * Math.PI * 2, sp = rand(3, 11) * cell;
     particles.push({
-      k: pix ? 'pixel' : 'confetti', x: cx, y: cy, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp - cell * 4, g: 0.55, drag: 0.965,
+      k: pix ? 'pixel' : fire ? 'ember' : 'confetti', x: cx, y: cy, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp - cell * 4, g: 0.55, drag: 0.965,
       s: cell * rand(0.14, 0.26), c: palette[(Math.random() * palette.length) | 0],
       life: 0, max: rand(1300, 2200), rot: Math.random() * 6, vr: rand(-14, 14), t0,
     });
@@ -2750,9 +2851,10 @@ function drawClears(now) {
 function drawFlashes(now) {
   ctx.save();
   ctx.globalCompositeOperation = 'lighter';
+  const fx = curFx();
   for (let k = flashes.length - 1; k >= 0; k--) {
     const f = flashes[k];
-    const p = (now - f.start) / (f.board ? 700 : 450);
+    const p = (now - f.start) / (f.board ? 700 : fx === 'fire' ? 700 : 450);
     if (p < 0) continue;
     if (p >= 1) { flashes.splice(k, 1); continue; }
     const a = 1 - easeOutCubic(p);
@@ -2761,8 +2863,7 @@ function drawFlashes(now) {
       rrPath(ctx, boardX - framePad, boardY - framePad, board + framePad * 2, board + framePad * 2, cell * 0.24); ctx.fill();
       continue;
     }
-    const fx = curFx();
-    if (fx === 'storm') { drawLineBolt(f, p, a); continue; }
+    if (fx === 'fire') { drawLineFire(f, p, now); continue; }
     if (fx === 'pixel') {
       // пиксельная вспышка: квадраты сжимаются ступеньками
       const k = Math.ceil((1 - p) * 4) / 4, sz = cell * k, o = (cell - sz) / 2;
@@ -2791,21 +2892,25 @@ function drawFlashes(now) {
   ctx.restore();
 }
 
-// «Макс»: по собранной линии бьёт молния (каждый кадр новая — дрожит)
-function drawLineBolt(f, p, a) {
-  const row = f.row != null, len = board + cell, steps = 14;
-  const c0 = (row ? boardY : boardX) + ((row ? f.row : f.col) + 0.5) * cell;
-  const pts = [];
-  for (let k = 0; k <= steps; k++) {
-    const t = -cell / 2 + len * k / steps, j = k && k < steps ? rand(-0.32, 0.32) * cell : 0;
-    pts.push(row ? [boardX + t, c0 + j] : [c0 + j, boardY + t]);
+// «Макс»: по собранной линии пробегает волна огня — из каждой клетки по очереди вырастает пламя
+function drawLineFire(f, p, now) {
+  const row = f.row != null;
+  for (let j = 0; j < N; j++) {
+    const q = clamp01((p - j * 0.035) / 0.72), e = Math.sin(Math.PI * q);
+    if (e <= 0.01) continue;
+    const x = boardX + ((row ? j : f.col) + 0.5) * cell, base = boardY + ((row ? f.row : j) + 0.9) * cell;
+    const h = cell * (1.1 + 2.1 * e) * (0.85 + 0.15 * Math.sin(now / 45 + j * 2.1)), sway = Math.sin(now / 70 + j) * cell * 0.18;
+    // внешнее пламя: оранжевое, к верху краснеет и тает
+    const gr = ctx.createLinearGradient(0, base, 0, base - h);
+    gr.addColorStop(0, `rgba(255,170,40,${0.95 * e})`); gr.addColorStop(0.45, `rgba(255,90,20,${0.7 * e})`); gr.addColorStop(1, 'rgba(200,30,10,0)');
+    ctx.fillStyle = gr;
+    ctx.beginPath(); flameTongue(x, base, cell * 1.15, h, sway); ctx.fill();
+    // внутреннее ядро: жёлто-белое, пониже
+    const ig = ctx.createLinearGradient(0, base, 0, base - h * 0.55);
+    ig.addColorStop(0, `rgba(255,250,200,${0.9 * e})`); ig.addColorStop(1, 'rgba(255,210,80,0)');
+    ctx.fillStyle = ig;
+    ctx.beginPath(); flameTongue(x, base, cell * 0.55, h * 0.55, sway * 0.6); ctx.fill();
   }
-  const band = cell * (1 + 0.6 * p);
-  ctx.fillStyle = `rgba(79,195,255,${0.35 * a})`;
-  if (row) ctx.fillRect(boardX, c0 - band / 2, board, band); else ctx.fillRect(c0 - band / 2, boardY, band, board);
-  ctx.lineJoin = 'round'; ctx.lineCap = 'round';
-  ctx.strokeStyle = `rgba(79,195,255,${0.55 * a})`; ctx.lineWidth = cell * 0.32 * a + 1; strokePts(pts);
-  ctx.strokeStyle = `rgba(240,250,255,${a})`; ctx.lineWidth = cell * 0.09 * a + 1; strokePts(pts);
 }
 function drawGhost() {
   if (!drag || !drag.snap) return;
@@ -3012,14 +3117,11 @@ function drawParticles(now, dt) {
         ctx.fillRect(Math.round(p.x - s / 2), Math.round(p.y - s / 2), Math.ceil(s), Math.ceil(s));
         break;
       }
-      case 'zap': {
-        // короткий дрожащий разряд
-        ctx.globalCompositeOperation = 'lighter';
-        ctx.strokeStyle = p.c; ctx.lineWidth = Math.max(1, p.s * 0.18); ctx.lineCap = 'round';
-        let x = p.x, y = p.y;
-        ctx.beginPath(); ctx.moveTo(x, y);
-        for (let k = 0; k < 3; k++) { x += rand(-p.s, p.s); y += rand(-p.s, p.s); ctx.lineTo(x, y); }
-        ctx.stroke();
+      case 'smoke': {
+        // клуб дыма растёт и тает
+        ctx.globalAlpha = 0.3 * a;
+        ctx.fillStyle = '#2a1a16';
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.s * (1 + 1.6 * (1 - a)), 0, Math.PI * 2); ctx.fill();
         break;
       }
       case 'confetti': {
@@ -3034,15 +3136,15 @@ function drawParticles(now, dt) {
   }
 }
 
-// Надписи секретных тем: «Макс» — электрические, «Матвей» — пиксельные цвета
-const STORM_TEXT = { stroke: '#0b1c4f', glow: '#4fc3ff', fill: ['#ffffff', '#bfe9ff', '#4fc3ff'] };
+// Надписи секретных тем: «Макс» — огненные, «Матвей» — пиксельные цвета
+const FIRE_TEXT = { stroke: '#5a0f0f', glow: '#ff5a2a', fill: ['#fff3c4', '#ff9a3c', '#ff3d3d'] };
 const PIXEL_TEXT = { score: '#ffffff', combo: '#ffff55', fire: '#ff5555', praise: '#55ffff', gold: '#ffaa00' };
 function drawTexts(now) {
   const fx = curFx();
   for (let k = texts.length - 1; k >= 0; k--) {
     const t = texts[k];
     let st = TEXT_STYLES[t.kind];
-    if (fx === 'storm' && t.kind !== 'gold') st = Object.assign({}, st, STORM_TEXT);
+    if (fx === 'fire' && t.kind !== 'gold') st = Object.assign({}, st, FIRE_TEXT);
     const p = (now - t.t0) / st.dur;
     if (p < 0) continue;
     if (p >= 1) { texts.splice(k, 1); continue; }
