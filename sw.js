@@ -16,8 +16,12 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
+  // свои файлы всегда сверяем с сервером (no-cache), чтобы обновления доходили сразу,
+  // а не через 10 минут кэша GitHub Pages
+  const own = new URL(e.request.url).origin === self.location.origin;
+  const req = own ? new Request(e.request.url, { cache: 'no-cache', credentials: 'same-origin' }) : e.request;
   e.respondWith(
-    fetch(e.request)
+    fetch(req)
       .then(res => {
         const copy = res.clone();
         caches.open(CACHE).then(c => c.put(e.request, copy));
