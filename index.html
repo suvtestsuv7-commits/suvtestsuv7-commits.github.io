@@ -151,6 +151,58 @@
   }
   .sect b { color: var(--gold); text-shadow: 0 2px 0 rgba(0,0,0,.25); }
   .themes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+
+  /* ---------- Выбор режима ---------- */
+  .modes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .mode-card {
+    display: flex; align-items: center; gap: 10px; padding: 9px 10px;
+    border: 0; border-radius: 16px; cursor: pointer; font-family: var(--font);
+    background: rgba(0,0,0,.18); color: #fff;
+    box-shadow: 0 4px 0 rgba(0,0,0,.22), inset 0 0 0 2px rgba(255,255,255,.14);
+    transition: transform .15s cubic-bezier(.3,1.6,.5,1), box-shadow .15s;
+  }
+  .mode-card:active { transform: translateY(2px); }
+  .mode-card.on { box-shadow: 0 4px 0 rgba(0,0,0,.22), inset 0 0 0 3px var(--gold), 0 0 14px rgba(251,222,0,.45); }
+  .mode-nm { font-size: 17px; font-weight: 900; }
+  .mode-ico {
+    width: 40px; height: 40px; flex: none; border-radius: 8px; background: #242c54;
+    box-shadow: 0 0 0 2px #1a2147;
+  }
+  .ico-classic { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 4px; }
+  .ico-classic i { border-radius: 2px; background: #2a3463; }
+  .ico-classic i.r { background: #ec3a3a; } .ico-classic i.y { background: #f4be05; }
+  .ico-classic i.g { background: #23c92f; } .ico-classic i.b { background: #3862f0; }
+  .ico-sand {
+    background:
+      radial-gradient(circle at 30% 30%, rgba(255,255,255,.35) 0 1px, transparent 1.5px) 0 0 / 5px 5px,
+      linear-gradient(160deg, #242c54 0 38%, #ffffff 38% 44%, #ec3a3a 44% 54%, #f45e19 54% 62%, #f4be05 62% 72%, #3862f0 72% 80%, #23c92f 80%);
+  }
+
+  /* ---------- Полоса уровня в режиме «Песок» ---------- */
+  #sandBar {
+    position: absolute; left: 50%; transform: translate(-50%, -50%);
+    display: flex; align-items: center; gap: .4em; font-weight: 900; color: #fff;
+    transition: opacity .2s;
+  }
+  #sandBar.hidden { opacity: 0; pointer-events: none; }
+  #sandBar .sb-lbl {
+    flex: none; min-width: 2.6em; text-align: center; padding: .28em .45em; border-radius: .5em;
+    background: #1d2a6b; box-shadow: inset 0 0 0 2px #3a55c8; font-size: .9em;
+  }
+  #sandBar .sb-track {
+    position: relative; flex: 1; height: 1.6em; border-radius: .45em; overflow: hidden;
+    background: #16204f; box-shadow: inset 0 0 0 2px #3a55c8, inset 0 3px 0 rgba(0,0,0,.3);
+  }
+  #sandBar .sb-fill {
+    position: absolute; left: 0; top: 0; bottom: 0; width: 0;
+    background: linear-gradient(180deg, #7fd8ff, #2f8cff);
+    box-shadow: inset 0 2px 0 rgba(255,255,255,.4);
+    transition: width .4s ease-out;
+  }
+  #sandBar .sb-lvl {
+    position: absolute; inset: 0; display: grid; place-items: center;
+    font-size: .95em; text-shadow: 0 2px 0 rgba(0,0,0,.4);
+  }
   .theme-sw {
     position: relative; border: 0; padding: 0; cursor: pointer;
     border-radius: 14px; overflow: hidden; aspect-ratio: 1 / 1.08;
@@ -252,6 +304,11 @@
     <span class="cb-mult">×<span id="comboNum">2</span></span>
     <span class="pips" title="Ходов до сброса комбо"><i></i><i></i><i></i></span>
   </div>
+  <div id="sandBar" class="hidden">
+    <span class="sb-lbl" id="sbFrom">0</span>
+    <div class="sb-track"><div class="sb-fill" id="sbFill"></div><span class="sb-lvl" id="sbLvl">Уровень 1</span></div>
+    <span class="sb-lbl" id="sbTo">2k</span>
+  </div>
   <button id="gearBtn" aria-label="Настройки">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
   </button>
@@ -261,7 +318,18 @@
 <div class="overlay" id="settingsOv" hidden>
   <div class="panel" role="dialog" aria-label="Настройки">
     <h2>Настройки</h2>
-    <div class="opt"><span>Звуки</span><button class="switch" id="swSound" aria-pressed="true" aria-label="Звуки"><i></i></button></div>
+    <div class="sect" style="margin-top:0"><span>Режим</span><b id="modeName">Классика</b></div>
+    <div class="modes" role="group" aria-label="Выбор режима">
+      <button type="button" class="mode-card" data-mode="classic" aria-label="Режим Классика">
+        <span class="mode-ico ico-classic"><i></i><i></i><i></i><i></i><i class="r"></i><i class="y"></i><i class="b"></i><i class="r"></i><i class="g"></i></span>
+        <span class="mode-nm">Классика</span>
+      </button>
+      <button type="button" class="mode-card" data-mode="sand" aria-label="Режим Песок">
+        <span class="mode-ico ico-sand"></span>
+        <span class="mode-nm">Песок</span>
+      </button>
+    </div>
+    <div class="opt" style="margin-top:12px"><span>Звуки</span><button class="switch" id="swSound" aria-pressed="true" aria-label="Звуки"><i></i></button></div>
     <div class="opt"><span>Музыка</span><button class="switch" id="swMusic" aria-pressed="true" aria-label="Музыка"><i></i></button></div>
     <div class="opt"><span>Вибрация</span><button class="switch" id="swVibro" aria-pressed="true" aria-label="Вибрация"><i></i></button></div>
     <div class="opt"><span>Подсказки</span><button class="switch" id="swHints" aria-pressed="true" aria-label="Подсказки"><i></i></button></div>
@@ -278,7 +346,7 @@
   <div class="panel" role="dialog" aria-label="Второй шанс">
     <svg class="revive-icon" viewBox="0 0 64 58" aria-hidden="true"><use href="#heart"/></svg>
     <div class="over-title">Нет ходов!</div>
-    <p class="revive-text">Уберём 3 самые заполненные линии и дадим новые фигуры. Второй шанс — один раз за игру.</p>
+    <p class="revive-text" id="reviveText">Уберём 3 самые заполненные линии и дадим новые фигуры. Второй шанс — один раз за игру.</p>
     <button class="btn btn-green" id="btnRevive">Второй шанс</button>
     <button class="btn btn-ghost" id="btnGiveUp">Завершить игру</button>
   </div>
@@ -295,7 +363,7 @@
       <span id="overBest">0</span>
     </div>
     <div class="over-stats">
-      <span>Линий: <b id="statLines">0</b></span>
+      <span><span id="statLinesLbl">Линий</span>: <b id="statLines">0</b></span>
       <span>Макс. комбо: <b id="statCombo">0</b></span>
     </div>
     <button class="btn btn-green" id="btnAgain">Играть снова</button>
@@ -669,6 +737,12 @@ class SoundEngine {
     const t = this.now;
     [88, 93].forEach((n, i) => this.fm(midi(n), t + i * 0.1, 0.035, { ratio: 3.5, index: 0.55, dur: 0.7, bright: 0.07, send: 0.6 }));
   }
+  // Шуршание осыпающегося песка
+  sandPour(pan = 0) {
+    const t = this.now;
+    this.noise(t, 0.6, this.out(0.09, 0.15, this.sfx, pan), { type: 'bandpass', f: 2600, to: 900, q: 0.6, attack: 0.03 });
+    this.noise(t + 0.05, 0.45, this.out(0.035, 0.1, this.sfx, pan), { type: 'highpass', f: 4500, attack: 0.05 });
+  }
   tap() { this.fm(1046, this.now, 0.12, { ratio: 3.5, index: 0.4, dur: 0.12, bright: 0.03, send: 0.05 }); }
 
   /* ---------- Фоновая музыка: тихий лоу-фай эмбиент ---------- */
@@ -760,7 +834,7 @@ const swSound = $('swSound'), swMusic = $('swMusic'), swVibro = $('swVibro'), sw
    Состояние
    ===================================================================== */
 let W = 0, H = 0, dpr = 1;
-let colX = 0, colW = 0, board = 0, cell = 0, boardX = 0, boardY = 0, framePad = 0;
+let colX = 0, colW = 0, board = 0, boardH = 0, cell = 0, boardX = 0, boardY = 0, framePad = 0;
 let hudY = 0, hudH = 0, trayY = 0, trayH = 0, trayCell = 0;
 
 const grid = new Int8Array(N * N).fill(-1);
@@ -773,7 +847,8 @@ let reviveUsed = false;
 let state = 'play';                     // 'play' | 'revive' | 'over'
 let overT0 = 0, paused = false;
 // lite — лёгкий режим для слабых телефонов; liteChecked — автопроверка FPS уже проводилась
-const settings = { sound: true, music: true, vibro: true, hints: true, lite: false, liteChecked: false };
+const settings = { sound: true, music: true, vibro: true, hints: true, lite: false, liteChecked: false, mode: 'classic' };
+let mode = 'classic';                   // 'classic' | 'sand'
 
 let themeIdx = 0;
 const themeFx = { prev: 0, t0: -1e9 };
@@ -1098,16 +1173,7 @@ function place(i, gx, gy) {
     }
   }
 
-  if (score > best) {
-    if (!newBestShown && startBest > 0) {
-      newBestShown = true;
-      addText('Новый рекорд!', boardX + board / 2, boardY + board * 0.18, 'gold', 400);
-      setTimeout(() => sfx('record'), 350);
-      bestBox.classList.remove('pulse'); void bestBox.offsetWidth; bestBox.classList.add('pulse');
-    }
-    best = score;
-    bestEl.textContent = best;
-  }
+  checkBest();
 
   if (hand.every(x => !x)) {
     hand = generateHand();
@@ -1119,6 +1185,18 @@ function place(i, gx, gy) {
   updateComboUI(comboEvent);
   if (!hand.some(x => x && x.fit)) triggerNoMoves();
   save();
+}
+
+function checkBest() {
+  if (score <= best) return;
+  if (!newBestShown && startBest > 0) {
+    newBestShown = true;
+    addText('Новый рекорд!', boardX + board / 2, boardY + boardH * 0.18, 'gold', 400);
+    setTimeout(() => sfx('record'), 350);
+    bestBox.classList.remove('pulse'); void bestBox.offsetWidth; bestBox.classList.add('pulse');
+  }
+  best = score;
+  bestEl.textContent = best;
 }
 
 function bumpScore() {
@@ -1134,7 +1212,7 @@ function comboLevel(c) {
   return { c1: '#6ef0ff', c2: '#2f8cff', glow: '#57d5ff' };
 }
 function updateComboUI(kind) {
-  const show = combo >= 2 && state === 'play';
+  const show = mode === 'classic' && combo >= 2 && state === 'play';
   clearTimeout(updateComboUI.t);
   if (show) {
     const lv = comboLevel(combo), st = document.documentElement.style;
@@ -1154,17 +1232,21 @@ function updateComboUI(kind) {
 }
 
 /* ---------- Нет ходов: второй шанс (раз за игру) или конец игры ---------- */
-function triggerNoMoves() {
+// epoch растёт при новой игре и смене режима — отложенные таймеры старой партии не срабатывают
+let epoch = 0, noMovesMsg = 'Нет ходов!';
+function triggerNoMoves(msg) {
+  noMovesMsg = msg || 'Нет ходов!';
   if (reviveUsed) { triggerGameOver(false); return; }
   state = 'revive'; drag = null; hint = null;
   updateComboUI('reset');
+  const ep = epoch;
   setTimeout(() => {
-    if (state !== 'revive') return;
+    if (state !== 'revive' || ep !== epoch) return;
     sfx('noMoves');
     if (engine) engine.duck(true);
-    addText('Нет ходов!', boardX + board / 2, boardY + board / 2, 'praise', 0);
+    addText(noMovesMsg, boardX + board / 2, boardY + boardH / 2, 'praise', 0);
   }, 450);
-  setTimeout(() => { if (state === 'revive') reviveOv.hidden = false; }, 1400);
+  setTimeout(() => { if (state === 'revive' && ep === epoch) reviveOv.hidden = false; }, 1400);
   save();
 }
 function lineFill(row, col) {
@@ -1173,6 +1255,7 @@ function lineFill(row, col) {
   return n;
 }
 function revive() {
+  if (mode === 'sand') { sandRevive(); return; }
   if (state !== 'revive') return;
   reviveOv.hidden = true;
   reviveUsed = true; state = 'play';
@@ -1210,20 +1293,23 @@ function giveUp() {
 
 function triggerGameOver(quiet) {
   state = 'over'; drag = null; hint = null;
+  sand.dirty = true;
   updateComboUI('reset');
-  const delay = quiet ? 150 : 700;
+  const delay = quiet ? 150 : 700, ep = epoch;
   overT0 = performance.now() + delay;
   setTimeout(() => {
+    if (ep !== epoch) return;
     sfx('gameOver'); vib(80);
     if (engine) engine.duck(true);
-    if (!quiet) addText('Нет ходов!', boardX + board / 2, boardY + board / 2, 'praise', 0);
+    if (!quiet) addText(noMovesMsg, boardX + board / 2, boardY + boardH / 2, 'praise', 0);
   }, delay);
-  setTimeout(showOver, delay + N * 60 + (quiet ? 700 : 1250));
+  setTimeout(() => { if (ep === epoch) showOver(); }, delay + N * 60 + (quiet ? 700 : 1250));
   save();
 }
 
 function showOver() {
   if (state !== 'over') return;
+  $('statLinesLbl').textContent = mode === 'sand' ? 'Очисток' : 'Линий';
   const record = score > startBest && score > 0;
   $('overTitle').textContent = record ? 'Новый рекорд!' : 'Игра окончена';
   $('overTitle').classList.toggle('record', record);
@@ -1242,6 +1328,8 @@ function showOver() {
 }
 
 function newGame() {
+  if (mode === 'sand') { sandNewGame(); return; }
+  epoch++;
   const now = performance.now();
   const wasOver = state === 'over';
   for (let i = 0; i < N * N; i++) {
@@ -1317,23 +1405,30 @@ function themeProgress(now) { return clamp01((now - themeFx.t0) / THEME_DUR); }
 /* =====================================================================
    Сохранение
    ===================================================================== */
+// Снимок неактивного режима хранится здесь, чтобы при сохранении не затереть его партию и рекорд
+const stash = { classic: null, sand: null };
+function snapClassic() {
+  return {
+    best,
+    game: state !== 'over' ? {
+      grid: Array.from(grid), hand: hand.map(h => h ? [h.s, h.c] : null),
+      score, combo, msc: movesSinceClear, nbs: newBestShown, sb: startBest, lines: linesTotal, mc: maxCombo,
+      ru: reviveUsed, recent,
+    } : null,
+  };
+}
 function save() {
   try {
-    localStorage.setItem(LS_KEY, JSON.stringify({
-      best, settings, theme: themeIdx,
-      game: state !== 'over' ? {
-        grid: Array.from(grid), hand: hand.map(h => h ? [h.s, h.c] : null),
-        score, combo, msc: movesSinceClear, nbs: newBestShown, sb: startBest, lines: linesTotal, mc: maxCombo,
-        ru: reviveUsed, recent,
-      } : null,
-    }));
+    const c = mode === 'classic' ? snapClassic() : stash.classic || { best: 0, game: null };
+    localStorage.setItem(LS_KEY, JSON.stringify({ best: c.best, settings, theme: themeIdx, game: c.game }));
+    const sd = mode === 'sand' ? snapSand() : stash.sand;
+    if (sd) localStorage.setItem(SAND_KEY, JSON.stringify(sd));
   } catch (_) {}
 }
 function restore() {
   let s = null;
   try { s = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); } catch (_) {}
   if (!s) return false;
-  best = Math.max(0, +s.best || 0);
   if (s.settings) {
     settings.sound = s.settings.sound !== false;
     settings.music = s.settings.music !== false;
@@ -1341,10 +1436,17 @@ function restore() {
     settings.hints = s.settings.hints !== false;
     settings.lite = !!s.settings.lite;
     settings.liteChecked = !!s.settings.liteChecked;
+    settings.mode = s.settings.mode === 'sand' ? 'sand' : 'classic';
   }
   if (Number.isInteger(s.theme) && s.theme >= 0 && s.theme < THEMES.length) themeIdx = s.theme;
-  const g = s.game;
+  return applyClassic(s);
+}
+// Загружает партию классики из снимка { best, game }; false — если партии нет
+function applyClassic(s) {
+  best = Math.max(0, +(s && s.best) || 0);
+  const g = s && s.game;
   if (!g || !Array.isArray(g.grid) || g.grid.length !== N * N) return false;
+  state = 'play'; overT0 = 0;
   for (let i = 0; i < N * N; i++) { const v = g.grid[i]; grid[i] = Number.isInteger(v) && v >= 0 && v < 7 ? v : -1; }
   hand = [0, 1, 2].map(k => {
     const h = (g.hand || [])[k];
@@ -1372,19 +1474,21 @@ function layout() {
   cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
   bgc.width = cv.width; bgc.height = cv.height;
   bgDirty = true; lastDraw = 0;
-  const HUD = 0.46, TRAY = 0.48;
-  board = Math.min(Math.min(W, 560) * 0.88, (H - 20) / (1 + HUD + TRAY));
-  board = Math.max(N * 16, Math.floor(board / N) * N);
-  cell = board / N;
+  const HUD = 0.46, TRAY = 0.48, ASPECT = mode === 'sand' ? SROWS / SCOLS : 1;
+  board = Math.min(Math.min(W, 560) * 0.88, (H - 20) / (ASPECT + HUD + TRAY));
+  // в песке ширина кратна числу песчинок — каждая песчинка ровно в целое число пикселей
+  board = mode === 'sand' ? Math.max(SCOLS * 2, Math.floor(board / SCOLS) * SCOLS) : Math.max(N * 16, Math.floor(board / N) * N);
+  boardH = board * ASPECT;
+  cell = board / N;                     // в песке это размер блока фигуры (SB песчинок)
   framePad = Math.max(4, Math.round(cell * 0.12));
   colW = Math.min(W, board / 0.88);
   colX = (W - colW) / 2;
   hudH = board * HUD;
   trayH = board * TRAY;
-  hudY = Math.max(6, (H - board * (1 + HUD + TRAY)) * 0.42);
+  hudY = Math.max(6, (H - board * (ASPECT + HUD + TRAY)) * 0.42);
   boardX = Math.round((W - board) / 2);
   boardY = Math.round(hudY + hudH);
-  trayY = boardY + board + framePad;
+  trayY = boardY + boardH + framePad;
   trayCell = Math.min(cell * 0.56, (colW / 3 * 0.9) / 5);
   blockCache.clear(); boardCache.clear(); bgCache.clear();
 
@@ -1400,6 +1504,9 @@ function layout() {
   scoreEl.style.top = (hudY + hudH * 0.5) + 'px';
   comboBadge.style.fontSize = board * 0.05 + 'px';
   comboBadge.style.top = (hudY + hudH * 0.84) + 'px';
+  sandBar.style.fontSize = board * 0.04 + 'px';
+  sandBar.style.width = board * 0.86 + 'px';
+  sandBar.style.top = (hudY + hudH * 0.84) + 'px';
   hintEl.style.fontSize = Math.max(13, board * 0.042) + 'px';
   hintEl.style.top = Math.min(H - 14, trayY + trayH * 0.93) + 'px';
 }
@@ -1409,7 +1516,15 @@ function slotAt(x, y) {
   const i = Math.floor((x - colX) / (colW / 3));
   return i >= 0 && i < 3 ? i : -1;
 }
-function updateHint() { hintEl.classList.toggle('show', best === 0 && score === 0 && state === 'play' && countFilled(grid) === 0); }
+function updateHint() {
+  if (mode === 'sand') {
+    hintEl.textContent = 'Соедините один цвет от края до края';
+    hintEl.classList.toggle('show', score === 0 && state === 'play' && sandCount() === 0);
+    return;
+  }
+  hintEl.textContent = 'Перетащите фигуру на поле';
+  hintEl.classList.toggle('show', best === 0 && score === 0 && state === 'play' && countFilled(grid) === 0);
+}
 
 /* =====================================================================
    Пререндер: блоки, поле, фон
@@ -1509,7 +1624,7 @@ function getBgImage(ti) {
   const lg = g.createLinearGradient(0, 0, 0, H);
   lg.addColorStop(0, th.bg[0]); lg.addColorStop(0.5, th.bg[1]); lg.addColorStop(1, th.bg[2]);
   g.fillStyle = lg; g.fillRect(0, 0, W, H);
-  const cx = boardX + board / 2, cy = boardY + board / 2;
+  const cx = boardX + board / 2, cy = boardY + boardH / 2;
   const rg = g.createRadialGradient(cx, cy, board * 0.1, cx, cy, board * 1.05);
   rg.addColorStop(0, rgba(th.glow, 0.3)); rg.addColorStop(1, rgba(th.glow, 0));
   g.fillStyle = rg; g.fillRect(0, 0, W, H);
@@ -1655,6 +1770,7 @@ function updateSnap() {
 
 window.addEventListener('pointerdown', () => { ensureAudio(); resetIdle(); }, true);
 cv.addEventListener('pointerdown', e => {
+  if (mode === 'sand') { sandPointerDown(e); return; }
   if (paused || state !== 'play' || drag) return;
   const i = slotAt(e.clientX, e.clientY);
   if (i < 0) return;
@@ -1675,13 +1791,14 @@ cv.addEventListener('pointermove', e => {
   if (drag && e.pointerId === drag.id) {
     drag.px = e.clientX; drag.py = e.clientY;
     if (!drag.moved && Math.hypot(drag.px - drag.sx, drag.py - drag.sy) > cell * 0.3) drag.moved = true;
-    updateSnap();
+    mode === 'sand' ? sandUpdateSnap() : updateSnap();
   } else if (!drag && e.pointerType === 'mouse') {
-    const i = slotAt(e.clientX, e.clientY);
-    cv.style.cursor = (i >= 0 && hand[i] && state === 'play' && !paused) ? 'grab' : 'default';
+    const i = slotAt(e.clientX, e.clientY), hs = mode === 'sand' ? sand.hand : hand;
+    cv.style.cursor = (i >= 0 && hs[i] && state === 'play' && !paused) ? 'grab' : 'default';
   }
 });
 function endDrag(e, cancel) {
+  if (mode === 'sand') { sandEndDrag(e, cancel); return; }
   if (!drag || e.pointerId !== drag.id) return;
   const d = drag; drag = null;
   cv.style.cursor = 'default';
@@ -1732,7 +1849,7 @@ function spawnClearFx(a) {
   }
 }
 function allClearBurst(t0) {
-  const cx = boardX + board / 2, cy = boardY + board / 2;
+  const cx = boardX + board / 2, cy = boardY + boardH / 2;
   rings.push({ x: cx, y: cy, t0, dur: 1000, r0: cell, r1: Math.hypot(W, H) * 0.65, w: cell * 0.35, color: '#ffffff' });
   rings.push({ x: cx, y: cy, t0: t0 + 150, dur: 900, r0: cell * 0.5, r1: board * 0.9, w: cell * 0.2, color: '#fff2a8' });
   flashes.push({ board: true, start: t0 });
@@ -1766,8 +1883,8 @@ function frame(now) {
     scoreEl.textContent = displayScore;
   }
 
-  // Подсказка, если игрок задумался
-  if (settings.hints && state === 'play' && !paused && !drag && !hint && settingsOv.hidden) {
+  // Подсказка, если игрок задумался (только в классике)
+  if (mode === 'classic' && settings.hints && state === 'play' && !paused && !drag && !hint && settingsOv.hidden) {
     const delay = best === 0 && score < 60 ? HINT_DELAY_FIRST : HINT_DELAY;
     if (now - idleT > delay && hand.every(h => !h || now > h.t0 + 400)) {
       hint = computeHint();
@@ -1781,6 +1898,8 @@ function frame(now) {
   const tp = themeProgress(now);
   if (bgDirty || tp < 1 || bgTrans) { drawBackground(now); bgTrans = tp < 1; bgDirty = false; }
 
+  if (mode === 'sand') sandUpdate(now);
+
   // Лёгкий режим: если на экране ничего не движется — кадр не перерисовываем
   if (!isActive(now) && now - lastDraw < 250) return;
   lastDraw = now;
@@ -1790,18 +1909,15 @@ function frame(now) {
   if (!settings.lite) {
     if (tp < 1) {
       ctx.save();
-      ctx.beginPath(); ctx.arc(boardX + board / 2, boardY + board / 2, Math.max(0.1, themeRadius(tp)), 0, Math.PI * 2); ctx.clip();
+      ctx.beginPath(); ctx.arc(boardX + board / 2, boardY + boardH / 2, Math.max(0.1, themeRadius(tp)), 0, Math.PI * 2); ctx.clip();
       drawDecor(themeIdx, now, dt);
       ctx.restore();
     } else drawDecor(themeIdx, now, dt);
   }
 
-  let sx = 0, sy = 0;
-  if (shake.amp) {
-    const p = (now - shake.t0) / 380;
-    if (p >= 1) shake.amp = 0;
-    else if (p > 0) { const a = shake.amp * (1 - p); sx = rand(-a, a); sy = rand(-a, a); }
-  }
+  if (mode === 'sand') { sandDraw(now, dt); return; }
+
+  const [sx, sy] = shakeOffset(now);
   ctx.save();
   ctx.translate(sx, sy);
   drawBoard(now, dt);
@@ -1821,7 +1937,7 @@ function frame(now) {
 }
 
 function themeRadius(tp) {
-  const cx = boardX + board / 2, cy = boardY + board / 2;
+  const cx = boardX + board / 2, cy = boardY + boardH / 2;
   return Math.hypot(Math.max(cx, W - cx), Math.max(cy, H - cy)) * easeInOutCubic(tp);
 }
 // Рисует слой фона (отдельный canvas под игрой)
@@ -1830,7 +1946,7 @@ function drawBackground(now) {
   bctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   if (tp < 1) {
     // Смена темы: новая тема раскрывается кругом от центра поля
-    const cx = boardX + board / 2, cy = boardY + board / 2, R = Math.max(0.1, themeRadius(tp));
+    const cx = boardX + board / 2, cy = boardY + boardH / 2, R = Math.max(0.1, themeRadius(tp));
     bctx.drawImage(getBgImage(themeFx.prev), 0, 0, W, H);
     bctx.save();
     bctx.beginPath(); bctx.arc(cx, cy, R, 0, Math.PI * 2); bctx.clip();
@@ -1854,7 +1970,10 @@ function isActive(now) {
   if (clearAnims.length || flashes.length || rings.length || placeAnims.size) return true;
   if (comboGlow > 0.02 || themeProgress(now) < 1) return true;
   if (state === 'over' && now < overT0 + N * 60 + 300) return true;
-  for (const h of hand) if (h && (h.ret || now < h.t0 + 450)) return true;
+  if (mode === 'sand' && (sand.phase !== 'idle' || sand.dirty)) return true;
+  for (const h of mode === 'sand' ? sand.hand : hand) if (h && (h.ret || now < h.t0 + 450)) return true;
+  // красная линия пульсирует, когда песок близко
+  if (mode === 'sand' && state === 'play' && sandTopRow() < SDANGER + 16) return true;
   return false;
 }
 
@@ -2238,6 +2357,643 @@ function drawTexts(now) {
 }
 
 /* =====================================================================
+   РЕЖИМ «ПЕСОК»
+   Фигура при установке рассыпается на песчинки, они осыпаются вниз.
+   Песок одного цвета, соединённый от левого края поля до правого,
+   исчезает. Если осыпавшийся после этого песок соединяет ещё одну
+   полосу — это комбо: цепная реакция в рамках одного хода.
+   ===================================================================== */
+const SB = 10;                        // песчинок на сторону одного блока фигуры
+const SCOLS = 8 * SB, SROWS = 10 * SB; // поле 8×10 блоков
+const SDANGER = 14;                   // красная линия: песок выше неё после оседания — конец игры
+const SAND_KEY = 'blockblast.sand.v1';
+const SAND_COLOR_IDX = [0, 2, 3, 5, 1, 6];   // красный, жёлтый, зелёный, синий, + оранжевый, фиолетовый с уровнями
+const LEVELS = [0, 2000, 5000, 10000, 18000, 30000, 45000, 65000, 90000, 120000, 160000, 210000, 270000, 350000, 450000];
+const SAND_STEPS = 3;                 // шагов симуляции за кадр
+
+function packRGBA(hex) { const n = parseInt(hex.slice(1), 16); return ((255 << 24) | ((n & 255) << 16) | (((n >> 8) & 255) << 8) | ((n >> 16) & 255)) >>> 0; }
+// 4 оттенка на цвет: 0 — светлая кромка, 1 — основной, 2 — чуть темнее, 3 — тёмная кромка
+const SAND_PAL = new Uint32Array(SAND_COLOR_IDX.length * 4), SAND_GREY = new Uint32Array(SAND_COLOR_IDX.length * 4);
+SAND_COLOR_IDX.forEach((ci, k) => {
+  const c = COLORS[ci], g = COLORS[GREY];
+  [c.t, c.c, c.r, c.b].forEach((h, s) => { SAND_PAL[k * 4 + s] = packRGBA(h); });
+  [g.t, g.c, g.r, g.b].forEach((h, s) => { SAND_GREY[k * 4 + s] = packRGBA(h); });
+});
+const SAND_WHITE = packRGBA('#ffffff');
+
+// Профиль столбцов каждой фигуры в песчинках: верх, низ и высота столбика
+const SHAPE_COLS = SHAPES.map(sh => {
+  const w = sh.w * SB, top = new Int16Array(w).fill(9999), bot = new Int16Array(w).fill(-1), cnt = new Int16Array(w);
+  for (const [cx, cy] of sh.cells) for (let px = 0; px < SB; px++) {
+    const X = cx * SB + px;
+    top[X] = Math.min(top[X], cy * SB); bot[X] = Math.max(bot[X], cy * SB + SB - 1);
+  }
+  for (let X = 0; X < w; X++) cnt[X] = bot[X] >= 0 ? bot[X] - top[X] + 1 : 0;
+  return { w, h: sh.h * SB, top, bot, cnt };
+});
+
+const sandBar = $('sandBar');
+const sand = {
+  grid: new Uint8Array(SCOLS * SROWS),    // 0 — пусто, 1..6 — цвет
+  shade: new Uint8Array(SCOLS * SROWS),   // оттенок песчинки (текстура)
+  tops: new Int16Array(SCOLS),            // верх песка в каждом столбце
+  seen: new Uint8Array(SCOLS * SROWS),
+  label: new Int32Array(SCOLS * SROWS),
+  stack: new Int32Array(SCOLS * SROWS),
+  comp: new Int32Array(SCOLS * SROWS),
+  hand: [null, null, null],
+  level: 0, chain: 0, phase: 'idle', clearT0: 0, clearCells: null,
+  img: makeCanvas(SCOLS, SROWS), pix: null, imgData: null, ictx: null, dirty: true,
+};
+sand.ictx = sand.img.getContext('2d');
+sand.imgData = sand.ictx.createImageData(SCOLS, SROWS);
+sand.pix = new Uint32Array(sand.imgData.data.buffer);
+
+function sandCount() { let n = 0; const g = sand.grid; for (let i = 0; i < g.length; i++) if (g[i]) n++; return n; }
+function sandComputeTops() {
+  const g = sand.grid;
+  for (let x = 0; x < SCOLS; x++) { let y = 0; while (y < SROWS && !g[y * SCOLS + x]) y++; sand.tops[x] = y; }
+}
+function sandTopRow() { let m = SROWS; for (let x = 0; x < SCOLS; x++) if (sand.tops[x] < m) m = sand.tops[x]; return m; }
+// Самая нижняя строка, куда можно поставить фигуру в столбце gx (фигура ложится на песок)
+function sandMaxY(s, gx) {
+  const pc = SHAPE_COLS[s];
+  let m = SROWS - pc.h;
+  for (let X = 0; X < pc.w; X++) if (pc.bot[X] >= 0) { const lim = sand.tops[gx + X] - 1 - pc.bot[X]; if (lim < m) m = lim; }
+  return m;
+}
+function refreshSandFit() {
+  for (const h of sand.hand) {
+    if (!h) continue;
+    const pc = SHAPE_COLS[h.s];
+    h.fit = false;
+    for (let gx = 0; gx <= SCOLS - pc.w && !h.fit; gx += 2) if (sandMaxY(h.s, gx) >= 0) h.fit = true;
+  }
+}
+
+// Фигура: оттенки песчинок (рамка блоков светлая/тёмная, внутри — крапинки) + готовая текстура
+function makeSandPiece(s, k) {
+  const sh = SHAPES[s], pw = sh.w * SB, ph = sh.h * SB;
+  const shades = new Uint8Array(pw * ph).fill(255);
+  for (const [cx, cy] of sh.cells) for (let y = 0; y < SB; y++) for (let x = 0; x < SB; x++) {
+    const v = y === 0 || x === 0 ? 0 : y === SB - 1 || x === SB - 1 ? 3 : Math.random() < 0.78 ? 1 : 2;
+    shades[(cy * SB + y) * pw + cx * SB + x] = v;
+  }
+  const tex = makeCanvas(pw, ph), tc = tex.getContext('2d'), id = tc.createImageData(pw, ph), p32 = new Uint32Array(id.data.buffer);
+  for (let i = 0; i < shades.length; i++) if (shades[i] !== 255) p32[i] = SAND_PAL[(k - 1) * 4 + shades[i]];
+  tc.putImageData(id, 0, 0);
+  return { s, k, shades, tex, t0: 0, ret: null, fit: true };
+}
+
+/* ---------- Физика: песчинка падает вниз, иначе скатывается по диагонали ---------- */
+function sandStep() {
+  const g = sand.grid, sh = sand.shade, C = SCOLS;
+  let moved = 0;
+  for (let y = SROWS - 2; y >= 0; y--) {
+    const ltr = Math.random() < 0.5, row = y * C;
+    for (let i = 0; i < C; i++) {
+      const x = ltr ? i : C - 1 - i, idx = row + x, v = g[idx];
+      if (!v) continue;
+      const below = idx + C;
+      if (!g[below]) { g[below] = v; sh[below] = sh[idx]; g[idx] = 0; moved++; continue; }
+      const d = Math.random() < 0.5 ? -1 : 1;
+      let nx = x + d;
+      if (nx >= 0 && nx < C && !g[below + d]) { g[below + d] = v; sh[below + d] = sh[idx]; g[idx] = 0; moved++; continue; }
+      nx = x - d;
+      if (nx >= 0 && nx < C && !g[below - d]) { g[below - d] = v; sh[below - d] = sh[idx]; g[idx] = 0; moved++; }
+    }
+  }
+  return moved;
+}
+
+// Все песчинки групп одного цвета, соединяющих левый и правый край (связность по 8 направлениям)
+function sandFindSpans() {
+  const g = sand.grid, C = SCOLS, R = SROWS, seen = sand.seen, st = sand.stack, comp = sand.comp;
+  seen.fill(0);
+  const out = [];
+  for (let y = 0; y < R; y++) {
+    const s0 = y * C, v = g[s0];
+    if (!v || seen[s0]) continue;
+    let sp = 0, n = 0, right = false;
+    st[sp++] = s0; seen[s0] = 1;
+    while (sp) {
+      const p = st[--sp];
+      comp[n++] = p;
+      const x = p % C, yy = (p - x) / C;
+      if (x === C - 1) right = true;
+      for (let dy = -1; dy <= 1; dy++) {
+        const ny = yy + dy;
+        if (ny < 0 || ny >= R) continue;
+        for (let dx = -1; dx <= 1; dx++) {
+          const nx = x + dx;
+          if ((!dx && !dy) || nx < 0 || nx >= C) continue;
+          const q = ny * C + nx;
+          if (!seen[q] && g[q] === v) { seen[q] = 1; st[sp++] = q; }
+        }
+      }
+    }
+    if (right) for (let i = 0; i < n; i++) out.push(comp[i]);
+  }
+  return out;
+}
+
+/* ---------- Генератор: в каждом наборе — фигура, которой можно собрать полосу ---------- */
+// Нумерует группы одного цвета и запоминает, какие касаются левого/правого края
+function sandLabel() {
+  const g = sand.grid, C = SCOLS, R = SROWS, lab = sand.label, st = sand.stack;
+  lab.fill(0);
+  const L = [false], Rt = [false];
+  let id = 0;
+  for (let p0 = 0; p0 < C * R; p0++) {
+    const v = g[p0];
+    if (!v || lab[p0]) continue;
+    id++;
+    let sp = 0, left = false, right = false;
+    st[sp++] = p0; lab[p0] = id;
+    while (sp) {
+      const p = st[--sp], x = p % C, y = (p - x) / C;
+      if (x === 0) left = true;
+      if (x === C - 1) right = true;
+      for (let dy = -1; dy <= 1; dy++) {
+        const ny = y + dy;
+        if (ny < 0 || ny >= R) continue;
+        for (let dx = -1; dx <= 1; dx++) {
+          const nx = x + dx;
+          if ((!dx && !dy) || nx < 0 || nx >= C) continue;
+          const q = ny * C + nx;
+          if (!lab[q] && g[q] === v) { lab[q] = id; st[sp++] = q; }
+        }
+      }
+    }
+    L.push(left); Rt.push(right);
+  }
+  return { L, R: Rt };
+}
+// Можно ли фигурой s цвета k соединить край с краем? Приближение: песок каждого
+// столбика фигуры ложится на верх песка в своём столбце. Возвращает gx или -1.
+function sandCanClear(s, k, info) {
+  const pc = SHAPE_COLS[s], g = sand.grid, lab = sand.label, C = SCOLS, tops = sand.tops;
+  for (let gx = 0; gx <= C - pc.w; gx += 2) {
+    let left = false, right = false, ok = true;
+    for (let X = 0; X < pc.w && !(left && right); X++) {
+      const n = pc.cnt[X];
+      if (!n) continue;
+      const bx = gx + X, t = tops[bx], y0 = t - n;
+      if (y0 < 0) { ok = false; break; }
+      if (bx === 0) left = true;
+      if (bx === C - 1) right = true;
+      for (let yy = Math.max(0, y0 - 1); yy <= Math.min(SROWS - 1, t); yy++) {
+        for (let dx = -1; dx <= 1; dx++) {
+          const nx = bx + dx;
+          if (nx < 0 || nx >= C || (dx === 0 && yy < t)) continue;
+          const q = yy * C + nx;
+          if (g[q] !== k) continue;
+          const id = lab[q];
+          if (info.L[id]) left = true;
+          if (info.R[id]) right = true;
+        }
+      }
+    }
+    if (ok && left && right) return gx;
+  }
+  return -1;
+}
+function sandColorsCount() { return sand.level < 2 ? 4 : sand.level < 5 ? 5 : 6; }
+function pickIdx(ws) {
+  let total = 0; for (const w of ws) total += w;
+  let r = Math.random() * total;
+  for (let i = 0; i < ws.length; i++) { r -= ws[i]; if (r <= 0) return i; }
+  return ws.length - 1;
+}
+function sandGenerateHand() {
+  sandComputeTops();
+  const nC = sandColorsCount(), ws = new Array(nC).fill(1);
+  // цвета, которые лежат сверху, выпадают чаще
+  for (let x = 0; x < SCOLS; x++) {
+    const t = sand.tops[x];
+    if (t < SROWS) { const v = sand.grid[t * SCOLS + x]; if (v && v <= nC) ws[v - 1] += 0.06; }
+  }
+  const pick = () => ({ s: pickWeighted(0), k: pickIdx(ws) + 1 });
+  let lucky = null;
+  if (sandCount() > SCOLS * 4) {          // на почти пустом поле одной фигурой полосу не собрать
+    const info = sandLabel(), t0 = performance.now();
+    for (let a = 0; a < 25 && !lucky; a++) { const p = pick(); if (sandCanClear(p.s, p.k, info) >= 0) lucky = p; }
+    if (!lucky) {
+      const order = shuffle([...Array(SHAPES.length).keys()]);
+      outer: for (const k of shuffle([...Array(nC).keys()].map(i => i + 1))) {
+        for (const s of order) {
+          if (performance.now() - t0 > 30) break outer;
+          if (sandCanClear(s, k, info) >= 0) { lucky = { s, k }; break outer; }
+        }
+      }
+    }
+  }
+  const list = shuffle([lucky || pick(), pick(), pick()]);
+  return list.map(p => makeSandPiece(p.s, p.k));
+}
+
+/* ---------- Ход ---------- */
+function sandPlace(i, gx, gy) {
+  const h = sand.hand[i], pc = SHAPE_COLS[h.s], g = sand.grid, sh = sand.shade;
+  for (let y = 0; y < pc.h; y++) for (let x = 0; x < pc.w; x++) {
+    const v = h.shades[y * pc.w + x];
+    if (v === 255) continue;
+    const idx = (gy + y) * SCOLS + gx + x;
+    g[idx] = h.k; sh[idx] = v;
+  }
+  sand.hand[i] = null;
+  score += SHAPES[h.s].n * 2;
+  const pan = ((gx + pc.w / 2) / SCOLS - 0.5) * 1.2;
+  sfx('place', SHAPES[h.s].n, pan); sfx('sandPour', pan); vib(10);
+  sand.chain = 0; sand.phase = 'falling'; sand.dirty = true;
+  checkBest(); updateSandBar(); updateHint();
+}
+function sandUpdate(now) {
+  if (paused || state === 'over') return;
+  if (sand.phase === 'falling') {
+    let settled = false;
+    for (let k = 0; k < SAND_STEPS; k++) if (sandStep() === 0) { settled = true; break; }
+    sand.dirty = true;
+    if (settled) {
+      const cells = sandFindSpans();
+      if (cells.length) { sand.chain++; sand.clearCells = cells; sand.phase = 'clearing'; sand.clearT0 = now; }
+      else sandMoveEnd(now);
+    }
+  } else if (sand.phase === 'clearing') {
+    sand.dirty = true;
+    if (now - sand.clearT0 >= 360) sandApplyClear(now);
+  }
+}
+function sandApplyClear(now) {
+  const cells = sand.clearCells, g = sand.grid, gs = board / SCOLS, n = cells.length;
+  const every = Math.max(1, Math.floor(n / (settings.lite ? 40 : 110)));
+  let sx = 0, sy = 0;
+  for (let i = 0; i < n; i++) {
+    const p = cells[i], x = p % SCOLS, y = (p - x) / SCOLS;
+    sx += x; sy += y;
+    if (i % every === 0) {
+      const col = COLORS[SAND_COLOR_IDX[g[p] - 1]], ang = Math.random() * Math.PI * 2, sp = rand(1, 3.5) * cell;
+      particles.push({
+        k: 'shard', x: boardX + (x + 0.5) * gs, y: boardY + (y + 0.5) * gs,
+        vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp - cell * 2.5, g: 1,
+        s: gs * rand(1.2, 2.2), c: Math.random() < 0.6 ? col.c : col.t,
+        life: 0, max: rand(450, 800), rot: Math.random() * 6, vr: rand(-10, 10),
+      });
+    }
+    g[p] = 0;
+  }
+  const pts = n * sand.chain;
+  score += pts; linesTotal++; maxCombo = Math.max(maxCombo, sand.chain);
+  const cx = boardX + (sx / n + 0.5) * gs, cy = Math.min(Math.max(boardY + (sy / n + 0.5) * gs, boardY + cell), boardY + boardH - cell);
+  rings.push({ x: cx, y: cy, t0: now, dur: 550, r0: cell * 0.5, r1: cell * (2.5 + sand.chain), w: cell * 0.16, color: '#ffffff' });
+  if (sand.chain >= 2) {
+    addText('Combo ' + sand.chain, cx, cy - cell * 0.55, sand.chain >= 4 ? 'fire' : 'combo', 0);
+    addText('+' + pts, cx, cy + cell * 0.45, 'score', 90);
+    shake.t0 = now; shake.amp = Math.min(cell * 0.12, 2 + sand.chain * 1.5);
+  } else addText('+' + pts, cx, cy, 'score', 0);
+  sfx('clear', Math.min(4, Math.max(1, Math.round(n / 350))), sand.chain, ((cx - boardX) / board - 0.5) * 1.2);
+  vib(sand.chain > 1 ? 45 : 25);
+  bumpScore(); checkBest(); sandCheckLevel();
+  sand.clearCells = null; sand.phase = 'falling'; sand.dirty = true;
+}
+// Ход закончился: всё осыпалось и больше ничего не собирается
+function sandMoveEnd(now) {
+  sand.phase = 'idle';
+  sandComputeTops();
+  if (sand.chain > 0 && sandCount() === 0) {
+    const bonus = 1000;
+    score += bonus;
+    addText('All Clear!', boardX + board / 2, boardY + boardH * 0.45, 'gold', 150);
+    addText('+' + bonus, boardX + board / 2, boardY + boardH * 0.58, 'score', 300);
+    allClearBurst(now + 60); sfx('allClear'); vib(70);
+    setTimeout(() => changeTheme((themeIdx + 1) % THEMES.length), 450);
+    checkBest(); sandCheckLevel();
+  }
+  sand.chain = 0;
+  if (sandTopRow() < SDANGER) { triggerNoMoves('Песок у линии!'); return; }
+  if (sand.hand.every(h => !h)) {
+    sand.hand = sandGenerateHand();
+    sand.hand.forEach((h, k) => { h.t0 = now + 120 + k * 80; });
+    setTimeout(() => sfx('appear'), 100);
+  }
+  refreshSandFit();
+  if (!sand.hand.some(h => h && h.fit)) { triggerNoMoves('Нет места!'); return; }
+  updateHint(); save();
+}
+function fmtK(n) { return n >= 1000 ? (n % 1000 === 0 ? n / 1000 : (n / 1000).toFixed(1)) + 'k' : String(n); }
+function updateSandBar() {
+  const from = LEVELS[sand.level], to = LEVELS[sand.level + 1] || from * 2;
+  $('sbFrom').textContent = fmtK(from);
+  $('sbTo').textContent = fmtK(to);
+  $('sbLvl').textContent = 'Уровень ' + (sand.level + 1);
+  $('sbFill').style.width = clamp01((score - from) / (to - from)) * 100 + '%';
+}
+function sandCheckLevel() {
+  let up = false;
+  while (sand.level + 1 < LEVELS.length && score >= LEVELS[sand.level + 1]) { sand.level++; up = true; }
+  if (up) {
+    addText('Уровень ' + (sand.level + 1) + '!', boardX + board / 2, boardY + boardH * 0.3, 'fire', 350);
+    if (sand.level === 2 || sand.level === 5) addText('Новый цвет!', boardX + board / 2, boardY + boardH * 0.42, 'gold', 650);
+    sfx('milestone');
+  }
+  updateSandBar();
+}
+function sandNewGame() {
+  epoch++;
+  const now = performance.now(), g = sand.grid, gs = board / SCOLS;
+  // старый песок разлетается
+  for (let p = 0, k = 0; p < g.length; p++) {
+    if (!g[p] || k++ % 40) continue;
+    const x = p % SCOLS, y = (p - x) / SCOLS, col = COLORS[SAND_COLOR_IDX[g[p] - 1]];
+    particles.push({ k: 'shard', x: boardX + x * gs, y: boardY + y * gs, vx: rand(-2, 2) * cell, vy: -rand(1, 3) * cell, g: 1,
+      s: gs * 1.6, c: state === 'over' ? '#8690a8' : col.c, life: 0, max: rand(400, 700), rot: 0, vr: rand(-8, 8) });
+  }
+  g.fill(0); sand.shade.fill(0); sand.dirty = true;
+  score = 0; displayScore = 0; scoreEl.textContent = '0';
+  newBestShown = false; startBest = best; linesTotal = 0; maxCombo = 0; reviveUsed = false;
+  sand.level = 0; sand.chain = 0; sand.phase = 'idle'; sand.clearCells = null;
+  state = 'play'; overT0 = 0; drag = null;
+  reviveOv.hidden = true; overOv.hidden = true;
+  sand.hand = sandGenerateHand();
+  sand.hand.forEach((h, k) => { h.t0 = now + 280 + k * 90; });
+  setTimeout(() => sfx('appear'), 260);
+  if (engine) engine.duck(false);
+  refreshSandFit(); updateSandBar(); updateHint(); save();
+}
+function sandRevive() {
+  if (state !== 'revive') return;
+  reviveOv.hidden = true; reviveUsed = true; state = 'play';
+  const now = performance.now(), g = sand.grid, gs = board / SCOLS;
+  const lim = Math.min(SROWS, sandTopRow() + 35);     // убираем верхние ~3.5 блока песка
+  for (let y = 0; y < lim; y++) for (let x = 0; x < SCOLS; x++) {
+    const p = y * SCOLS + x;
+    if (!g[p]) continue;
+    if ((x + y) % 23 === 0) {
+      const col = COLORS[SAND_COLOR_IDX[g[p] - 1]];
+      particles.push({ k: 'shard', x: boardX + x * gs, y: boardY + y * gs, vx: rand(-2, 2) * cell, vy: -rand(1, 3) * cell, g: 1,
+        s: gs * 1.6, c: col.c, life: 0, max: rand(400, 800), rot: 0, vr: rand(-8, 8) });
+    }
+    g[p] = 0;
+  }
+  rings.push({ x: boardX + board / 2, y: boardY + boardH * 0.3, t0: now, dur: 800, r0: cell, r1: board, w: cell * 0.3, color: '#fff2a8' });
+  sand.dirty = true; sand.phase = 'idle';
+  sandComputeTops();
+  if (sand.hand.every(h => !h)) {
+    sand.hand = sandGenerateHand();
+    sand.hand.forEach((h, k) => { h.t0 = now + 400 + k * 90; });
+  }
+  refreshSandFit();
+  sfx('revive'); vib(40);
+  if (engine) engine.duck(false);
+  addText('Второй шанс!', boardX + board / 2, boardY + boardH * 0.45, 'gold', 100);
+  save();
+}
+
+/* ---------- Сохранение песка ---------- */
+// поле кодируется строкой: символ = 40 + цвет*4 + оттенок
+function snapSand() {
+  let cells = '';
+  if (state !== 'over') {
+    const g = sand.grid, sh = sand.shade, parts = [];
+    for (let i = 0; i < g.length; i++) parts.push(String.fromCharCode(40 + g[i] * 4 + (g[i] ? sh[i] : 0)));
+    cells = parts.join('');
+  }
+  return {
+    best,
+    game: state !== 'over' ? {
+      cells, hand: sand.hand.map(h => h ? [h.s, h.k] : null),
+      score, level: sand.level, sb: startBest, nbs: newBestShown, lines: linesTotal, mc: maxCombo, ru: reviveUsed,
+    } : null,
+  };
+}
+function readSandStore() { try { return JSON.parse(localStorage.getItem(SAND_KEY) || 'null'); } catch (_) { return null; } }
+function loadSand(snap) {
+  best = Math.max(0, +(snap && snap.best) || 0);
+  const g = snap && snap.game;
+  if (!g || typeof g.cells !== 'string' || g.cells.length !== SCOLS * SROWS) { sand.grid.fill(0); state = 'play'; sandNewGame(); return; }
+  for (let i = 0; i < g.cells.length; i++) {
+    const v = g.cells.charCodeAt(i) - 40, c = v >> 2;
+    sand.grid[i] = c >= 1 && c <= SAND_COLOR_IDX.length ? c : 0;
+    sand.shade[i] = v & 3;
+  }
+  sand.hand = [0, 1, 2].map(k => {
+    const h = (g.hand || [])[k];
+    return Array.isArray(h) && SHAPES[h[0]] && h[1] >= 1 && h[1] <= SAND_COLOR_IDX.length ? makeSandPiece(h[0], h[1]) : null;
+  });
+  score = Math.max(0, +g.score || 0); displayScore = score;
+  sand.level = Math.max(0, Math.min(LEVELS.length - 1, +g.level || 0));
+  startBest = g.sb != null ? +g.sb : best; newBestShown = !!g.nbs;
+  linesTotal = +g.lines || 0; maxCombo = +g.mc || 0; reviveUsed = !!g.ru;
+  state = 'play'; overT0 = 0; sand.chain = 0; sand.clearCells = null;
+  sand.phase = 'falling';                 // досыпаем песок, если сохранились посреди падения
+  sand.dirty = true;
+  const now = performance.now();
+  sand.hand.forEach((h, k) => { if (h) h.t0 = now + 150 + k * 90; });
+  updateSandBar();
+}
+
+/* ---------- Перетаскивание ---------- */
+function sandDragGeom(d) {
+  const pc = SHAPE_COLS[d.h.s], gs = board / SCOLS, pw = pc.w * gs, ph = pc.h * gs;
+  const lift = d.touch ? ph / 2 + cell * 1.25 : 0;
+  return { cx: d.px, cy: d.py - lift, pw, ph, gs };
+}
+function sandUpdateSnap() {
+  const d = drag, pc = SHAPE_COLS[d.h.s], g = sandDragGeom(d);
+  d.snap = null;
+  if (g.cx < boardX - cell || g.cx > boardX + board + cell || g.cy > boardY + boardH + cell * 0.6 || g.cy < boardY - cell * 3) return;
+  const gx = Math.max(0, Math.min(SCOLS - pc.w, Math.round((g.cx - g.pw / 2 - boardX) / g.gs)));
+  let gy = Math.max(0, Math.round((g.cy - g.ph / 2 - boardY) / g.gs));
+  gy = Math.min(gy, sandMaxY(d.h.s, gx));   // если под пальцем песок — фигура ложится сверху
+  if (gy >= 0) d.snap = { gx, gy };
+}
+function sandPointerDown(e) {
+  if (paused || state !== 'play' || drag || sand.phase !== 'idle') return;
+  const i = slotAt(e.clientX, e.clientY);
+  if (i < 0) return;
+  const h = sand.hand[i];
+  if (!h || performance.now() < h.t0) return;
+  e.preventDefault();
+  h.ret = null;
+  const sc = slotCenter(i);
+  drag = { i, h, px: e.clientX, py: e.clientY, sx: e.clientX, sy: e.clientY, moved: false,
+           t0: performance.now(), touch: e.pointerType !== 'mouse', id: e.pointerId, snap: null,
+           cx: sc.x, cy: sc.y, cs: trayCell };
+  try { cv.setPointerCapture(e.pointerId); } catch (_) {}
+  sandUpdateSnap();
+  sfx('pick', (i - 1) * 0.4); vib(8);
+  cv.style.cursor = 'grabbing';
+}
+function sandEndDrag(e, cancel) {
+  if (!drag || e.pointerId !== drag.id) return;
+  const d = drag; drag = null;
+  cv.style.cursor = 'default';
+  if (!cancel && d.moved && d.snap && sand.phase === 'idle') sandPlace(d.i, d.snap.gx, d.snap.gy);
+  else {
+    d.h.ret = { cx: d.cx, cy: d.cy, cs: d.cs, t0: performance.now() };
+    if (d.moved) sfx('bad');
+  }
+}
+
+/* ---------- Отрисовка ---------- */
+function getSandBoardImage(ti) {
+  const key = 'sand' + ti;
+  let img = boardCache.get(key);
+  if (img) return img;
+  const th = THEMES[ti], fw = board + framePad * 2, fh = boardH + framePad * 2, m = boardMargin();
+  img = makeCanvas((fw + m * 2) * dpr, (fh + m * 2) * dpr);
+  const g = img.getContext('2d');
+  g.scale(dpr, dpr);
+  g.save();
+  g.shadowColor = 'rgba(0,0,0,0.38)'; g.shadowBlur = cell * 0.7 * dpr; g.shadowOffsetY = cell * 0.18 * dpr;
+  g.fillStyle = th.edge; rrPath(g, m, m, fw, fh, cell * 0.24); g.fill();
+  g.restore();
+  g.translate(m, m);
+  g.fillStyle = th.edge; rrPath(g, 0, 0, fw, fh, cell * 0.24); g.fill();
+  g.fillStyle = th.board; g.fillRect(framePad, framePad, board, boardH);
+  // едва заметная сетка блоков
+  g.strokeStyle = 'rgba(255,255,255,0.04)'; g.lineWidth = 1;
+  g.beginPath();
+  for (let i = 1; i < 8; i++) { const x = framePad + Math.round(i * cell) + 0.5; g.moveTo(x, framePad); g.lineTo(x, framePad + boardH); }
+  for (let i = 1; i < 10; i++) { const y = framePad + Math.round(i * cell) + 0.5; g.moveTo(framePad, y); g.lineTo(framePad + board, y); }
+  g.stroke();
+  const hg = g.createLinearGradient(0, 0, 0, fh);
+  hg.addColorStop(0, 'rgba(255,255,255,0.28)'); hg.addColorStop(0.05, 'rgba(255,255,255,0.04)'); hg.addColorStop(1, 'rgba(255,255,255,0)');
+  g.strokeStyle = hg; g.lineWidth = 2;
+  rrPath(g, 1, 1, fw - 2, fh - 2, cell * 0.24); g.stroke();
+  boardCache.set(key, img);
+  return img;
+}
+function sandRender(now) {
+  if (!sand.dirty) return;
+  sand.dirty = false;
+  const g = sand.grid, sh = sand.shade, px = sand.pix, pal = state === 'over' ? SAND_GREY : SAND_PAL;
+  for (let i = 0; i < g.length; i++) { const v = g[i]; px[i] = v ? pal[(v - 1) * 4 + sh[i]] : 0; }
+  if (sand.phase === 'clearing' && sand.clearCells) {
+    const on = ((now - sand.clearT0) / 70 | 0) % 2 === 0;   // исчезающая полоса мигает белым
+    if (on) for (const p of sand.clearCells) px[p] = SAND_WHITE;
+  }
+  sand.ictx.putImageData(sand.imgData, 0, 0);
+}
+function drawSandPiece(h, cx, cy, cs) {
+  const sh = SHAPES[h.s], w = sh.w * cs, hh = sh.h * cs;
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(h.tex, cx - w / 2, cy - hh / 2, w, hh);
+  ctx.imageSmoothingEnabled = true;
+}
+function sandDraw(now, dt) {
+  const [sx, sy] = shakeOffset(now);
+  ctx.save();
+  ctx.translate(sx, sy);
+  const m = boardMargin();
+  ctx.drawImage(getSandBoardImage(themeIdx), boardX - framePad - m, boardY - framePad - m, board + (framePad + m) * 2, boardH + (framePad + m) * 2);
+  sandRender(now);
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(sand.img, boardX, boardY, board, boardH);
+  ctx.imageSmoothingEnabled = true;
+  // красная линия; когда песок близко — тревожная подсветка
+  const gs = board / SCOLS, ly = boardY + SDANGER * gs;
+  const near = state === 'play' && sand.phase === 'idle' && sandTopRow() < SDANGER + 16;
+  if (near) {
+    ctx.fillStyle = `rgba(255,40,40,${0.1 + 0.07 * Math.sin(now / 150)})`;
+    ctx.fillRect(boardX, boardY, board, ly - boardY);
+  }
+  ctx.fillStyle = near ? `rgba(255,80,80,${0.8 + 0.2 * Math.sin(now / 150)})` : 'rgba(255,60,60,0.85)';
+  ctx.fillRect(boardX, ly - 1, board, near ? 3 : 2);
+  // куда упадёт фигура
+  if (drag && drag.snap) {
+    const h = drag.h, pc = SHAPE_COLS[h.s], x0 = boardX + drag.snap.gx * gs, y0 = boardY + drag.snap.gy * gs;
+    ctx.fillStyle = 'rgba(255,255,255,0.07)';
+    for (let X = 0; X < pc.w; X++) {
+      if (pc.bot[X] < 0) continue;
+      const from = drag.snap.gy + pc.bot[X] + 1, to = sand.tops[drag.snap.gx + X];
+      if (to > from) ctx.fillRect(x0 + X * gs, boardY + from * gs, gs, (to - from) * gs);
+    }
+    ctx.globalAlpha = 0.45;
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(h.tex, x0, y0, pc.w * gs, pc.h * gs);
+    ctx.imageSmoothingEnabled = true;
+    ctx.globalAlpha = 1;
+  }
+  ctx.restore();
+  drawRings(now);
+  // лоток
+  for (let i = 0; i < 3; i++) {
+    const h = sand.hand[i];
+    if (!h || (drag && drag.i === i)) continue;
+    const sh = SHAPES[h.s], sc = slotCenter(i);
+    let cx = sc.x, cy = sc.y, cs = trayCell;
+    if (h.t0 && now < h.t0 + 380) {
+      const p = clamp01((now - h.t0) / 380);
+      if (p <= 0) continue;
+      cs = trayCell * Math.max(0, easeOutBack(p));
+    }
+    if (h.ret) {
+      const p = clamp01((now - h.ret.t0) / 190), e = easeOutCubic(p);
+      cx = lerp(h.ret.cx, sc.x, e); cy = lerp(h.ret.cy, sc.y, e); cs = lerp(h.ret.cs, trayCell, e);
+      if (p >= 1) h.ret = null;
+    }
+    const dim = state !== 'play' || !h.fit;
+    if (!dim) drawPieceShadow(sh, cx, cy, cs, 0, cs * 0.14, 0.18);
+    ctx.globalAlpha = dim ? 0.38 : 1;
+    drawSandPiece(h, cx, cy, cs);
+    ctx.globalAlpha = 1;
+  }
+  // фигура в руке
+  if (drag) {
+    const e = easeOutCubic(clamp01((now - drag.t0) / 110)), g = sandDragGeom(drag), sc = slotCenter(drag.i);
+    drag.cx = lerp(sc.x, g.cx, e); drag.cy = lerp(sc.y, g.cy, e); drag.cs = lerp(trayCell, cell, e);
+    if (!drag.snap) drawPieceShadow(SHAPES[drag.h.s], drag.cx, drag.cy, drag.cs, drag.cs * 0.08, drag.cs * 0.2, 0.22);
+    drawSandPiece(drag.h, drag.cx, drag.cy, drag.cs);
+  }
+  drawParticles(now, dt);
+  drawTexts(now);
+}
+
+/* ---------- Переключение режимов ---------- */
+function switchMode(m, initial) {
+  if (m === mode) return;
+  drag = null; hint = null; epoch++;
+  if (mode === 'classic') stash.classic = snapClassic(); else stash.sand = snapSand();
+  mode = m; settings.mode = m;
+  clearAnims = []; flashes = []; particles = []; sparkles = []; texts = []; rings = [];
+  placeAnims.clear(); shake.amp = 0;
+  overOv.hidden = true; reviveOv.hidden = true;
+  layout();
+  if (m === 'sand') loadSand(stash.sand || readSandStore());
+  else if (applyClassic(stash.classic)) {
+    refreshFit();
+    if (!hand.some(h => h && h.fit)) triggerNoMoves();
+  } else { state = 'play'; newGame(); }
+  bestEl.textContent = best;
+  scoreEl.textContent = displayScore;
+  updateModeUi(); updateComboUI('reset'); updateHint();
+  if (!initial) save();
+}
+function updateModeUi() {
+  const sandMode = mode === 'sand';
+  sandBar.classList.toggle('hidden', !sandMode);
+  if (sandMode) comboBadge.classList.add('hidden');
+  $('modeName').textContent = sandMode ? 'Песок' : 'Классика';
+  document.querySelectorAll('.mode-card').forEach(b => {
+    const on = b.dataset.mode === mode;
+    b.classList.toggle('on', on); b.setAttribute('aria-pressed', on);
+  });
+  $('reviveText').textContent = sandMode
+    ? 'Уберём верхний слой песка и продолжим. Второй шанс — один раз за игру.'
+    : 'Уберём 3 самые заполненные линии и дадим новые фигуры. Второй шанс — один раз за игру.';
+  if (sandMode) updateSandBar();
+}
+function shakeOffset(now) {
+  if (!shake.amp) return [0, 0];
+  const p = (now - shake.t0) / 380;
+  if (p >= 1) { shake.amp = 0; return [0, 0]; }
+  if (p <= 0) return [0, 0];
+  const a = shake.amp * (1 - p);
+  return [rand(-a, a), rand(-a, a)];
+}
+
+/* =====================================================================
    Меню
    ===================================================================== */
 function syncSwitches() {
@@ -2265,6 +3021,10 @@ swLite.addEventListener('click', () => {
   settings.lite = !settings.lite; settings.liteChecked = true;
   layout(); syncSwitches(); save(); sfx('tap');
 });
+document.querySelectorAll('.mode-card').forEach(b => b.addEventListener('click', () => {
+  sfx('tap');
+  if (b.dataset.mode !== mode) { switchMode(b.dataset.mode); closeSettings(); }
+}));
 $('btnRevive').addEventListener('click', () => { ensureAudio(); revive(); });
 $('btnGiveUp').addEventListener('click', () => { ensureAudio(); sfx('tap'); giveUp(); });
 $('btnAgain').addEventListener('click', () => { ensureAudio(); sfx('tap'); overOv.hidden = true; newGame(); });
@@ -2295,10 +3055,12 @@ if (restore()) {
   hand.forEach((h, k) => h.t0 = now + 200 + k * 90);
   refreshFit();
 }
+if (settings.mode === 'sand') switchMode('sand', true);
 applyThemeDom();
 bestEl.textContent = best;
 scoreEl.textContent = displayScore;
 syncSwitches();
+updateModeUi();
 updateHint();
 updateComboUI('reset');
 requestAnimationFrame(frame);
@@ -2314,6 +3076,8 @@ window.__bb = {
   get combo() { return combo; }, get theme() { return themeIdx; }, get hint() { return hint; }, get reviveUsed() { return reviveUsed; },
   get layout() { return { boardX, boardY, cell, trayY, trayH, colX, colW }; },
   place, SHAPES, THEMES, newGame, changeTheme, SoundEngine, generateHand, computeHint, helpLevel, revive, giveUp, frame,
+  get mode() { return mode; }, sand, switchMode, sandPlace, sandFindSpans, sandComputeTops, sandMaxY, sandCanClear, sandLabel,
+  SHAPE_COLS, SCOLS, SROWS, SDANGER,
 };
 })();
 </script>
