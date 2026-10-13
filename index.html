@@ -1696,6 +1696,21 @@ $('codeForm').addEventListener('submit', e => {
   e.preventDefault();
   const code = codeIn.value.trim().toLowerCase().replace(/ё/g, 'е');
   if (!code) return;
+  // Админ-код: начисляет 400 000 очков в копилку текущего режима
+  if (code === '\u0430\u0434\u043c\u0438\u043d666') {
+    codeIn.value = ''; codeIn.classList.remove('bad'); codeIn.blur();
+    wallet[mode] += 400000;
+    renderThemePicker();
+    themeNote.textContent = '\u0410\u0434\u043c\u0438\u043d-\u043a\u043e\u0434! \u0417\u0430\u0447\u0438\u0441\u043b\u0435\u043d\u043e 400 000 \u043e\u0447\u043a\u043e\u0432 \u0432 \u043a\u043e\u043f\u0438\u043b\u043a\u0443 (' + fmtNum(wallet[mode]) + ').';
+    const admNow = performance.now();
+    addText('+400 000', boardX + board / 2, boardY + boardH * 0.4, 'gold', 100);
+    addText('\u0432 \u043a\u043e\u043f\u0438\u043b\u043a\u0443!', boardX + board / 2, boardY + boardH * 0.53, 'praise', 300);
+    allClearBurst(admNow + 250);
+    setTimeout(() => sfx('record'), 250);
+    vib(60);
+    save();
+    return;
+  }
   const i = THEMES.findIndex(th => th.code && th.code === code);
   codeIn.blur();
   if (i < 0) {
