@@ -228,6 +228,7 @@
   .mini.st-glass i.blk { background: linear-gradient(135deg, transparent 38%, rgba(255,255,255,.45) 46% 56%, transparent 64%), var(--k); opacity: .82; box-shadow: inset 0 0 0 1px rgba(255,255,255,.75); }
   .mini.st-gem i.blk { background: radial-gradient(circle at 35% 35%, rgba(255,255,255,.7) 0 12%, transparent 30%), var(--k); box-shadow: inset 0 0 0 2px rgba(0,0,0,.22), inset 0 0 0 4px rgba(255,255,255,.25); }
   .mini.st-magma i.blk { background: radial-gradient(circle at 50% 75%, #fff3b0 0 12%, var(--k) 55%, #3a1209 100%); box-shadow: inset 0 0 0 1.5px #2a0c08, 0 0 5px #ff7a2a; }
+  .mini.st-void i.blk { background: radial-gradient(circle at 30% 30%, var(--k) 0 25%, #0a0618 80%); box-shadow: inset 0 0 0 1.5px var(--k), 0 0 4px var(--k); }
   .mini.st-pixel, .mini.st-pixel i { border-radius: 0; }
   .mini.st-pixel i.blk { box-shadow: inset 2px 2px 0 rgba(255,255,255,.4), inset -2px -2px 0 rgba(0,0,0,.35); }
   .mini.st-sand { gap: 0; }
@@ -577,9 +578,12 @@ const THEMES = [
   { id: 'matvey', mode: 'classic', code: 'матвей', blocks: 'pixel', fx: 'pixel', square: true, name: 'Матвей',
     bg: ['#4fb8ff', '#86d4ff', '#c4eeff'], glow: '#ffffff', board: '#5e4027', edge: '#3a2412', cell: '#74512f',
     panel: ['#5aa83a', '#3f7f27', '#a8e07a', '#244d14'], ui: '#ffffff', decor: 'pixelsky' },
+  { id: 'dima', mode: 'classic', code: 'дима009', blocks: 'void', fx: 'void', name: 'Дима',
+    bg: ['#020108', '#07051a', '#120a2e'], glow: '#9d7bff', board: '#06051a', edge: '#1d1446', cell: '#0d0b24',
+    panel: ['#5a3fc0', '#35238a', '#b7a2ff', '#160d40'], ui: '#e0d6ff', decor: 'blackhole' },
 ];
 const PIXEL_FONT = "'Press Start 2P', 'Courier New', monospace";
-// Эффекты текущей темы (только в классике): 'fire' | 'pixel' | undefined
+// Эффекты текущей темы (только в классике): 'fire' | 'pixel' | 'void' | undefined
 function curFx() { return mode === 'classic' ? THEMES[themeIdx].fx : undefined; }
 
 const N = 8;
@@ -899,7 +903,16 @@ class SoundEngine {
       for (let k = 0; k < 7; k++) this.noise(t + 0.05 + Math.random() * 0.45, 0.025, this.out(0.07, 0.05), { type: 'highpass', f: 2400, attack: 0.001 });
       // большая очистка — рык дракона
       if (lines >= 2) this.roar(t + 0.05, Math.min(1, 0.6 + lines * 0.15));
-    }
+    } else if (kind === 'void') this.voidClear(lines, comboN);
+  }
+  // «Дима»: линию засасывает в чёрную дыру — гул вниз, потом мерцающий отзвук
+  voidClear(lines, comboN) {
+    const t = this.now, step = Math.max(0, comboN - 1);
+    this.osc('sine', 420, t, 0.55, this.out(0.16, 0.3), { to: 45, toT: 0.5, attack: 0.02 });
+    this.noise(t, 0.45, this.out(0.06, 0.3), { type: 'bandpass', f: 2400, to: 180, q: 1.2, attack: 0.25 });
+    chordOn(84, COMBO_CHORDS[step % 7], 0).forEach((n, i) =>
+      this.fm(midi(n), t + 0.42 + i * 0.06, 0.035, { ratio: 3.5, index: 0.6, dur: 1.2, bright: 0.08, send: 0.8 }));
+    if (lines >= 2) this.osc('sine', 60, t + 0.4, 1.2, this.out(0.3, 0.3), { to: 30, attack: 0.01 });   // глубокий удар
   }
   roar(t, vol) {
     const c = this.ctx, fl = c.createBiquadFilter();
@@ -913,6 +926,7 @@ class SoundEngine {
     const t = this.now;
     if (kind === 'pixel') this.osc('square', 660, t, 0.06, this.out(0.03), { to: 990, toT: 0.03, attack: 0.001 });
     else if (kind === 'fire') this.noise(t, 0.05, this.out(0.05, 0.05), { type: 'highpass', f: 3000, attack: 0.001 });
+    else if (kind === 'void') this.fm(midi(96), t, 0.025, { ratio: 3.5, index: 0.5, dur: 0.6, bright: 0.05, send: 0.8 });
   }
 
   /* ---------- Фоновая музыка: тихий лоу-фай эмбиент ---------- */
@@ -1294,11 +1308,14 @@ function place(i, gx, gy) {
     const cleared = new Set();
     rows.forEach(y => { for (let x = 0; x < N; x++) cleared.add(y * N + x); });
     cols.forEach(x => { for (let y = 0; y < N; y++) cleared.add(y * N + x); });
-    const ccx = gx + sh.w / 2, ccy = gy + sh.h / 2;
+    const ccx = gx + sh.w / 2, ccy = gy + sh.h / 2, rowSet = new Set(rows);
     for (const idx of cleared) {
       const x = idx % N, y = (idx / N) | 0;
       const d = Math.hypot(x + 0.5 - ccx, y + 0.5 - ccy);
-      clearAnims.push({ x, y, color: grid[idx], start: now + 30 + d * 32, spawned: false });
+      // tx, ty — центр собранной линии (туда блоки затягивает в теме «Дима»)
+      const tx = rowSet.has(y) ? boardX + board / 2 : boardX + (x + 0.5) * cell;
+      const ty = rowSet.has(y) ? boardY + (y + 0.5) * cell : boardY + board / 2;
+      clearAnims.push({ x, y, color: grid[idx], start: now + 30 + d * 32, spawned: false, tx, ty });
     }
     for (const idx of cleared) { grid[idx] = -1; placeAnims.delete(idx); }
     rows.forEach(y => flashes.push({ row: y, start: now + 20 }));
@@ -1400,6 +1417,8 @@ function bumpScore() {
 
 function comboLevel(c) {
   // в огненной теме комбо всегда «горит»: от оранжевого к раскалённо-жёлтому
+  // в космической — фиолетовое свечение, на больших комбо почти белое
+  if (curFx() === 'void') return c >= 7 ? { c1: '#ffffff', c2: '#b04dff', glow: '#e0b4ff' } : { c1: '#c8b4ff', c2: '#6a3cff', glow: '#9d7bff' };
   if (curFx() === 'fire') return c >= 7 ? { c1: '#fff27a', c2: '#ff4a1a', glow: '#ff6a2a' } : { c1: '#ffbf5a', c2: '#ff5a1f', glow: '#ff7a2a' };
   if (c >= 10) return { c1: '#ff7ae0', c2: '#9b4dff', glow: '#e07bff' };
   if (c >= 7) return { c1: '#ffa04a', c2: '#ff3d3d', glow: '#ff6a3d' };
@@ -1963,6 +1982,32 @@ BLOCK_STYLES.magma = (g, col, s) => {
   rrPath(g, b, b, cw, cw, r * 0.7); g.stroke();
   g.fillStyle = 'rgba(255,255,255,0.35)'; rrPath(g, b * 1.4, b * 1.3, s * 0.18, s * 0.055, s * 0.03); g.fill();
 };
+// «Дима»: кусочек космоса — тёмный блок с туманностью цвета блока, звёздами и светящейся кромкой
+BLOCK_STYLES.void = (g, col, s) => {
+  const p = Math.max(1, s * 0.03), w = s - 2 * p, r = s * 0.18;
+  g.fillStyle = mixHex(col.b, '#000000', 0.72); rrPath(g, p, p, w, w, r); g.fill();
+  g.save(); g.clip();
+  const n1 = g.createRadialGradient(s * 0.3, s * 0.3, 0, s * 0.3, s * 0.3, s * 0.8);
+  n1.addColorStop(0, rgba(col.t, 0.75)); n1.addColorStop(0.35, rgba(col.c, 0.45)); n1.addColorStop(1, rgba(col.c, 0));
+  g.fillStyle = n1; g.fillRect(0, 0, s, s);
+  const n2 = g.createRadialGradient(s * 0.78, s * 0.8, 0, s * 0.78, s * 0.8, s * 0.5);
+  n2.addColorStop(0, rgba(col.l, 0.4)); n2.addColorStop(1, rgba(col.l, 0));
+  g.fillStyle = n2; g.fillRect(0, 0, s, s);
+  // звёзды: расположение зависит только от цвета, поэтому одинаково на любом размере
+  let seed = parseInt(col.c.slice(1), 16) || 5;
+  const rnd = () => (seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff;
+  g.fillStyle = '#ffffff';
+  for (let i = 0; i < 4; i++) {
+    const x = s * (0.18 + 0.64 * rnd()), y = s * (0.18 + 0.64 * rnd()), rr = s * (0.012 + 0.02 * rnd());
+    g.globalAlpha = 0.6 + 0.4 * rnd(); g.beginPath(); g.arc(x, y, Math.max(0.5, rr), 0, Math.PI * 2); g.fill();
+  }
+  g.globalAlpha = 1;
+  drawStar(s * 0.68, s * 0.32, s * 0.11, g);
+  g.restore();
+  const lw = Math.max(1.5, s * 0.06);
+  g.lineWidth = lw; g.strokeStyle = col.c; rrPath(g, p + lw / 2, p + lw / 2, w - lw, w - lw, r * 0.9); g.stroke();
+  g.lineWidth = Math.max(1, s * 0.02); g.strokeStyle = rgba(mixHex(col.t, '#ffffff', 0.5), 0.8); g.stroke();
+};
 // «Матвей»: пиксельный блок 8×8 со «шерстяной» текстурой (узор одинаковый на любом размере)
 BLOCK_STYLES.pixel = (g, col, s) => {
   const n = 8, at = k => Math.round(k * s / n);
@@ -2125,6 +2170,24 @@ function drawBgScenery(g, th) {
     g.save(); g.translate(d.x, d.y); g.scale(d.k, d.k);
     drawDragon(g);
     g.restore();
+  } else if (th.decor === 'blackhole') {
+    // туманности и россыпь неподвижных звёзд; в лёгком режиме дыра рисуется сюда же, без анимации
+    g.save(); g.globalCompositeOperation = 'lighter';
+    const cols = ['#7a5cff', '#2f6bff', '#c04dff', '#ff5aa8'];
+    for (let k = 0; k < 5; k++) {
+      const x = W * rand(0, 1), y = H * rand(0.25, 1), r = Math.max(W, H) * rand(0.2, 0.38);
+      const ng = g.createRadialGradient(x, y, 0, x, y, r);
+      ng.addColorStop(0, rgba(cols[k % cols.length], 0.14)); ng.addColorStop(1, rgba(cols[k % cols.length], 0));
+      g.fillStyle = ng; g.fillRect(0, 0, W, H);
+    }
+    g.restore();
+    g.fillStyle = '#ffffff';
+    for (let i = 0, n = Math.round(W * H / 2500); i < n; i++) {
+      g.globalAlpha = rand(0.15, 0.7); const s = rand(0.5, 1.4);
+      g.fillRect(rand(0, W), rand(0, H), s, s);
+    }
+    g.globalAlpha = 1;
+    if (settings.lite) drawBlackHole(g, 0);
   } else if (th.decor === 'pixelsky') {
     // пиксельное солнце и холмы из травы и земли
     const P = Math.max(4, Math.round(U * 0.022));
@@ -2214,6 +2277,86 @@ function drawDragon(g) {
   g.strokeStyle = 'rgba(150,50,22,0.6)'; g.lineWidth = 0.8; wingBones(g, WING_NEAR);
 }
 
+/* ---------- Чёрная дыра темы «Дима»: тень, аккреционный диск, ореол, падающие по спирали звёзды ---------- */
+const DISK_IN = 1.3, DISK_OUT = 3.4, DISK_TILT = 0.24;   // радиусы диска в радиусах «тени», наклон
+const hole = { disk: null, halo: null, ang: 0, infall: [] };
+// Над полем, за счётом: белые цифры читаются на чёрной тени
+function holeGeom() {
+  return { cx: W / 2, cy: hudY + hudH * 0.5, R: Math.max(12, Math.min(W * 0.11, hudH * 0.27, H * 0.065)) };
+}
+// Текстура диска (вид сверху): горячий белый край внутри, к краю — оранжевый и фиолетовый, с завихрениями
+function holeTextures() {
+  if (hole.disk) return;
+  const S = 512, o = S / 2, rin = o * DISK_IN / DISK_OUT;
+  hole.disk = makeCanvas(S, S);
+  let g = hole.disk.getContext('2d');
+  const rg = g.createRadialGradient(o, o, rin, o, o, o);
+  rg.addColorStop(0, 'rgba(255,250,235,1)'); rg.addColorStop(0.12, 'rgba(255,214,140,0.95)');
+  rg.addColorStop(0.35, 'rgba(255,140,60,0.75)'); rg.addColorStop(0.65, 'rgba(200,60,140,0.4)'); rg.addColorStop(1, 'rgba(90,40,200,0)');
+  g.fillStyle = rg; g.beginPath(); g.arc(o, o, o, 0, Math.PI * 2); g.arc(o, o, rin, 0, Math.PI * 2, true); g.fill();
+  let seed = 9;
+  const rnd = () => (seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff;
+  g.lineCap = 'round';
+  for (let i = 0; i < 140; i++) {
+    const r = rin + (o - rin) * Math.pow(rnd(), 1.4), a = rnd() * Math.PI * 2, len = 0.3 + rnd() * 0.9, k = 1 - (r - rin) / (o - rin);
+    g.strokeStyle = rnd() < 0.6 ? `rgba(255,240,210,${0.25 * k})` : `rgba(20,0,30,${0.3 * k})`;
+    g.lineWidth = 1 + rnd() * 3;
+    g.beginPath(); g.arc(o, o, r, a, a + len); g.stroke();
+  }
+  // ореол: свет диска, изогнутый гравитацией вокруг тени
+  hole.halo = makeCanvas(256, 256);
+  g = hole.halo.getContext('2d');
+  const hr = 128 / 1.9, hg = g.createRadialGradient(128, 128, hr * 0.98, 128, 128, 128);
+  hg.addColorStop(0, 'rgba(255,240,210,0)'); hg.addColorStop(0.03, 'rgba(255,245,225,1)'); hg.addColorStop(0.12, 'rgba(255,200,130,0.65)');
+  hg.addColorStop(0.35, 'rgba(240,110,90,0.25)'); hg.addColorStop(1, 'rgba(120,60,220,0)');
+  g.fillStyle = hg; g.fillRect(0, 0, 256, 256);
+  for (let i = 0; i < 46; i++) hole.infall.push({ r: rand(1.4, 4.4), th: rand(0, Math.PI * 2), s: rand(0.6, 1.6) });
+}
+function holeDiskHalf(g, cx, cy, R, back) {
+  g.save();
+  g.beginPath();
+  if (back) g.rect(cx - R * 4, cy - R * 4, R * 8, R * 4); else g.rect(cx - R * 4, cy, R * 8, R * 4);
+  g.clip();
+  g.translate(cx, cy); g.scale(1, DISK_TILT); g.rotate(hole.ang);
+  const D = R * DISK_OUT;
+  g.drawImage(hole.disk, -D, -D, D * 2, D * 2);
+  g.restore();
+}
+// Звёзды за тенью (верхняя половина орбиты) рисуются до неё, перед тенью — после
+function holeInfall(g, cx, cy, R, back) {
+  g.fillStyle = '#ffffff';
+  for (const p of hole.infall) {
+    const sn = Math.sin(p.th);
+    if ((sn < 0) !== back) continue;
+    g.globalAlpha = Math.min(1, (p.r - 1.1) * 1.2) * 0.8;
+    g.beginPath(); g.arc(cx + Math.cos(p.th) * p.r * R, cy + sn * p.r * R * DISK_TILT, p.s, 0, Math.PI * 2); g.fill();
+  }
+  g.globalAlpha = 1;
+}
+function drawBlackHole(g, dt) {
+  holeTextures();
+  const { cx, cy, R } = holeGeom();
+  hole.ang += dt * 0.35;
+  for (const p of hole.infall) {
+    p.th += dt * 1.4 / Math.pow(p.r, 1.5);
+    p.r -= dt * 0.25 / p.r;
+    if (p.r < 1.08) { p.r = rand(3.6, 4.6); p.th = rand(0, Math.PI * 2); }
+  }
+  const gl = g.createRadialGradient(cx, cy, R, cx, cy, R * 5);
+  gl.addColorStop(0, 'rgba(255,150,80,0.18)'); gl.addColorStop(1, 'rgba(90,40,200,0)');
+  g.fillStyle = gl; g.fillRect(cx - R * 5, cy - R * 5, R * 10, R * 10);
+  g.save(); g.globalCompositeOperation = 'lighter';
+  holeDiskHalf(g, cx, cy, R, true);
+  holeInfall(g, cx, cy, R, true);
+  g.drawImage(hole.halo, cx - R * 1.9, cy - R * 1.9, R * 3.8, R * 3.8);
+  g.restore();
+  g.fillStyle = '#000000'; g.beginPath(); g.arc(cx, cy, R, 0, Math.PI * 2); g.fill();
+  g.save(); g.globalCompositeOperation = 'lighter';
+  holeDiskHalf(g, cx, cy, R, false);
+  holeInfall(g, cx, cy, R, false);
+  g.restore();
+}
+
 function getGlow(color) {
   let img = glowCache.get(color);
   if (img) return img;
@@ -2228,7 +2371,7 @@ function getGlow(color) {
 
 /* ---------- Анимированный декор фона ---------- */
 const DECOR_COUNT = { squares: 16, bokeh: 14, bubbles: 20, fireflies: 24, stars: 70, embers: 32, snow: 55,
-  synthwave: 30, petals: 26, aurora: 50, glitter: 34, dunes: 30, galaxy: 80, dragon: 40, pixelsky: 6 };
+  synthwave: 30, petals: 26, aurora: 50, glitter: 34, dunes: 30, galaxy: 80, dragon: 40, pixelsky: 6, blackhole: 50 };
 let shootStar = null;                   // падающая звезда темы «Галактика»
 const dragon = { fire: [], next: 0, until: 0 };   // огненное дыхание дракона (тема «Макс»)
 function getDecor(ti) {
@@ -2259,7 +2402,7 @@ function drawDecor(ti, now, dt) {
   else if (kind === 'dragon') { drawFloorFlames(ts); drawDragonFire(ts, dt, U); }
   for (const d of arr) {
     switch (kind) {
-      case 'synthwave': case 'aurora': case 'galaxy':
+      case 'synthwave': case 'aurora': case 'galaxy': case 'blackhole':
         twinkle(d);
         break;
       case 'petals': {
@@ -2383,6 +2526,8 @@ function drawDecor(ti, now, dt) {
       }
     }
   }
+  ctx.globalAlpha = 1;
+  if (kind === 'blackhole') drawBlackHole(ctx, dt);   // поверх звёзд
   ctx.restore();
 }
 // Неоновая сетка: пол и потолок бегут навстречу от горизонта в центре поля
@@ -2607,6 +2752,18 @@ function spawnClearFx(a) {
     }
     return;
   }
+  if (fx === 'void' && a.tx != null) {
+    // осколки блока по спирали затягивает в центр линии
+    const spin = Math.random() < 0.5 ? -1 : 1;
+    for (let i = 0, n = settings.lite ? 1 : 3; i < n; i++) {
+      const sx = cx + rand(-0.6, 0.6) * cell, sy = cy + rand(-0.6, 0.6) * cell;
+      particles.push({
+        k: 'suck', x: sx, y: sy, sx, sy, tx: a.tx, ty: a.ty, spin, vx: 0, vy: 0, g: 0,
+        s: cell * rand(0.14, 0.26), c: [col.c, col.t, col.l, '#ffffff'][i % 4], life: 0, max: rand(380, 560), rot: 0, vr: 0,
+      });
+    }
+    return;
+  }
   if (fx === 'fire' && !a.quiet) {
     // угли летят вверх, следом поднимается дым
     for (let i = 0, n = settings.lite ? 1 : 3; i < n; i++) {
@@ -2642,7 +2799,14 @@ function spawnClearFx(a) {
 // Эффект установки фигуры у секретных тем
 function placeFx(fx, sh, gx, gy) {
   if (settings.lite) return;
-  if (fx === 'fire') {
+  if (fx === 'void') {
+    // вокруг фигуры вспыхивают звёздочки
+    for (let k = 0; k < 2; k++) {
+      const [dx, dy] = sh.cells[(Math.random() * sh.cells.length) | 0];
+      particles.push({ k: 'spark', x: boardX + (gx + dx + rand(0, 1)) * cell, y: boardY + (gy + dy + rand(0, 1)) * cell,
+        vx: 0, vy: -cell * 0.3, g: 0, s: cell * rand(0.18, 0.3), c: Math.random() < 0.5 ? '#ffffff' : '#c8b4ff', life: 0, max: rand(400, 650), rot: 0, vr: 0 });
+    }
+  } else if (fx === 'fire') {
     // от раскалённой фигуры отлетают искры
     for (let k = 0; k < 3; k++) {
       const [dx, dy] = sh.cells[(Math.random() * sh.cells.length) | 0];
@@ -2664,14 +2828,16 @@ function allClearBurst(t0) {
   rings.push({ x: cx, y: cy, t0, dur: 1000, r0: cell, r1: Math.hypot(W, H) * 0.65, w: cell * 0.35, color: '#ffffff' });
   rings.push({ x: cx, y: cy, t0: t0 + 150, dur: 900, r0: cell * 0.5, r1: board * 0.9, w: cell * 0.2, color: '#fff2a8' });
   if (mode === 'classic') flashes.push({ board: true, start: t0 });   // в песке вспышки не рисуются
-  const fx = curFx(), pix = fx === 'pixel', fire = fx === 'fire';
+  const fx = curFx(), pix = fx === 'pixel', fire = fx === 'fire', space = fx === 'void';
   if (fire) for (let y = N - 1; y >= 0; y--) flashes.push({ row: y, start: t0 + (N - 1 - y) * 55 });   // огонь поднимается снизу вверх
+  if (space) rings.push({ x: cx, y: cy, t0: t0 + 300, dur: 1100, r0: cell, r1: Math.hypot(W, H) * 0.7, w: cell * 0.5, color: '#9d7bff' });
   const palette = fire ? ['#ffe9a0', '#ffd25a', '#ff9a2a', '#ff5a1f']
+    : space ? ['#ffffff', '#e0d6ff', '#b48cff', '#6ad7ff', '#ff9de2']
     : ['#ff5a5a', '#ffb02e', '#ffe14a', '#4ee06a', '#3ed2ff', '#5b8bff', '#b06bff', '#ffffff'];
   for (let i = 0, n = settings.lite ? 40 : 90; i < n; i++) {
     const ang = Math.random() * Math.PI * 2, sp = rand(3, 11) * cell;
     particles.push({
-      k: pix ? 'pixel' : fire ? 'ember' : 'confetti', x: cx, y: cy, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp - cell * 4, g: 0.55, drag: 0.965,
+      k: pix ? 'pixel' : fire ? 'ember' : space ? 'spark' : 'confetti', x: cx, y: cy, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp - cell * 4, g: 0.55, drag: 0.965,
       s: cell * rand(0.14, 0.26), c: palette[(Math.random() * palette.length) | 0],
       life: 0, max: rand(1300, 2200), rot: Math.random() * 6, vr: rand(-14, 14), t0,
     });
@@ -2876,6 +3042,19 @@ function drawClears(now) {
     const t = now - a.start;
     if (t < 0) { drawBlock(a.color, bx, by, cell); continue; }
     if (!a.spawned) { a.spawned = true; spawnClearFx(a); }
+    if (curFx() === 'void' && a.tx != null) {
+      // «Дима»: блок улетает по спирали в центр линии и тает
+      const q = t / 480;
+      if (q >= 1) { clearAnims.splice(k, 1); continue; }
+      const e = easeInCubic(q), dx = bx + cell / 2 - a.tx, dy = by + cell / 2 - a.ty;
+      const r = Math.hypot(dx, dy) * (1 - e), ang = Math.atan2(dy, dx) + 2.2 * e, s = cell * (1 - 0.85 * e);
+      ctx.save();
+      ctx.translate(a.tx + Math.cos(ang) * r, a.ty + Math.sin(ang) * r); ctx.rotate(e * 3);
+      ctx.globalAlpha = 1 - 0.5 * e;
+      drawBlock(a.color, -s / 2, -s / 2, s);
+      ctx.restore();
+      continue;
+    }
     const p = t / 330;
     if (p >= 1) { clearAnims.splice(k, 1); continue; }
     let sc, white;
@@ -2895,7 +3074,7 @@ function drawFlashes(now) {
   const fx = curFx();
   for (let k = flashes.length - 1; k >= 0; k--) {
     const f = flashes[k];
-    const p = (now - f.start) / (f.board ? 700 : fx === 'fire' ? 700 : 450);
+    const p = (now - f.start) / (f.board ? 700 : fx === 'fire' ? 700 : fx === 'void' ? 650 : 450);
     if (p < 0) continue;
     if (p >= 1) { flashes.splice(k, 1); continue; }
     const a = 1 - easeOutCubic(p);
@@ -2905,6 +3084,7 @@ function drawFlashes(now) {
       continue;
     }
     if (fx === 'fire') { drawLineFire(f, p, now); continue; }
+    if (fx === 'void') { drawLineHole(f, p, now); continue; }
     if (fx === 'pixel') {
       // пиксельная вспышка: квадраты сжимаются ступеньками
       const k = Math.ceil((1 - p) * 4) / 4, sz = cell * k, o = (cell - sz) / 2;
@@ -2933,6 +3113,36 @@ function drawFlashes(now) {
   ctx.restore();
 }
 
+// «Дима»: в центре линии открывается мини-дыра и затягивает блоки, потом схлопывается с ударной волной
+function drawLineHole(f, p, now) {
+  const row = f.row != null;
+  const cx = row ? boardX + board / 2 : boardX + (f.col + 0.5) * cell, cy = row ? boardY + (f.row + 0.5) * cell : boardY + board / 2;
+  if (p >= 0.78 && !f.boom) {
+    f.boom = true;
+    rings.push({ x: cx, y: cy, t0: now, dur: 520, r0: cell * 0.3, r1: cell * 3.2, w: cell * 0.22, color: '#c8b4ff' });
+  }
+  const e = p < 0.25 ? p / 0.25 : p < 0.75 ? 1 : 1 - (p - 0.75) / 0.25, R = cell * 0.45 * e;
+  if (R < 0.5) return;
+  const gl = ctx.createRadialGradient(cx, cy, R, cx, cy, R * 3.2);
+  gl.addColorStop(0, 'rgba(200,170,255,0.9)'); gl.addColorStop(0.3, 'rgba(140,90,255,0.45)'); gl.addColorStop(1, 'rgba(80,40,200,0)');
+  ctx.fillStyle = gl; ctx.beginPath(); ctx.arc(cx, cy, R * 3.2, 0, Math.PI * 2); ctx.fill();
+  // три закрученных рукава
+  ctx.lineCap = 'round'; ctx.strokeStyle = 'rgba(255,240,255,0.7)'; ctx.lineWidth = Math.max(1, R * 0.25);
+  for (let k = 0; k < 3; k++) {
+    const a0 = now / 180 + k * Math.PI * 2 / 3;
+    ctx.beginPath();
+    for (let j = 0; j <= 12; j++) {
+      const t = j / 12, rr = R * (1.1 + 1.8 * t), a = a0 + t * 2.2;
+      j ? ctx.lineTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr) : ctx.moveTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr);
+    }
+    ctx.stroke();
+  }
+  // чёрное ядро рисуем обычным наложением, иначе «lighter» его не покажет
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.fillStyle = '#000000'; ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = 'rgba(255,245,230,0.9)'; ctx.lineWidth = Math.max(1, R * 0.12); ctx.stroke();
+  ctx.globalCompositeOperation = 'lighter';
+}
 // «Макс»: по собранной линии пробегает волна огня — из каждой клетки по очереди вырастает пламя
 function drawLineFire(f, p, now) {
   const row = f.row != null;
@@ -3158,6 +3368,18 @@ function drawParticles(now, dt) {
         ctx.fillRect(Math.round(p.x - s / 2), Math.round(p.y - s / 2), Math.ceil(s), Math.ceil(s));
         break;
       }
+      case 'suck': {
+        // движение по спирали к центру линии, к концу — быстрее и мельче
+        const q = p.life / p.max, e = q * q;
+        const dx = p.sx - p.tx, dy = p.sy - p.ty, r0 = Math.hypot(dx, dy), a0 = Math.atan2(dy, dx);
+        const r = r0 * (1 - e), ang = a0 + p.spin * e * 2.6, s = p.s * (1 - 0.75 * e);
+        p.x = p.tx + Math.cos(ang) * r; p.y = p.ty + Math.sin(ang) * r;
+        ctx.globalAlpha = 1 - 0.4 * q;
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.translate(p.x, p.y); ctx.rotate(ang);
+        ctx.fillStyle = p.c; ctx.fillRect(-s / 2, -s / 2, s, s);
+        break;
+      }
       case 'smoke': {
         // клуб дыма растёт и тает
         ctx.globalAlpha = 0.3 * a;
@@ -3179,6 +3401,7 @@ function drawParticles(now, dt) {
 
 // Надписи секретных тем: «Макс» — огненные, «Матвей» — пиксельные цвета
 const FIRE_TEXT = { stroke: '#5a0f0f', glow: '#ff5a2a', fill: ['#fff3c4', '#ff9a3c', '#ff3d3d'] };
+const VOID_TEXT = { stroke: '#1a0b3d', glow: '#7a5cff', fill: ['#ffffff', '#e0d6ff', '#a98bff'] };
 const PIXEL_TEXT = { score: '#ffffff', combo: '#ffff55', fire: '#ff5555', praise: '#55ffff', gold: '#ffaa00' };
 function drawTexts(now) {
   const fx = curFx();
@@ -3186,6 +3409,7 @@ function drawTexts(now) {
     const t = texts[k];
     let st = TEXT_STYLES[t.kind];
     if (fx === 'fire' && t.kind !== 'gold') st = Object.assign({}, st, FIRE_TEXT);
+    if (fx === 'void' && t.kind !== 'gold') st = Object.assign({}, st, VOID_TEXT);
     const p = (now - t.t0) / st.dur;
     if (p < 0) continue;
     if (p >= 1) { texts.splice(k, 1); continue; }
