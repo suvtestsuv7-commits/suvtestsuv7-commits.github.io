@@ -1,6 +1,6 @@
 // Офлайн-кэш: сначала сеть (чтобы обновления доходили), без сети — из кэша
-const CACHE = 'blocks-v2';   // v2: в precache добавлен вариант index-sakura.html
-const CORE = ['./', './index.html', './index-sakura.html', './manifest.json', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
+const CACHE = 'blocks-v3';   // v3: index-sakura.html переименован в index.html и убран из precache
+const CORE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));
