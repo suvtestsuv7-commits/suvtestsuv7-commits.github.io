@@ -2314,8 +2314,8 @@ function getBgImage(ti) {
 }
 
 /* ---------- Тема «Андрюша»: брейнроты, нарисованные кодом ----------
-   Каждый персонаж рисуется в квадрате 240×240 (смотрит вправо), подпись — отдельной картинкой,
-   чтобы при развороте персонажа она не отражалась. */
+   Каждый персонаж рисуется в квадрате 240×240 (смотрит вправо).
+   Имена в BR_CHARS — только для справки, на экране подписей нет. */
 const BR_S = 240, BR_INK = '#1d1622';
 const brSprites = new Map();
 // SVG-путь: заливка + обводка
@@ -2332,7 +2332,10 @@ function brS(g, d, w, col, light) {
   g.lineCap = 'round'; g.lineJoin = 'round';
   g.lineWidth = w + 7; g.strokeStyle = BR_INK; g.stroke(p);
   g.lineWidth = w; g.strokeStyle = col; g.stroke(p);
-  if (light) { g.save(); g.translate(-w * 0.18, -w * 0.18); g.lineWidth = w * 0.3; g.strokeStyle = light; g.stroke(p); g.restore(); }
+  if (light) {
+    g.save(); g.translate(w * 0.2, w * 0.12); g.lineWidth = w * 0.3; g.strokeStyle = 'rgba(60,20,0,0.18)'; g.stroke(p); g.restore();
+    g.save(); g.translate(-w * 0.18, -w * 0.18); g.lineWidth = w * 0.26; g.strokeStyle = light; g.stroke(p); g.restore();
+  }
 }
 function brLin(g, x0, y0, x1, y1, ...cs) { const q = g.createLinearGradient(x0, y0, x1, y1); cs.forEach((c, i) => q.addColorStop(i / (cs.length - 1), c)); return q; }
 function brRad(g, x, y, r0, x1, y1, r1, ...cs) { const q = g.createRadialGradient(x, y, r0, x1, y1, r1); cs.forEach((c, i) => q.addColorStop(i / (cs.length - 1), c)); return q; }
@@ -2377,10 +2380,15 @@ const BR_CHARS = {
     const fin = brLin(g, 0, 20, 0, 160, '#6a9bd0', '#3d6c9f');
     for (const [x, dk] of [[140, 1], [100, 0], [180, 0]]) {
       brS(g, `M${x} 128 Q${x + 6} 168 ${x - 2} 206`, 14, dk ? '#d39a72' : '#f0c39c', dk ? null : 'rgba(255,240,220,0.7)');
+      g.strokeStyle = 'rgba(150,80,40,0.35)'; g.lineWidth = 1.5; g.beginPath(); g.arc(x + 3, 168, 4, 0.3, 2.4); g.stroke();
+      brP(g, `M${x - 10} 184 L${x + 6} 184 L${x + 6} 198 L${x - 10} 198 Z`, dk ? '#d9dce2' : '#ffffff', 3);
+      g.fillStyle = '#e04848'; g.fillRect(x - 9, 187, 14, 2.2);
       brSneaker(g, x - 2, 210, dk);
     }
     brP(g, 'M54 100 C42 80 30 60 8 40 C34 44 56 64 66 92 Z', fin);
     brP(g, 'M52 108 C40 120 28 136 14 154 C36 146 56 130 66 114 Z', fin);
+    brP(g, 'M64 90 L70 74 L82 86 Z', fin, 3);
+    brP(g, 'M66 118 L72 132 L84 122 Z', fin, 3);
     brP(g, 'M106 68 C110 46 118 30 132 12 C136 32 146 52 160 64 Z', fin);
     brIn(g, 'M106 68 C110 46 118 30 132 12 C136 32 146 52 160 64 Z', () => {
       g.fillStyle = 'rgba(255,255,255,0.25)'; g.beginPath(); g.moveTo(112, 66); g.lineTo(131, 16); g.lineTo(124, 66); g.fill();
@@ -2393,12 +2401,18 @@ const BR_CHARS = {
       g.strokeStyle = 'rgba(255,255,255,0.45)'; g.lineWidth = 5;
       g.beginPath(); g.moveTo(78, 78); g.bezierCurveTo(120, 63, 170, 61, 205, 73); g.stroke();
       g.fillStyle = 'rgba(20,40,70,0.18)'; g.beginPath(); g.ellipse(70, 116, 40, 26, 0, 0, Math.PI * 2); g.fill();
+      g.fillStyle = 'rgba(30,60,100,0.35)';
+      for (const [x, y, r] of [[96, 80, 1.6], [110, 74, 1.3], [128, 72, 1.8], [146, 70, 1.3], [160, 74, 1.6], [120, 84, 1.2], [140, 82, 1.5], [176, 76, 1.2], [84, 88, 1.3]]) { g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2); g.fill(); }
+      g.strokeStyle = 'rgba(255,255,255,0.35)'; g.lineWidth = 2.5;
+      g.beginPath(); g.moveTo(206, 76); g.quadraticCurveTo(222, 82, 230, 96); g.stroke();
     });
     brP(g, body, null);
     brP(g, 'M146 124 C134 142 114 158 96 164 C120 164 144 152 162 128 Z', fin);
     g.strokeStyle = 'rgba(30,60,95,0.75)'; g.lineWidth = 2.6;
     for (const x of [166, 175, 184]) { g.beginPath(); g.moveTo(x, 90); g.quadraticCurveTo(x + 6, 104, x, 118); g.stroke(); }
     brEye(g, 205, 88, 10, 0.6, -0.1, '#1d3b5c');
+    g.fillStyle = '#5a88b6'; g.beginPath(); g.ellipse(205, 81, 11, 5, 0, Math.PI, Math.PI * 2); g.fill();
+    g.strokeStyle = BR_INK; g.lineWidth = 2.5; g.beginPath(); g.ellipse(205, 81, 11, 5, 0, Math.PI * 1.05, Math.PI * 1.95); g.stroke();
     g.strokeStyle = BR_INK; g.lineWidth = 3; g.beginPath(); g.moveTo(193, 77); g.quadraticCurveTo(205, 72, 217, 78); g.stroke();
     const mouth = 'M180 116 Q206 136 232 108 Q212 118 180 116 Z';
     brP(g, mouth, brLin(g, 0, 108, 0, 130, '#7a1a2a', '#4a0c18'), 3);
@@ -2413,14 +2427,18 @@ const BR_CHARS = {
     g.translate(2, 10); g.scale(0.97, 0.97);
     const prop = (x, y, r) => {
       g.fillStyle = 'rgba(225,235,245,0.55)'; g.beginPath(); g.ellipse(x, y, r * 0.18, r, 0, 0, Math.PI * 2); g.fill();
-      g.strokeStyle = 'rgba(40,40,40,0.55)'; g.lineWidth = 2.5;
-      g.beginPath(); g.moveTo(x, y - r * 0.95); g.lineTo(x, y + r * 0.95); g.stroke();
+      g.fillStyle = 'rgba(40,40,40,0.45)';
+      for (const k of [-1, 1]) { g.beginPath(); g.ellipse(x, y + k * r * 0.5, 2.6, r * 0.45, k * 0.12, 0, Math.PI * 2); g.fill(); }
+      g.strokeStyle = 'rgba(255,255,255,0.6)'; g.lineWidth = 1.2;
+      g.beginPath(); g.ellipse(x, y, r * 0.18, r, 0, -Math.PI / 2, Math.PI / 2); g.stroke();
       brE(g, x + 2, y, 5, 4.5, '#d23a3a', 2);
     };
     brP(g, 'M96 92 L156 92 L130 24 L106 24 Z', brLin(g, 0, 24, 0, 92, '#5c6a4f', '#46523c'));
     brE(g, 126, 58, 17, 8, brLin(g, 0, 50, 0, 66, '#6b7760', '#3d4735'), 3); prop(145, 58, 15);
     brP(g, 'M44 98 L22 34 L48 34 L76 92 Z', brLin(g, 0, 34, 0, 98, '#9aa785', '#6b785a'));
     brP(g, 'M27 48 L49 48 L55 60 L31 60 Z', '#c83a2e', 2);
+    brP(g, 'M30 90 L10 86 L10 90 L30 94 Z', '#3a3f35', 2);
+    brE(g, 34, 92, 6, 5, '#6b785a', 2.5);
     for (const [x, y] of [[92, 130], [130, 132]]) {
       brP(g, `M${x - 22} ${y} L${x - 30} ${y - 6} L${x - 30} ${y + 6} Z`, '#2d322a', 2);
       brE(g, x, y, 20, 7.5, brLin(g, 0, y - 7, 0, y + 7, '#5a6052', '#24281f'), 3);
@@ -2445,6 +2463,11 @@ const BR_CHARS = {
       g.strokeStyle = 'rgba(30,35,25,0.3)'; g.lineWidth = 1.5;
       for (const y of [140, 166, 190]) { g.beginPath(); g.moveTo(80, y); g.lineTo(170, y); g.stroke(); }
     });
+    brIn(g, wing, () => {
+      g.fillStyle = brLin(g, 100, 0, 130, 0, 'rgba(30,30,30,0)', 'rgba(30,30,30,0.35)', 'rgba(30,30,30,0)');
+      g.beginPath(); g.moveTo(104, 156); g.lineTo(122, 156); g.lineTo(116, 208); g.lineTo(106, 208); g.fill();
+      g.fillStyle = 'rgba(255,255,255,0.18)'; g.fillRect(80, 118, 90, 4);
+    });
     brE(g, 118, 182, 13, 13, '#ffffff', 2.5); g.fillStyle = '#d23a3a'; drawStar(118, 182, 11, g);
     brE(g, 128, 150, 26, 10, brLin(g, 0, 140, 0, 160, '#7b8770', '#3d4735'), 3);
     g.fillStyle = '#2a2a2a'; g.fillRect(102, 147, 6, 6);
@@ -2453,6 +2476,10 @@ const BR_CHARS = {
     const jawL = 'M166 108 L236 116 Q242 123 232 127 L168 129 Z';
     brP(g, jawL, brLin(g, 0, 108, 0, 129, '#4f9a3e', '#cfdc95'));
     brP(g, 'M168 104 L232 108 L232 117 L168 112 Z', '#8a2232', 2.5);
+    brIn(g, jawL, () => {
+      g.strokeStyle = 'rgba(80,100,40,0.5)'; g.lineWidth = 1.2;
+      for (let x = 176; x < 232; x += 7) { g.beginPath(); g.moveTo(x, 119); g.lineTo(x + 1, 129); g.stroke(); }
+    });
     brTeeth(g, 172, 112.5, 230, 116.5, -6, 7);
     const jawU = 'M160 72 C190 68 216 80 234 92 C243 98 241 108 232 108 L166 106 Z';
     brP(g, jawU, brLin(g, 0, 66, 0, 108, '#82cf62', '#4c9e3a', '#357a2b'));
@@ -2495,8 +2522,18 @@ const BR_CHARS = {
     brE(g, 121, 34, 39, 10, brRad(g, 121, 34, 0, 121, 34, 39, '#f6d39f', '#e5b276', '#c98c50'), 3);
     g.strokeStyle = 'rgba(150,95,45,0.7)'; g.lineWidth = 1.3;
     for (const k of [0.25, 0.5, 0.75]) { g.beginPath(); g.ellipse(121, 34, 39 * k, 10 * k, 0, 0, Math.PI * 2); g.stroke(); }
-    g.beginPath(); g.moveTo(121, 34); g.lineTo(146, 39); g.stroke();
+    g.beginPath(); g.moveTo(121, 34); g.lineTo(146, 39); g.moveTo(121, 34); g.lineTo(100, 29); g.lineTo(92, 31); g.stroke();
+    g.strokeStyle = 'rgba(90,50,20,0.55)'; g.lineWidth = 1.5;
+    g.beginPath(); g.moveTo(84, 60); g.lineTo(90, 66); g.lineTo(86, 74); g.moveTo(158, 120); g.lineTo(152, 128); g.lineTo(156, 136); g.stroke();
+    g.fillStyle = 'rgba(70,35,10,0.35)';
+    g.beginPath(); g.ellipse(104, 92, 19, 18, 0, 0, Math.PI * 2); g.ellipse(139, 92, 19, 18, 0, 0, Math.PI * 2); g.fill();
     brEye(g, 104, 86, 16, 0.25, 0.15, '#2a1a0c'); brEye(g, 139, 86, 16, 0.25, 0.15, '#2a1a0c');
+    g.strokeStyle = 'rgba(60,30,8,0.6)'; g.lineWidth = 2;
+    for (const x of [104, 139]) { g.beginPath(); g.arc(x, 90, 19, 0.5, Math.PI - 0.5); g.stroke(); }
+    g.lineWidth = 1.6; g.strokeStyle = 'rgba(60,30,8,0.45)';
+    for (const y of [52, 57]) { g.beginPath(); g.moveTo(102, y); g.quadraticCurveTo(121, y - 4, 140, y); g.stroke(); }
+    g.fillStyle = 'rgba(200,90,50,0.22)';
+    g.beginPath(); g.ellipse(94, 118, 9, 6, 0, 0, Math.PI * 2); g.ellipse(150, 118, 9, 6, 0, 0, Math.PI * 2); g.fill();
     brS(g, 'M86 64 L116 70', 5, '#4a2a10'); brS(g, 'M126 70 L156 63', 5, '#4a2a10');
     brE(g, 122, 108, 7, 6, brRad(g, 120, 105, 0, 122, 108, 7, '#e2aa6c', '#a86c38'), 2.5);
     const mouth = 'M90 120 Q122 158 154 120 Q122 132 90 120 Z';
@@ -2544,6 +2581,10 @@ const BR_CHARS = {
     };
     tutu(120, 166, 66, 16, 10, 7, brLin(g, 0, 150, 0, 190, '#ffe0ee', '#ffb6d4'));
     tutu(120, 162, 52, 11, 8, 5, brLin(g, 0, 150, 0, 178, '#ffd0e4', '#ff94c0'));
+    g.fillStyle = '#ffffff';
+    for (const [x, y, r] of [[78, 172, 3], [96, 178, 2.2], [146, 176, 2.6], [164, 170, 2], [120, 180, 2.4], [104, 168, 1.8], [138, 168, 1.8]]) drawStar(x, y, r, g);
+    g.strokeStyle = '#ff7fb2'; g.lineWidth = 1.6;
+    g.beginPath(); g.moveTo(112, 218); g.lineTo(121, 206); g.lineTo(111, 196); g.moveTo(121, 218); g.lineTo(112, 206); g.lineTo(121, 196); g.stroke();
     const body = 'M106 118 Q120 112 134 118 L131 160 Q120 164 109 160 Z';
     brP(g, body, brLin(g, 106, 0, 134, 0, '#ff9cc4', pink, '#e0508e'), 3);
     brIn(g, body, () => {
@@ -2563,6 +2604,8 @@ const BR_CHARS = {
       g.fillStyle = 'rgba(120,90,60,0.12)'; g.beginPath(); g.ellipse(120, 104, 40, 10, 0, 0, Math.PI * 2); g.fill();
     });
     brE(g, 120, 36, 40, 10.5, '#fbf8f4', 3);
+    g.strokeStyle = '#d9a93a'; g.lineWidth = 1.8; g.beginPath(); g.ellipse(120, 36, 37.5, 9, 0, 0.1, Math.PI - 0.1); g.stroke();
+    g.beginPath(); g.moveTo(84, 94); g.quadraticCurveTo(120, 106, 156, 94); g.stroke();
     brE(g, 120, 36.5, 34, 7.5, brRad(g, 120, 36, 1, 120, 36, 34, '#e9c28f', '#c98d55', '#8a5228'), 1.5);
     g.save(); g.translate(120, 36.5); g.scale(1, 0.3);
     g.fillStyle = '#fbf1e2'; g.beginPath(); g.moveTo(0, 14); g.bezierCurveTo(-26, -6, -12, -26, 0, -12); g.bezierCurveTo(12, -26, 26, -6, 0, 14); g.fill();
@@ -2606,6 +2649,8 @@ const BR_CHARS = {
       g.strokeStyle = 'rgba(160,110,70,0.5)'; g.lineWidth = 1.4;
       for (let i = 0; i < 16; i++) { const a = -Math.PI + i * Math.PI / 15, x = 121 + Math.cos(a) * 30, y = 62 + Math.sin(a) * 28; g.beginPath(); g.moveTo(x, y); g.lineTo(x + Math.cos(a) * 6, y + Math.sin(a) * 6); g.stroke(); }
     });
+    g.fillStyle = 'rgba(255,255,255,0.18)'; g.beginPath(); g.ellipse(108, 40, 14, 6, -0.4, 0, Math.PI * 2); g.fill();
+    for (const s of [-1, 1]) brP(g, `M${121 + s * 26} 60 L${121 + s * 36} 66 L${121 + s * 28} 70 L${121 + s * 35} 76 L${121 + s * 24} 78 Z`, '#6e4422', 2);
     const mask = 'M96 58 C94 40 117 38 121 50 C125 38 148 40 146 58 C152 74 142 92 121 93 C100 92 90 74 96 58 Z';
     brP(g, mask, brRad(g, 121, 60, 2, 121, 66, 34, '#f6d3ac', face, '#cf9c70'), 3);
     brEye(g, 110, 56, 7.5, 0.1, 0.2, '#5a3519'); brEye(g, 132, 56, 7.5, 0.1, 0.2, '#5a3519');
@@ -2619,6 +2664,8 @@ const BR_CHARS = {
     flap('M88 94 C70 104 60 124 54 148 C70 132 84 118 106 100 Z', false);
     flap('M154 94 C172 104 182 124 188 148 C172 132 158 118 136 100 Z', false);
     flap('M104 97 Q121 104 138 97 Q132 126 121 144 Q110 126 104 97 Z', true);
+    g.strokeStyle = 'rgba(190,150,60,0.55)'; g.lineWidth = 1.2;
+    for (const [a, b, c, d] of [[112, 102, 118, 132], [130, 102, 124, 132], [78, 104, 64, 132], [164, 104, 178, 132]]) { g.beginPath(); g.moveTo(a, b); g.quadraticCurveTo((a + c) / 2 + 3, (b + d) / 2, c, d); g.stroke(); }
     brE(g, 92, 96, 8, 7, face, 3); brE(g, 150, 96, 8, 7, face, 3);
   }],
 
@@ -2648,7 +2695,11 @@ const BR_CHARS = {
     for (const s of [-1, 1]) {
       const ear = s < 0 ? 'M90 50 C56 36 38 70 48 98 C58 118 88 110 98 88 Z' : 'M154 50 C188 36 206 70 196 98 C186 118 156 110 146 88 Z';
       brP(g, ear, brLin(g, 0, 40, 0, 110, '#b5bcc4', '#858e99'));
-      brIn(g, ear, () => { g.fillStyle = 'rgba(240,170,180,0.75)'; g.beginPath(); g.ellipse(122 + s * 66, 76, 14, 22, s * 0.3, 0, Math.PI * 2); g.fill(); });
+      brIn(g, ear, () => {
+        g.fillStyle = 'rgba(240,170,180,0.75)'; g.beginPath(); g.ellipse(122 + s * 66, 76, 14, 22, s * 0.3, 0, Math.PI * 2); g.fill();
+        g.strokeStyle = 'rgba(200,110,130,0.6)'; g.lineWidth = 1.2;
+        for (const k of [-8, 0, 8]) { g.beginPath(); g.moveTo(122 + s * 56, 70 + k); g.quadraticCurveTo(122 + s * 68, 72 + k * 1.4, 122 + s * 76, 66 + k * 2); g.stroke(); }
+      });
     }
     const head = new Path2D(); head.ellipse(122, 64, 36, 32, 0, 0, Math.PI * 2);
     brP(g, head, brRad(g, 110, 48, 2, 122, 64, 40, '#d6dce2', '#a5adb7', '#7a838e'));
@@ -2658,6 +2709,13 @@ const BR_CHARS = {
     g.strokeStyle = 'rgba(60,65,75,0.5)'; g.lineWidth = 1.6;
     for (const [x, y] of [[116, 96], [117, 104], [114, 112], [108, 119]]) { g.beginPath(); g.moveTo(x - 6, y - 2); g.quadraticCurveTo(x, y + 1, x + 7, y - 2); g.stroke(); }
     brEye(g, 108, 58, 7, 0.2, 0.2, '#3a2a1a'); brEye(g, 136, 58, 7, 0.2, 0.2, '#3a2a1a');
+    // карманные часы, которые он держит хоботом
+    brS(g, 'M90 114 L82 122', 3, '#d9a93a');
+    brE(g, 76, 132, 14, 14, brRad(g, 72, 128, 1, 76, 132, 14, '#fff3b0', '#e8b83a', '#a8741a'), 3);
+    brE(g, 76, 132, 10, 10, '#fffdf6', 1.5);
+    brE(g, 82, 117, 3, 3, '#e8b83a', 1.5);
+    g.strokeStyle = BR_INK; g.lineWidth = 1.8; g.beginPath(); g.moveTo(76, 132); g.lineTo(76, 125); g.moveTo(76, 132); g.lineTo(81, 134); g.stroke();
+    g.fillStyle = BR_INK; for (let k = 0; k < 12; k++) { const a = k * Math.PI / 6; g.fillRect(76 + Math.cos(a) * 8 - 0.6, 132 + Math.sin(a) * 8 - 0.6, 1.2, 1.2); }
     g.strokeStyle = BR_INK; g.lineWidth = 2.6; g.beginPath(); g.moveTo(98, 47); g.lineTo(114, 49); g.moveTo(130, 49); g.lineTo(146, 47); g.stroke();
     // розовый цветок кактуса на макушке
     for (let k = 0; k < 5; k++) { const a = k * Math.PI * 2 / 5 - Math.PI / 2; brE(g, 122 + Math.cos(a) * 6, 31 + Math.sin(a) * 6, 5, 5, '#ff7fb5', 2); }
@@ -2684,9 +2742,14 @@ const BR_CHARS = {
       g.strokeStyle = 'rgba(50,25,8,0.5)'; g.lineWidth = 1.8;
       for (const x of [98, 108, 120, 132, 142]) { g.beginPath(); g.moveTo(x, 100); g.bezierCurveTo(x + 5, 130, x - 5, 160, x + (x - 120) * 0.15, 192); g.stroke(); }
       brE(g, 132, 150, 5, 7, '#3a200c', 2);
+      g.fillStyle = 'rgba(110,170,60,0.75)';
+      for (const [x, y, r] of [[96, 172, 7], [104, 178, 5], [146, 118, 6], [92, 112, 4]]) { g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2); g.fill(); }
     });
     for (const [x, y, r] of [[88, 46, 24], [152, 46, 24], [120, 28, 27], [72, 72, 18], [168, 72, 18], [104, 40, 22], [138, 40, 22]]) {
       brE(g, x, y, r, r * 0.92, brRad(g, x - r * 0.35, y - r * 0.4, 1, x, y, r, '#a8ec72', '#5fbf3c', '#2f7d24'), 3);
+      g.strokeStyle = 'rgba(30,90,20,0.45)'; g.lineWidth = 1.3;
+      g.beginPath(); g.arc(x + r * 0.15, y + r * 0.1, r * 0.55, 0.3, 1.6); g.stroke();
+      g.fillStyle = 'rgba(255,255,255,0.35)'; g.beginPath(); g.ellipse(x - r * 0.35, y - r * 0.4, r * 0.25, r * 0.14, -0.6, 0, Math.PI * 2); g.fill();
     }
     const head = new Path2D(); head.ellipse(120, 84, 36, 32, 0, 0, Math.PI * 2);
     brP(g, head, brRad(g, 108, 70, 2, 120, 84, 40, '#9a6a3c', '#6e4520', '#4a2c12'));
@@ -2697,6 +2760,7 @@ const BR_CHARS = {
     brP(g, 'M114 82 C110 100 106 118 112 128 C116 134 124 134 128 128 C134 118 130 100 126 82 Z', brLin(g, 110, 0, 132, 0, '#f6a88a', '#ff8f73', '#d9684f'), 3);
     g.fillStyle = 'rgba(255,255,255,0.45)'; g.beginPath(); g.ellipse(117, 100, 2, 10, 0.05, 0, Math.PI * 2); g.fill();
     g.fillStyle = BR_INK; g.beginPath(); g.ellipse(116, 128, 2, 1.5, 0, 0, Math.PI * 2); g.ellipse(124, 128, 2, 1.5, 0, 0, Math.PI * 2); g.fill();
+    brP(g, 'M110 120 Q96 118 90 126 Q100 124 112 126 Z', '#3a2510', 2); brP(g, 'M130 120 Q144 118 150 126 Q140 124 128 126 Z', '#3a2510', 2);
   }],
 };
 const BR_KEYS = Object.keys(BR_CHARS);
@@ -2709,27 +2773,13 @@ function brSprite(key, px) {
     if (brSprites.size > 60) brSprites.clear();
     const k = px / BR_S, t = makeCanvas(px, px), tg = t.getContext('2d');
     tg.translate(px * 0.03, px * 0.015); tg.scale(k * 0.94, k * 0.94); BR_CHARS[key][1](tg);
+    tg.setTransform(1, 0, 0, 1, 0, 0); tg.globalCompositeOperation = 'source-atop';
+    tg.fillStyle = brLin(tg, 0, 0, px, px, 'rgba(255,250,235,0.14)', 'rgba(255,255,255,0)', 'rgba(255,255,255,0)', 'rgba(20,10,40,0.2)');
+    tg.fillRect(0, 0, px, px); tg.globalCompositeOperation = 'source-over';
     c = makeCanvas(px, px);
     const g = c.getContext('2d');
     g.shadowColor = 'rgba(0,0,0,0.35)'; g.shadowBlur = px * 0.03; g.shadowOffsetY = px * 0.02;
     g.drawImage(t, 0, 0);
-    brSprites.set(id, c);
-  }
-  return c;
-}
-function brLabel(key, px) {
-  px = Math.max(8, Math.round(px));
-  const id = 'lbl_' + key + px;
-  let c = brSprites.get(id);
-  if (!c) {
-    const name = BR_CHARS[key][0], fs = px * 0.8;
-    const m = makeCanvas(1, 1).getContext('2d'); m.font = `900 ${fs}px ${FONT}`;
-    const w = Math.ceil(m.measureText(name).width + fs * 0.6);
-    c = makeCanvas(w, px);
-    const g = c.getContext('2d');
-    g.font = `900 ${fs}px ${FONT}`; g.textAlign = 'center'; g.textBaseline = 'middle';
-    g.lineJoin = 'round'; g.lineWidth = fs * 0.28; g.strokeStyle = BR_INK; g.strokeText(name, w / 2, px / 2);
-    g.fillStyle = '#ffffff'; g.fillText(name, w / 2, px / 2);
     brSprites.set(id, c);
   }
   return c;
@@ -2739,7 +2789,7 @@ function brLabel(key, px) {
 const brActors = [];
 function brSize() { return Math.max(70, Math.min(Math.min(W, H) * 0.29, 180)); }
 function brStep(dt) {
-  const U = Math.min(W, H), sz = brSize(), hw = sz * 0.45, top = sz * 0.45, bot = sz * 0.6;
+  const U = Math.min(W, H), sz = brSize(), hw = sz * 0.45, top = sz * 0.45, bot = sz * 0.45;
   if (!brActors.length) BR_KEYS.forEach((key, i) => {
     const a = Math.PI / 4 + (i % 4) * Math.PI / 2 + rand(-0.3, 0.3), sp = rand(0.1, 0.15);
     brActors.push({ key, x: rand(hw, W - hw), y: rand(top, H - bot), vx: Math.cos(a) * sp, vy: Math.sin(a) * sp,
@@ -2767,15 +2817,13 @@ function brStep(dt) {
 }
 function drawBrainrots(g, ts, dt) {
   brStep(dt);
-  const sz = brSize(), lh = sz * 0.14;
+  const sz = brSize();
   for (const a of brActors) {
     const q = 0.14 * a.sq * Math.sin(a.sq * Math.PI);
     g.save(); g.translate(a.x, a.y); g.rotate(Math.sin(ts * 2.2 + a.ph) * 0.07);
     g.scale(a.flip * (a.sqx ? 1 - q : 1 + q), a.sqx ? 1 + q : 1 - q);
     g.drawImage(brSprite(a.key, sz * dpr), -sz / 2, -sz / 2, sz, sz);
     g.restore();
-    const lb = brLabel(a.key, lh * dpr), lw = lb.width / dpr;
-    g.drawImage(lb, a.x - lw / 2, a.y + sz * 0.44, lw, lh);
   }
 }
 // Лёгкий режим: персонажи стоят неподвижно по углам (рисуются один раз в картинку фона)
@@ -2787,14 +2835,12 @@ function drawBrainrotsStill(g) {
   } else {
     const ht = Math.max(50, Math.min(U * 0.3, boardY - (hudY + hudH * 0.15 + board * 0.08) - 6));
     const hb = Math.max(50, Math.min(U * 0.3, H - trayY - trayH * 0.7));
-    const yt = boardY - framePad - ht * 0.6, yb = H - hb * 0.62;
+    const yt = boardY - framePad - ht * 0.5, yb = H - hb * 0.5;
     list.push(['tralalero', Math.max(ht / 2, boardX + ht * 0.4), yt, ht], ['ballerina', Math.min(W - ht / 2, boardX + board - ht * 0.4), yt, ht],
       ['tung', Math.max(hb / 2, boardX + hb * 0.4), yb, hb], ['chimp', Math.min(W - hb / 2, boardX + board - hb * 0.4), yb, hb]);
   }
   for (const [key, x, y, h] of list) {
     g.drawImage(brSprite(key, h * dpr), x - h / 2, y - h / 2, h, h);
-    const lh = h * 0.14, lb = brLabel(key, lh * dpr), lw = lb.width / dpr;
-    g.drawImage(lb, x - lw / 2, y + h * 0.44, lw, lh);
   }
 }
 
