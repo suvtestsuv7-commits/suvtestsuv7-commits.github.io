@@ -153,7 +153,7 @@
   .themes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
 
   /* ---------- Выбор режима ---------- */
-  .modes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .modes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
   .mode-card {
     display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 9px 4px;
     border: 0; border-radius: 16px; cursor: pointer; font-family: var(--font);
@@ -179,6 +179,52 @@
   }
 
   .ico-bomb svg { display: block; width: 100%; height: 100%; }
+  .ico-puzzle svg { display: block; width: 100%; height: 100%; }
+
+  /* ---------- Режим «Головоломка» ---------- */
+  #puzBar {
+    position: absolute; left: 50%; transform: translate(-50%, -50%);
+    display: flex; align-items: center; gap: .4em; font-weight: 900; color: #fff; line-height: 1;
+    transition: opacity .2s;
+  }
+  #puzBar.hidden { opacity: 0; visibility: hidden; }
+  #puzBar button {
+    pointer-events: auto; flex: none; width: 2.4em; height: 2.4em; padding: 0; border: 0; border-radius: .65em; cursor: pointer;
+    display: grid; place-items: center; background: rgba(0, 0, 0, .22);
+    box-shadow: inset 0 2px 0 rgba(0,0,0,.12), 0 1px 0 rgba(255,255,255,.12);
+  }
+  #puzBar button svg { width: 60%; height: 60%; fill: var(--ui); }
+  #puzBar button:active { transform: translateY(2px); }
+  #puzBar button:disabled { opacity: .35; }
+  #puzBar .pz-info {
+    flex: 1; min-width: 0; height: 2.4em; padding: 0 .7em; border-radius: .65em; white-space: nowrap;
+    display: flex; align-items: center; justify-content: center; gap: .55em;
+    background: rgba(0, 0, 0, .22); box-shadow: inset 0 2px 0 rgba(0,0,0,.12);
+  }
+  #pzStars { color: var(--gold); letter-spacing: .04em; text-shadow: 0 .08em 0 rgba(0,0,0,.3); }
+  #pzLeft { font-size: .85em; opacity: .85; }
+  .btn[hidden], .pz-stars[hidden] { display: none; }
+  .pz-stars { display: flex; justify-content: center; align-items: flex-end; gap: 4px; margin: -6px 0 6px; font-size: 52px; line-height: 1; }
+  .pz-stars i { font-style: normal; color: rgba(0,0,0,.28); }
+  .pz-stars i:nth-child(2) { font-size: 1.2em; }
+  .pz-stars i.on { color: var(--gold); text-shadow: 0 3px 0 #b86f00, 0 0 18px rgba(251,222,0,.6); animation: starIn .55s cubic-bezier(.2,1.6,.4,1) both; }
+  @keyframes starIn { from { transform: scale(0) rotate(-50deg); opacity: 0; } }
+  .lv-total { margin: -8px 0 4px; font-size: 17px; font-weight: 800; }
+  .lv-total b { color: var(--gold); }
+  .lv-head { margin: 12px 4px 7px; text-align: left; font-size: 17px; font-weight: 900; }
+  .lv-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; }
+  .lv-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 7px 0 6px;
+    border: 0; border-radius: 12px; cursor: pointer; font-family: var(--font); color: #fff;
+    background: rgba(0,0,0,.2); box-shadow: 0 3px 0 rgba(0,0,0,.22), inset 0 0 0 2px rgba(255,255,255,.14);
+  }
+  .lv-btn b { font-size: 19px; font-weight: 900; line-height: 1; }
+  .lv-btn span { font-size: 11px; line-height: 1; color: var(--gold); letter-spacing: -.04em; white-space: nowrap; }
+  .lv-btn span i { font-style: normal; color: rgba(0,0,0,.32); }
+  .lv-btn.locked { opacity: .5; }
+  .lv-btn.cur { box-shadow: 0 3px 0 rgba(0,0,0,.22), inset 0 0 0 3px var(--gold); }
+  .lv-btn:active { transform: translateY(2px); }
+  .lv-btn.nope { animation: nope .4s; }
 
   /* ---------- Таблица рекордов ---------- */
   .seg { display: flex; gap: 4px; margin: 0 0 8px; padding: 4px; border-radius: 14px; background: rgba(0,0,0,.2); }
@@ -259,6 +305,8 @@
   .mini.st-crate i.blk { border-radius: 1px; background: linear-gradient(45deg, transparent 40%, rgba(0,0,0,.28) 40% 60%, transparent 60%), var(--k); box-shadow: inset 0 0 0 2px rgba(60,30,10,.7); }
   .mini.st-plate i.blk { background: radial-gradient(circle, var(--k) 0 34%, #14181c 36% 46%, transparent 48%), linear-gradient(135deg, #b9c1c9, #59616a); box-shadow: inset 0 0 0 1px rgba(0,0,0,.45); }
   .mini.st-toxic i.blk { border-radius: 30%; background: linear-gradient(180deg, #1d2318 0 30%, var(--k) 30%); box-shadow: inset 0 0 0 1.5px #2f3a22, 0 0 4px var(--k); }
+  .mini.st-marble i.blk { background: linear-gradient(115deg, transparent 30%, rgba(0,0,0,.28) 34%, transparent 40%, transparent 62%, rgba(0,0,0,.2) 66%, transparent 70%), linear-gradient(180deg, rgba(255,255,255,.55), transparent 55%), var(--k); box-shadow: inset 0 0 0 1.5px #b8893a; }
+  .mini.st-crystal i.blk { background: conic-gradient(from 45deg, rgba(255,255,255,.55) 0 25%, rgba(255,255,255,.15) 0 50%, rgba(0,0,0,.35) 0 75%, rgba(0,0,0,.15) 0), var(--k); box-shadow: inset 0 0 0 1px rgba(255,255,255,.6), 0 0 4px var(--k); }
   .mini.st-magma i.blk { background: linear-gradient(45deg, transparent 43%, var(--k) 46% 54%, transparent 57%), linear-gradient(-45deg, transparent 43%, var(--k) 46% 54%, transparent 57%), #2a2224; box-shadow: inset 0 0 0 1px rgba(0,0,0,.5), 0 0 4px var(--k); }
   .mini.st-pixel, .mini.st-pixel i { border-radius: 0; }
   .mini.st-pixel i.blk { box-shadow: inset 2px 2px 0 rgba(255,255,255,.4), inset -2px -2px 0 rgba(0,0,0,.35); }
@@ -413,6 +461,12 @@
     <div class="sb-track"><div class="sb-fill" id="sbFill"></div><span class="sb-lvl" id="sbLvl">Уровень 1</span></div>
     <span class="sb-lbl" id="sbTo">2k</span>
   </div>
+  <div id="puzBar" class="hidden">
+    <button type="button" id="pzLevels" aria-label="Все уровни"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg></button>
+    <div class="pz-info"><span id="pzLvl">Уровень 1</span><span id="pzStars">★★★</span><span id="pzLeft"></span></div>
+    <button type="button" id="pzUndo" aria-label="Отменить ход"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg></button>
+    <button type="button" id="pzRestart" aria-label="Начать уровень заново"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></button>
+  </div>
   <button id="gearBtn" aria-label="Настройки">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
   </button>
@@ -435,6 +489,10 @@
       <button type="button" class="mode-card" data-mode="bomb" aria-label="Режим Бомбы">
         <span class="mode-ico ico-bomb"><svg viewBox="0 0 40 40" aria-hidden="true"><defs><radialGradient id="bombIcoG" cx="35%" cy="35%" r="70%"><stop offset="0" stop-color="#7a828e"/><stop offset=".5" stop-color="#2a2e36"/><stop offset="1" stop-color="#0b0c10"/></radialGradient></defs><circle cx="18" cy="24" r="11.5" fill="url(#bombIcoG)"/><rect x="23" y="9.5" width="6.5" height="5" rx="1" fill="#555b66" transform="rotate(35 26 12)"/><path d="M28.5 9.5 Q32.5 5 29.5 2.5" stroke="#d6b27a" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="29.5" cy="3" r="3.2" fill="#ffb347"/><circle cx="29.5" cy="3" r="1.4" fill="#fff"/><text x="18" y="28.5" font-size="12" font-weight="900" fill="#fff" text-anchor="middle" font-family="Nunito, Arial, sans-serif">9</text></svg></span>
         <span class="mode-nm">Бомбы</span>
+      </button>
+      <button type="button" class="mode-card" data-mode="puzzle" aria-label="Режим Головоломка">
+        <span class="mode-ico ico-puzzle"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M5.0 9.0L10.6 9.0C11.3 8.1 8.6 5.4 12.5 5.4C16.4 5.4 13.7 8.1 14.4 9.0L20.0 9.0L20.0 14.6C19.1 15.3 16.4 12.6 16.4 16.5C16.4 20.4 19.1 17.7 20.0 18.4L20.0 24.0L5.0 24.0L5.0 9.0Z" fill="#f4be05" stroke="#1a2147" stroke-width="1.2"/><path d="M20.0 9.0L25.6 9.0C26.3 9.9 23.6 12.6 27.5 12.6C31.4 12.6 28.7 9.9 29.4 9.0L35.0 9.0L35.0 24.0L29.4 24.0C28.7 24.9 31.4 27.6 27.5 27.6C23.6 27.6 26.3 24.9 25.6 24.0L20.0 24.0L20.0 18.4C19.1 17.7 16.4 20.4 16.4 16.5C16.4 12.6 19.1 15.3 20.0 14.6L20.0 9.0Z" fill="#3862f0" stroke="#1a2147" stroke-width="1.2"/><path d="M5.0 24.0L20.0 24.0L20.0 29.6C20.9 30.3 23.6 27.6 23.6 31.5C23.6 35.4 20.9 32.7 20.0 33.5L20.0 39.0L5.0 39.0L5.0 24.0Z" fill="#ec3a3a" stroke="#1a2147" stroke-width="1.2"/></svg></span>
+        <span class="mode-nm">Головоломка</span>
       </button>
     </div>
     <div class="opt" style="margin-top:12px"><span>Звуки</span><button class="switch" id="swSound" aria-pressed="true" aria-label="Звуки"><i></i></button></div>
@@ -503,6 +561,26 @@
   </div>
 </div>
 
+<div class="overlay" id="puzOv" hidden>
+  <div class="panel" role="dialog" aria-label="Итог уровня">
+    <div class="over-title" id="pzTitle">Уровень пройден!</div>
+    <div class="pz-stars" id="pzResStars"><i>★</i><i>★</i><i>★</i></div>
+    <p class="revive-text" id="pzText"></p>
+    <button class="btn btn-green" id="pzNext">Следующий уровень</button>
+    <button class="btn btn-orange" id="pzAgain">Ещё раз</button>
+    <button class="btn btn-ghost" id="pzToLevels">Все уровни</button>
+  </div>
+</div>
+
+<div class="overlay" id="lvlOv" hidden>
+  <div class="panel" role="dialog" aria-label="Уровни">
+    <h2>Уровни</h2>
+    <div class="lv-total">Звёзды: <b id="lvTotal">0</b></div>
+    <div id="lvList"></div>
+    <button class="btn btn-green" id="lvClose">Закрыть</button>
+  </div>
+</div>
+
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
     <linearGradient id="crownGrad" x1="0" y1="0" x2="0" y2="1">
@@ -525,6 +603,9 @@
       <circle cx="32" cy="6.5" r="4.5" fill="#fbd400" stroke="#c07a00" stroke-width="2.5"/>
       <circle cx="56" cy="14" r="4.5" fill="#fbd400" stroke="#c07a00" stroke-width="2.5"/>
       <rect x="12" y="36" width="40" height="6" fill="#e59a00" opacity=".55"/>
+    </symbol>
+    <symbol id="starIco" viewBox="0 0 64 48">
+      <polygon points="32.0,4.0 37.6,18.3 52.9,19.2 41.0,28.9 44.9,43.8 32.0,35.5 19.1,43.8 23.0,28.9 11.1,19.2 26.4,18.3" fill="url(#crownGrad)" stroke="#c07a00" stroke-width="3" stroke-linejoin="round"/>
     </symbol>
     <symbol id="flame" viewBox="0 0 32 40">
       <path d="M16 2 C18 10 27 13 27 25 C27 33 22 38 16 38 C10 38 5 33 5 25 C5 18 10 15 11 9 C13 13 14 15 16 16 C17 11 16 6 16 2 Z" fill="url(#flameGrad)" stroke="#b8360c" stroke-width="2" stroke-linejoin="round"/>
@@ -576,7 +657,7 @@ const COLORS = [
 const GREY = 7;
 
 /* =====================================================================
-   Темы. Тема сменяется сама, когда игрок полностью очищает поле.
+   Темы. Тему выбирает игрок в настройках (сама при очистке поля не меняется).
    Первые 8 тем бесплатные и общие для обоих режимов. Особые темы
    (mode + cost) покупаются за очки из копилки своего режима:
    blocks — вид блоков классики, sand — цвета песка (красный, жёлтый,
@@ -682,6 +763,19 @@ const THEMES = [
   { id: 'reactor', mode: 'bomb', cost: 100000, blocks: 'toxic', name: 'Реактор',
     bg: ['#050a04', '#0f1f08', '#24380c'], glow: '#b6ff3d', board: '#0a1206', edge: '#3a5a12', cell: '#111d0a',
     panel: ['#6aa31c', '#45700f', '#d8ff7a', '#1d3305'], ui: '#efffc8', decor: 'fallout' },
+  // ---- Режим «Головоломка»: две бесплатные темы и две за очки копилки «Головоломки» ----
+  { id: 'cork', mode: 'puzzle', name: 'Пазл',
+    bg: ['#c79a63', '#b4844f', '#94653a'], glow: '#fff1c9', board: '#3a2a1c', edge: '#5a4029', cell: '#46331f',
+    panel: ['#c9874a', '#985f2c', '#ffd9a8', '#4f2e12'], ui: '#fff3df', decor: 'jigsaw' },
+  { id: 'blueprint', mode: 'puzzle', name: 'Чертёж',
+    bg: ['#0d3b78', '#134a92', '#1b5aa8'], glow: '#bfe3ff', board: '#0a2a55', edge: '#2d6bbf', cell: '#0f3466',
+    panel: ['#2f78d0', '#1d559e', '#bfe3ff', '#0b2c5a'], ui: '#e6f4ff', decor: 'blueprint' },
+  { id: 'chess', mode: 'puzzle', cost: 8000, blocks: 'marble', name: 'Шахматы',
+    bg: ['#2a1a10', '#3d2616', '#5a3a20'], glow: '#ffe2a8', board: '#1e140c', edge: '#8a6a3a', cell: '#2a1c10',
+    panel: ['#9a6a36', '#6a4420', '#f2d39a', '#3a220c'], ui: '#fff0d0', decor: 'chess' },
+  { id: 'crystal', mode: 'puzzle', cost: 20000, blocks: 'crystal', name: 'Кристаллы',
+    bg: ['#0c0620', '#1d0f3d', '#2e1858'], glow: '#c58cff', board: '#100a24', edge: '#4a2a8a', cell: '#181034',
+    panel: ['#7a4ad8', '#4f2a9a', '#e2c8ff', '#22104a'], ui: '#f0e4ff', decor: 'crystal' },
 ];
 const PIXEL_FONT = "'Press Start 2P', 'Courier New', monospace";
 // Эффекты текущей темы (только в классике): 'sakura' | 'pixel' | 'void' | undefined
@@ -739,7 +833,7 @@ function mixHex(a, b, t) {
 const fmtNum = n => Math.round(n).toLocaleString('ru-RU');
 function makeCanvas(w, h) { const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(w)); c.height = Math.max(1, Math.round(h)); return c; }
 function rrPath(g, x, y, w, h, r) {
-  r = Math.min(r, w / 2, h / 2);
+  r = Math.max(0, Math.min(r, w / 2, h / 2));
   g.beginPath();
   g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r);
   g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath();
@@ -1141,11 +1235,11 @@ let state = 'play';                     // 'play' | 'revive' | 'over'
 let overT0 = 0, paused = false;
 // lite — лёгкий режим для слабых телефонов; liteChecked — автопроверка FPS уже проводилась
 const settings = { sound: true, music: true, vibro: true, hints: true, lite: false, liteChecked: false, mode: 'classic' };
-let mode = 'classic';                   // 'classic' | 'sand' | 'bomb'
+let mode = 'classic';                   // 'classic' | 'sand' | 'bomb' | 'puzzle'
 
 let themeIdx = 0;
-const themeByMode = { classic: 0, sand: 0, bomb: 0 };   // у каждого режима своя выбранная тема
-const wallet = { classic: 0, sand: 0, bomb: 0 };        // копилка очков для покупки тем
+const themeByMode = { classic: 0, sand: 0, bomb: 0, puzzle: 0 };   // у каждого режима своя выбранная тема
+const wallet = { classic: 0, sand: 0, bomb: 0, puzzle: 0 };        // копилка очков для покупки тем
 const owned = new Set();                       // id купленных тем
 let banked = 0;                                // сколько очков текущей партии уже положено в копилку
 const themeFx = { prev: 0, t0: -1e9 };
@@ -1167,10 +1261,10 @@ const blockCache = new Map(), boardCache = new Map(), bgCache = new Map(), glowC
 const BOMB_KEY = 'blockblast.bomb.v1';
 const bombs = new Map();                // клетка поля → сколько ходов осталось до взрыва
 let bombsDefused = 0;
-const MODE_NAME = { classic: 'Классика', sand: 'Песок', bomb: 'Бомбы' };
-const MODE_GEN = { classic: '«Классики»', sand: '«Песка»', bomb: '«Бомб»' };
+const MODE_NAME = { classic: 'Классика', sand: 'Песок', bomb: 'Бомбы', puzzle: 'Головоломка' };
+const MODE_GEN = { classic: '«Классики»', sand: '«Песка»', bomb: '«Бомб»', puzzle: '«Головоломки»' };
 const BOMB_THEME0 = THEMES.findIndex(t => t.id === 'sapper');
-function defaultTheme(m) { return m === 'bomb' ? BOMB_THEME0 : 0; }
+function defaultTheme(m) { return m === 'bomb' ? BOMB_THEME0 : m === 'puzzle' ? THEMES.findIndex(t => t.id === 'cork') : 0; }
 function readBombStore() { try { return JSON.parse(localStorage.getItem(BOMB_KEY) || 'null'); } catch (_) { return null; } }
 // чем больше очков, тем короче фитиль
 function bombTimer() { return score < 3000 ? 9 : score < 9000 ? 8 : score < 20000 ? 7 : 6; }
@@ -1274,7 +1368,7 @@ function drawBomb(x, y, s, t, now, grey) {
   }
   ctx.globalAlpha = a0 * (grey ? 0.65 : 1);
   const sc = 1 + 0.08 * pulse, o = s * (1 - sc) / 2;
-  ctx.drawImage(bombSprite(Math.max(8, Math.round(s * dpr))), x + o, y + o, s * sc, s * sc);
+  ctx.drawImage(bombSprite(Math.max(8, Math.round((s > trayCell * 1.25 ? cell : trayCell) * dpr))), x + o, y + o, s * sc, s * sc);
   if (!grey) {
     const fx = x + s * 0.734, fy = y + s * 0.116, fl = 0.75 + 0.25 * Math.sin(now / 40 + x * 0.7);
     ctx.drawImage(getGlow('#ffcf5a'), fx - s * 0.17 * fl, fy - s * 0.17 * fl, s * 0.34 * fl, s * 0.34 * fl);
@@ -1303,7 +1397,13 @@ function drawPieceBomb(h, sh, cx, cy, cs, grey) {
   drawBomb(cx - sh.w * cs / 2 + dx * cs, cy - sh.h * cs / 2 + dy * cs, cs, h.bt, performance.now(), grey);
 }
 themeByMode.bomb = BOMB_THEME0;
-const lb = (() => { try { const v = JSON.parse(localStorage.getItem('blockblast.lb.v1')); return v && typeof v === 'object' ? v : {}; } catch (_) { return {}; } })();
+const lb = (() => {
+  let v = null;
+  try { v = JSON.parse(localStorage.getItem('blockblast.lb.v1')); } catch (_) {}
+  v = v && typeof v === 'object' && !Array.isArray(v) ? v : {};
+  for (const m of ['classic', 'sand', 'bomb']) { const r = v[m]; if (r != null && !(r && Array.isArray(r.score) && Array.isArray(r.combo))) delete v[m]; }
+  return v;
+})();
 let gameLogged = false;                 // результат текущей партии уже записан в таблицу рекордов
 
 /* =====================================================================
@@ -1537,6 +1637,7 @@ function resetIdle() { idleT = performance.now(); hint = null; }
    и на очки за установку фигур. Каждые 5 комбо — бонус.
    ===================================================================== */
 function place(i, gx, gy) {
+  if (mode === 'puzzle') puzPush();
   const h = hand[i], sh = SHAPES[h.s];
   const now = performance.now();
   for (const [dx, dy] of sh.cells) {
@@ -1546,6 +1647,7 @@ function place(i, gx, gy) {
   let fresh = -1;
   if (h.b != null && sh.cells[h.b]) { fresh = (gy + sh.cells[h.b][1]) * N + gx + sh.cells[h.b][0]; bombs.set(fresh, h.bt); }
   hand[i] = null;
+  if (mode === 'puzzle') { const nx = puzPiece(puz.qi, now + 220); if (nx) { hand[i] = nx; puz.qi++; } }   // слот сразу пополняется из очереди уровня
   resetIdle();
   const pan = ((gx + sh.w / 2) / N - 0.5) * 1.2;
   const streak = combo > 0 && movesSinceClear < COMBO_WINDOW;
@@ -1625,7 +1727,6 @@ function place(i, gx, gy) {
       addText('All Clear!', boardX + board / 2, boardY + board * 0.55, 'gold', 300);
       allClearBurst(now + 120);
       sfx('allClear'); vib(70);
-      setTimeout(() => changeTheme(nextTheme()), 450);
     }
   } else {
     movesSinceClear++;
@@ -1635,6 +1736,7 @@ function place(i, gx, gy) {
     }
   }
 
+  if (mode === 'puzzle') { refreshFit(); updateHint(); updateComboUI(comboEvent); puzAfterMove(now); save(); return; }
   if (tickBombs(fresh, now)) { checkBest(); updateComboUI('reset'); save(); return; }
   checkBest();
 
@@ -1666,6 +1768,7 @@ function earn() {
   }
 }
 function checkBest() {
+  if (mode === 'puzzle') return;
   earn();
   if (score <= best) return;
   if (!newBestShown && startBest > 0) {
@@ -1694,7 +1797,7 @@ function comboLevel(c) {
   return { c1: '#6ef0ff', c2: '#2f8cff', glow: '#57d5ff' };
 }
 function updateComboUI(kind) {
-  const show = mode !== 'sand' && combo >= 2 && state === 'play';
+  const show = mode !== 'sand' && mode !== 'puzzle' && combo >= 2 && state === 'play';
   clearTimeout(updateComboUI.t);
   if (show) {
     const lv = comboLevel(combo), st = document.documentElement.style;
@@ -1716,6 +1819,7 @@ function updateComboUI(kind) {
 /* ---------- Нет ходов: второй шанс (раз за игру) или конец игры ---------- */
 // epoch растёт при новой игре и смене режима — отложенные таймеры старой партии не срабатывают
 let epoch = 0, noMovesMsg = 'Нет ходов!';
+let pendingNm = null;                   // сохранённая партия ждала второго шанса (например, после взрыва)
 function triggerNoMoves(msg) {
   noMovesMsg = msg || 'Нет ходов!';
   if (reviveUsed) { triggerGameOver(false); return; }
@@ -1728,7 +1832,7 @@ function triggerNoMoves(msg) {
     if (engine) engine.duck(true);
     addText(noMovesMsg, boardX + board / 2, boardY + boardH / 2, 'praise', 0);
   }, 450);
-  $('reviveTitle').textContent = noMovesMsg === 'Бум!' ? 'Бомба взорвалась!' : 'Нет ходов!';
+  $('reviveTitle').textContent = noMovesMsg === 'Бум!' ? 'Бомба взорвалась!' : noMovesMsg;
   setTimeout(() => { if (state === 'revive' && ep === epoch) reviveOv.hidden = false; }, 1400);
   save();
 }
@@ -1770,7 +1874,7 @@ function revive() {
   addText('Второй шанс!', boardX + board / 2, boardY + board * 0.45, 'gold', 100);
   resetIdle();
   updateComboUI('move');
-  if (!hand.some(h => h.fit)) triggerGameOver(false);
+  if (!hand.some(h => h.fit)) { noMovesMsg = 'Нет ходов!'; triggerGameOver(false); }
   save();
 }
 function giveUp() {
@@ -1830,6 +1934,7 @@ function showOver() {
 
 function newGame() {
   if (mode === 'sand') { sandNewGame(); return; }
+  if (mode === 'puzzle') { puzRestart(); return; }
   epoch++;
   const now = performance.now();
   const wasOver = state === 'over';
@@ -1872,16 +1977,13 @@ function applyThemeDom() {
 function themeAvail(i, m = mode) { const th = THEMES[i]; return !!th && (!th.mode || th.mode === m); }
 function themeOwned(i) { const th = THEMES[i]; return !!th && ((!th.cost && !th.code) || owned.has(th.id)); }
 function themeOk(i, m = mode) { return themeAvail(i, m) && themeOwned(i); }
-function nextTheme() {
-  for (let k = 1; k < THEMES.length; k++) { const i = (themeIdx + k) % THEMES.length; if (themeOk(i)) return i; }
-  return themeIdx;
-}
 // Ставит тему без звука и надписей; anim — плавная смена кругом от центра поля
 function setTheme(next, anim) {
   themeFx.prev = themeIdx;
   themeFx.t0 = anim ? performance.now() : -1e9;
   themeIdx = next; themeByMode[mode] = next;
   for (const k of [...bgCache.keys()]) if (k !== themeIdx && k !== themeFx.prev) bgCache.delete(k);
+  for (const k of [...boardCache.keys()]) { const t = typeof k === 'number' ? k : +String(k).slice(4); if (t !== themeIdx && t !== themeFx.prev) boardCache.delete(k); }
   bgDirty = true;
   applyThemeDom();
   if (mode === 'sand') { sandRetex(); sand.dirty = true; }
@@ -1897,13 +1999,13 @@ function changeTheme(next, manual) {
 // Миниатюры тем в настройках: фон темы + маленькое поле с парой блоков.
 // Показываем общие темы и особые темы текущего режима.
 const themesEl = $('themes'), themeNote = $('themeNote');
-const THEME_NOTE = 'Очки из каждой игры копятся — за них открываются особые темы. Тема меняется и сама, когда вы полностью очищаете поле';
+const THEME_NOTE = 'Очки из каждой игры копятся — за них открываются особые темы.';
 let confirmIdx = -1;
 function renderThemePicker() {
   const MINI = [-1, -1, -1, -1, -1, 5, 0, 2, 3], MINI_SAND = [-1, -1, -1, 3, -1, -1, 0, 1, 2];
   themesEl.textContent = '';
   confirmIdx = -1;
-  themeNote.textContent = THEME_NOTE;
+  themeNote.textContent = mode === 'puzzle' ? 'В «Головоломке» копилка пополняется только за новые звёзды: 400 очков за звезду.' : THEME_NOTE;
   const order = THEMES.map((_, i) => i).sort((a, b) => (!!THEMES[a].code - !!THEMES[b].code) || a - b);   // секретные — в конце
   order.forEach(i => {
     const th = THEMES[i];
@@ -2037,7 +2139,7 @@ function snapClassic() {
     game: state !== 'over' ? {
       grid: Array.from(grid), hand: hand.map(h => h ? (h.b != null ? [h.s, h.c, h.b, h.bt] : [h.s, h.c]) : null),
       score, combo, msc: movesSinceClear, nbs: newBestShown, sb: startBest, lines: linesTotal, mc: maxCombo,
-      ru: reviveUsed, recent, bombs: [...bombs], bd: bombsDefused,
+      ru: reviveUsed, recent, bombs: [...bombs], bd: bombsDefused, nm: state === 'revive' ? noMovesMsg : null,
     } : null,
   };
 }
@@ -2045,13 +2147,14 @@ function save() {
   try {
     const c = mode === 'classic' ? snapClassic() : stash.classic || { best: 0, game: null };
     localStorage.setItem(LS_KEY, JSON.stringify({
-      best: c.best, settings, theme: themeByMode.classic, themeSand: themeByMode.sand, themeBomb: themeByMode.bomb,
+      best: c.best, settings, theme: themeByMode.classic, themeSand: themeByMode.sand, themeBomb: themeByMode.bomb, themePuzzle: themeByMode.puzzle,
       wallet, owned: [...owned], game: c.game,
     }));
     const sd = mode === 'sand' ? snapSand() : stash.sand;
     if (sd) localStorage.setItem(SAND_KEY, JSON.stringify(sd));
     const bd = mode === 'bomb' ? snapClassic() : stash.bomb;
     if (bd) localStorage.setItem(BOMB_KEY, JSON.stringify(bd));
+    puzSave();
   } catch (_) {}
 }
 function restore() {
@@ -2065,12 +2168,13 @@ function restore() {
     settings.hints = s.settings.hints !== false;
     settings.lite = !!s.settings.lite;
     settings.liteChecked = !!s.settings.liteChecked;
-    settings.mode = s.settings.mode === 'sand' || s.settings.mode === 'bomb' ? s.settings.mode : 'classic';
+    settings.mode = ['sand', 'bomb', 'puzzle'].includes(s.settings.mode) ? s.settings.mode : 'classic';
   }
   if (s.wallet) {
     wallet.classic = Math.max(0, +s.wallet.classic || 0);
     wallet.sand = Math.max(0, +s.wallet.sand || 0);
     wallet.bomb = Math.max(0, +s.wallet.bomb || 0);
+    wallet.puzzle = Math.max(0, +s.wallet.puzzle || 0);
   } else {
     // первый запуск версии с копилкой: стартовый капитал — рекорды режимов
     const sd = readSandStore();
@@ -2083,20 +2187,22 @@ function restore() {
   // раньше тема была общей — песок наследует её, если своей ещё нет
   themeByMode.sand = valid(s.themeSand, 'sand') ? s.themeSand : valid(s.theme, 'sand') ? s.theme : 0;
   themeByMode.bomb = valid(s.themeBomb, 'bomb') ? s.themeBomb : BOMB_THEME0;
+  themeByMode.puzzle = valid(s.themePuzzle, 'puzzle') ? s.themePuzzle : PUZ_THEME0;
   themeIdx = themeByMode.classic;
   return applyClassic(s);
 }
 // Загружает партию классики из снимка { best, game }; false — если партии нет
 function applyClassic(s) {
   best = Math.max(0, +(s && s.best) || 0);
-  bombs.clear(); bombsDefused = 0;
+  bombs.clear(); bombsDefused = 0; pendingNm = null;
   const g = s && s.game;
   if (!g || !Array.isArray(g.grid) || g.grid.length !== N * N) return false;
   state = 'play'; overT0 = 0;
+  pendingNm = typeof g.nm === 'string' && g.nm ? g.nm : null;
   for (let i = 0; i < N * N; i++) { const v = g.grid[i]; grid[i] = Number.isInteger(v) && v >= 0 && v < 7 ? v : -1; }
   hand = [0, 1, 2].map(k => {
     const h = (g.hand || [])[k];
-    if (!(Array.isArray(h) && SHAPES[h[0]] && h[1] >= 0 && h[1] < 7)) return null;
+    if (!(Array.isArray(h) && Number.isInteger(h[0]) && SHAPES[h[0]] && Number.isInteger(h[1]) && h[1] >= 0 && h[1] < 7)) return null;
     const o = { s: h[0], c: h[1], t0: 0, fit: true, ret: null };
     if (Number.isInteger(h[2]) && h[2] >= 0 && h[2] < SHAPES[h[0]].n) { o.b = h[2]; o.bt = Math.max(1, Math.round(+h[3]) || 9); }
     return o;
@@ -2147,7 +2253,7 @@ function layout() {
   trayY = boardY + boardH + framePad;
   // в песке блоки на поле мельче, а фигуры в лотке — того же размера, что и в классике
   trayCell = Math.min(board / N * 0.56, (colW / 3 * 0.9) / 5);
-  blockCache.clear(); boardCache.clear(); bgCache.clear();
+  blockCache.clear(); boardCache.clear(); bgCache.clear(); bombCache.clear();
 
   const row1 = hudY + hudH * 0.15;
   bestBox.style.fontSize = board * 0.056 + 'px';
@@ -2164,6 +2270,9 @@ function layout() {
   sandBar.style.fontSize = board * 0.04 + 'px';
   sandBar.style.width = board * 0.86 + 'px';
   sandBar.style.top = (hudY + hudH * 0.84) + 'px';
+  puzBar.style.fontSize = board * 0.045 + 'px';
+  puzBar.style.width = board + 'px';
+  puzBar.style.top = (hudY + hudH * 0.84) + 'px';
   hintEl.style.fontSize = Math.max(13, board * 0.042) + 'px';
   hintEl.style.top = Math.min(H - 14, trayY + trayH * 0.93) + 'px';
 }
@@ -2177,6 +2286,11 @@ function updateHint() {
   if (mode === 'sand') {
     hintEl.textContent = 'Соедините один цвет от края до края';
     hintEl.classList.toggle('show', score === 0 && state === 'play' && sandCount() === 0);
+    return;
+  }
+  if (mode === 'puzzle') {
+    hintEl.textContent = 'Очистите всё поле этими фигурами';
+    hintEl.classList.toggle('show', puz.lvl < 2 && state === 'play' && !puz.undo.length);
     return;
   }
   if (mode === 'bomb') {
@@ -2650,6 +2764,66 @@ BLOCK_STYLES.magma = (g, col, s) => {
   g.lineWidth = Math.max(1, s * 0.035); g.strokeStyle = rgba(col.c, 0.8); rrPath(g, p, p, w, w, r); g.stroke();
   g.fillStyle = 'rgba(255,255,255,0.12)'; rrPath(g, p * 2, p * 2, w - p * 2, s * 0.12, r * 0.6); g.fill();
 };
+// «Шахматы»: полированный мрамор цвета блока с прожилками и латунной кромкой
+BLOCK_STYLES.marble = (g, col, s) => {
+  const p = Math.max(1, s * 0.03), w = s - 2 * p, r = s * 0.08;
+  const base = mixHex(col.c, '#f4ece0', 0.38);
+  const lg = g.createLinearGradient(0, 0, s, s);
+  lg.addColorStop(0, mixHex(base, '#ffffff', 0.35)); lg.addColorStop(0.55, base); lg.addColorStop(1, mixHex(col.b, '#1a1008', 0.25));
+  g.fillStyle = lg; rrPath(g, p, p, w, w, r); g.fill();
+  g.save(); rrPath(g, p, p, w, w, r); g.clip();
+  let seed = (parseInt(col.c.slice(1), 16) || 5) ^ 0x51e3;
+  const rnd = () => (seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff;
+  g.lineCap = 'round';
+  for (let k = 0; k < 2; k++) {
+    let x = s * (0.15 + 0.7 * rnd()), y = -s * 0.05;
+    const pts = [[x, y]];
+    while (y < s * 1.05) { y += s * (0.14 + 0.1 * rnd()); x += s * (rnd() - 0.5) * 0.3; pts.push([x, y]); }
+    for (const [lw, st] of [[0.05, rgba(mixHex(col.b, '#000000', 0.3), 0.12)], [0.016, rgba(mixHex(col.b, '#000000', 0.4), 0.38)]]) {
+      g.lineWidth = Math.max(0.6, s * lw); g.strokeStyle = st;
+      g.beginPath(); g.moveTo(pts[0][0], pts[0][1]);
+      for (let j = 1; j < pts.length; j++) { const [ax, ay] = pts[j - 1], [bx, by] = pts[j]; g.quadraticCurveTo(ax + (bx - ax) * 0.2 + s * 0.04, (ay + by) / 2, bx, by); }
+      g.stroke();
+    }
+  }
+  // глянцевый блик
+  const hg = g.createLinearGradient(0, p, 0, s * 0.5);
+  hg.addColorStop(0, 'rgba(255,255,255,0.55)'); hg.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = hg; g.beginPath(); g.moveTo(p, p); g.lineTo(s - p, p); g.lineTo(s - p, s * 0.22); g.quadraticCurveTo(s * 0.5, s * 0.42, p, s * 0.34); g.closePath(); g.fill();
+  g.restore();
+  g.lineWidth = Math.max(1, s * 0.045); g.strokeStyle = '#b8893a'; rrPath(g, p + s * 0.02, p + s * 0.02, w - s * 0.04, w - s * 0.04, r); g.stroke();
+  g.lineWidth = Math.max(0.6, s * 0.015); g.strokeStyle = 'rgba(255,236,180,0.85)'; rrPath(g, p + s * 0.045, p + s * 0.045, w - s * 0.09, w - s * 0.09, r * 0.8); g.stroke();
+};
+// «Кристаллы»: гранёный камень — грани сходятся к светлой площадке, внутри свечение
+BLOCK_STYLES.crystal = (g, col, s) => {
+  const p = Math.max(1, s * 0.03), w = s - 2 * p, r = s * 0.12;
+  g.fillStyle = mixHex(col.b, '#0a0418', 0.55); rrPath(g, p, p, w, w, r); g.fill();
+  const q = s * 0.1, a = q, b = s - q, m = s * 0.34, n = s - m;
+  const outer = [[a + s * 0.08, a], [b - s * 0.08, a], [b, a + s * 0.08], [b, b - s * 0.08], [b - s * 0.08, b], [a + s * 0.08, b], [a, b - s * 0.08], [a, a + s * 0.08]];
+  const inner = [[m, m], [n, m], [n, m], [n, n], [n, n], [m, n], [m, n], [m, m]];
+  const shade = [0.55, 0.62, 0.15, -0.05, -0.35, -0.45, -0.2, 0.3];
+  for (let k = 0; k < 8; k++) {
+    const k2 = (k + 1) % 8, t = shade[k];
+    g.beginPath(); g.moveTo(outer[k][0], outer[k][1]); g.lineTo(outer[k2][0], outer[k2][1]); g.lineTo(inner[k2][0], inner[k2][1]); g.lineTo(inner[k][0], inner[k][1]); g.closePath();
+    g.fillStyle = t >= 0 ? mixHex(col.c, '#ffffff', t * 0.75) : mixHex(col.c, '#0a0418', -t);
+    g.fill();
+  }
+  const tg = g.createLinearGradient(m, m, n, n);
+  tg.addColorStop(0, mixHex(col.t, '#ffffff', 0.55)); tg.addColorStop(1, col.c);
+  g.fillStyle = tg; g.fillRect(m, m, n - m, n - m);
+  g.strokeStyle = 'rgba(255,255,255,0.55)'; g.lineWidth = Math.max(0.6, s * 0.014);
+  g.beginPath();
+  for (let k = 0; k < 8; k++) { g.moveTo(outer[k][0], outer[k][1]); g.lineTo(inner[k][0], inner[k][1]); }
+  g.stroke();
+  g.strokeRect(m, m, n - m, n - m);
+  g.beginPath(); g.moveTo(outer[0][0], outer[0][1]); for (let k = 1; k < 8; k++) g.lineTo(outer[k][0], outer[k][1]); g.closePath(); g.stroke();
+  // искра на площадке
+  const cx = m + (n - m) * 0.32, cy = m + (n - m) * 0.3, L = s * 0.12;
+  g.fillStyle = 'rgba(255,255,255,0.95)';
+  g.beginPath(); g.moveTo(cx, cy - L); g.lineTo(cx + L * 0.18, cy - L * 0.18); g.lineTo(cx + L, cy); g.lineTo(cx + L * 0.18, cy + L * 0.18);
+  g.lineTo(cx, cy + L); g.lineTo(cx - L * 0.18, cy + L * 0.18); g.lineTo(cx - L, cy); g.lineTo(cx - L * 0.18, cy - L * 0.18); g.closePath(); g.fill();
+  g.lineWidth = Math.max(1, s * 0.03); g.strokeStyle = rgba(col.t, 0.9); rrPath(g, p, p, w, w, r); g.stroke();
+};
 function renderBlock(col, s, style) {
   const c = makeCanvas(s, s), g = c.getContext('2d');
   if (BLOCK_STYLES[style]) { BLOCK_STYLES[style](g, col, s); return c; }
@@ -2764,7 +2938,7 @@ function getBgImage(ti) {
   const lg = g.createLinearGradient(0, 0, 0, H);
   lg.addColorStop(0, th.bg[0]); lg.addColorStop(0.5, th.bg[1]); lg.addColorStop(1, th.bg[2]);
   g.fillStyle = lg; g.fillRect(0, 0, W, H);
-  const tinyPic = th.bgTiny ? window[th.bgTiny] : null;
+  const tinyPic = th.bgTiny ? themePhoto({ bgImage: th.bgTiny }) : null;   // заглушка, пока грузится большое фото
   const photo = themePhoto(th) || tinyPic;
   if (photo) {
     // картинка на весь экран с обрезкой краёв (как background-size: cover)
@@ -3401,6 +3575,7 @@ function drawFish(x, y, sz, dir, col, ts, ph) {
 // Неподвижные детали фона особых тем (рисуются один раз в картинку фона)
 function drawBgScenery(g, th) {
   if (BOMB_DECOR[th.decor]) { drawBombScenery(g, th); return; }
+  if (PUZ_DECOR[th.decor]) { drawPuzScenery(g, th); return; }
   const U = Math.min(W, H);
   if (th.decor === 'dunes') {
     // солнце и три слоя барханов
@@ -3673,7 +3848,8 @@ function getGlow(color) {
 /* ---------- Анимированный декор фона ---------- */
 const DECOR_COUNT = { squares: 16, bokeh: 14, bubbles: 20, fireflies: 24, stars: 70, embers: 32, snow: 55,
   synthwave: 30, petals: 26, aurora: 50, glitter: 34, dunes: 30, galaxy: 80, pixelsky: 6, blackhole: 50, brainrot: 10,
-  gummies: 14, holo: 12, volcano: 36, reef: 22, rainbow: 40, storm: 70, camo: 9, fuse: 45, canyon: 26, radar: 14, fallout: 38 };
+  gummies: 14, holo: 12, volcano: 36, reef: 22, rainbow: 40, storm: 70, camo: 9, fuse: 45, canyon: 26, radar: 14, fallout: 38,
+  jigsaw: 10, blueprint: 16, chess: 30, crystal: 36 };
 let shootStar = null;                   // падающая звезда темы «Галактика»
 function getDecor(ti) {
   let arr = decorSets.get(ti);
@@ -3702,6 +3878,7 @@ function drawDecor(ti, now, dt) {
   else if (kind === 'galaxy') drawShootingStar(ts, dt, U);
   else if (kind === 'holo') drawSynthGrid({ glow: `hsl(${(ts * 40) % 360},100%,70%)` }, ts);
   if (BOMB_DECOR[kind]) { BOMB_DECOR[kind](arr, ts, dt, U); ctx.restore(); return; }
+  if (PUZ_DECOR[kind]) { PUZ_DECOR[kind](arr, ts, dt, U); ctx.restore(); return; }
   for (const d of arr) {
     switch (kind) {
       case 'synthwave': case 'aurora': case 'galaxy': case 'blackhole':
@@ -4121,6 +4298,264 @@ const BOMB_DECOR = {
     ctx.globalCompositeOperation = 'source-over';
   },
 };
+/* ---------- Фон тем «Головоломки» ---------- */
+// Контур детали пазла: tabs — [верх, право, низ, лево], 1 — выступ, -1 — впадина, 0 — ровный край
+function jigPath(g, x, y, s, tabs) {
+  const sides = [[x, y, s, 0, 0, -s], [x + s, y, 0, s, s, 0], [x + s, y + s, -s, 0, 0, s], [x, y + s, 0, -s, -s, 0]];
+  g.beginPath(); g.moveTo(x, y);
+  sides.forEach(([ox, oy, ex, ey, nx, ny], k) => {
+    const d = tabs[k] * 0.24, P = (u, v) => [ox + ex * u + nx * v, oy + ey * u + ny * v];
+    if (d) {
+      g.lineTo(...P(0.37, 0));
+      g.bezierCurveTo(...P(0.42, d * 0.25), ...P(0.24, d), ...P(0.5, d));
+      g.bezierCurveTo(...P(0.76, d), ...P(0.58, d * 0.25), ...P(0.63, 0));
+    }
+    g.lineTo(...P(1, 0));
+  });
+  g.closePath();
+}
+function gearPath(g, cx, cy, r, teeth, rot) {
+  g.beginPath();
+  for (let i = 0; i < teeth * 4; i++) {
+    const a = rot + i / (teeth * 4) * Math.PI * 2, rr = (i % 4 < 2) ? r : r * 0.82;
+    i ? g.lineTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr) : g.moveTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr);
+  }
+  g.closePath();
+  g.moveTo(cx + r * 0.32, cy); g.arc(cx, cy, r * 0.32, 0, Math.PI * 2);
+}
+function crystalShard(g, x, y, w, h, ang, c1, c2) {
+  g.save(); g.translate(x, y); g.rotate(ang);
+  const t = h * 0.2;
+  g.beginPath(); g.moveTo(-w / 2, 0); g.lineTo(-w / 2, -h + t); g.lineTo(0, -h); g.lineTo(0, 0); g.closePath();
+  g.fillStyle = c1; g.fill();
+  g.beginPath(); g.moveTo(0, 0); g.lineTo(0, -h); g.lineTo(w / 2, -h + t); g.lineTo(w / 2, 0); g.closePath();
+  g.fillStyle = c2; g.fill();
+  g.strokeStyle = 'rgba(255,255,255,0.5)'; g.lineWidth = Math.max(1, w * 0.04);
+  g.beginPath(); g.moveTo(0, 0); g.lineTo(0, -h); g.stroke();
+  g.restore();
+}
+function drawPuzScenery(g, th) {
+  const U = Math.min(W, H), k = th.decor;
+  if (k === 'jigsaw') {
+    // пробковая доска: крапинки, готовые куски пазла по углам и кнопки
+    const rnd = seeded(913), n = Math.min(2200, Math.round(W * H / 120));
+    for (let i = 0; i < n; i++) {
+      const v = rnd();
+      g.fillStyle = v < 0.5 ? 'rgba(90,55,25,0.35)' : v < 0.8 ? 'rgba(235,190,130,0.3)' : 'rgba(60,35,15,0.4)';
+      const r = 0.6 + rnd() * 1.6;
+      g.fillRect(W * rnd(), H * rnd(), r, r);
+    }
+    const cols = ['#e2574c', '#f2b134', '#4fae5b', '#3a8fd6', '#9b5bd0', '#ef7f3a'];
+    const s = U * 0.1;
+    const group = (gx, gy, cw, rh, seed) => {
+      const R = seeded(seed), tabsH = [], tabsV = [];
+      for (let y = 0; y <= rh; y++) for (let x = 0; x < cw; x++) tabsH[y * cw + x] = (y === 0 || y === rh) ? 0 : (R() < 0.5 ? 1 : -1);
+      for (let y = 0; y < rh; y++) for (let x = 0; x <= cw; x++) tabsV[y * (cw + 1) + x] = (x === 0 || x === cw) ? 0 : (R() < 0.5 ? 1 : -1);
+      for (let y = 0; y < rh; y++) for (let x = 0; x < cw; x++) {
+        if (R() < 0.18) continue;
+        const tabs = [-tabsH[y * cw + x], tabsV[y * (cw + 1) + x + 1], tabsH[(y + 1) * cw + x], -tabsV[y * (cw + 1) + x]];
+        const px = gx + x * s, py = gy + y * s, col = cols[(x + y * 2 + seed) % cols.length];
+        g.save(); g.translate(s * 0.05, s * 0.07); jigPath(g, px, py, s, tabs); g.fillStyle = 'rgba(40,20,5,0.35)'; g.fill(); g.restore();
+        jigPath(g, px, py, s, tabs);
+        const pg = g.createLinearGradient(px, py, px + s, py + s);
+        pg.addColorStop(0, mixHex(col, '#ffffff', 0.25)); pg.addColorStop(1, mixHex(col, '#000000', 0.15));
+        g.fillStyle = pg; g.fill();
+        g.strokeStyle = 'rgba(50,25,8,0.55)'; g.lineWidth = Math.max(1, U * 0.003); g.stroke();
+      }
+    };
+    group(-s * 0.4, -s * 0.3, 3, 2, 3);
+    group(W - s * 2.6, H - s * 1.7, 3, 2, 8);
+    group(W - s * 1.6, -s * 0.5, 2, 2, 5);
+    group(-s * 0.6, H - s * 2.2, 2, 3, 11);
+    const pin = (x, y, c) => {
+      g.fillStyle = 'rgba(40,20,5,0.35)'; g.beginPath(); g.ellipse(x + U * 0.008, y + U * 0.012, U * 0.016, U * 0.012, 0, 0, Math.PI * 2); g.fill();
+      const pg = g.createRadialGradient(x - U * 0.005, y - U * 0.006, 0, x, y, U * 0.016);
+      pg.addColorStop(0, mixHex(c, '#ffffff', 0.6)); pg.addColorStop(0.5, c); pg.addColorStop(1, mixHex(c, '#000000', 0.4));
+      g.fillStyle = pg; g.beginPath(); g.arc(x, y, U * 0.016, 0, Math.PI * 2); g.fill();
+    };
+    pin(W * 0.08, H * 0.42, '#e23b3b'); pin(W * 0.93, H * 0.36, '#2f7de0'); pin(W * 0.12, H * 0.07 + s * 1.6, '#f0c020'); pin(W * 0.9, H * 0.66, '#3bbf5a');
+    // тень по краям доски
+    const vg = g.createRadialGradient(W / 2, H / 2, U * 0.4, W / 2, H / 2, Math.hypot(W, H) * 0.6);
+    vg.addColorStop(0, 'rgba(60,30,10,0)'); vg.addColorStop(1, 'rgba(60,30,10,0.45)');
+    g.fillStyle = vg; g.fillRect(0, 0, W, H);
+  } else if (k === 'blueprint') {
+    // сетка и чертежи белыми линиями
+    const step = U * 0.03;
+    g.lineWidth = 1;
+    for (let i = 0, x = 0; x < W; x += step, i++) { g.strokeStyle = i % 5 ? 'rgba(190,225,255,0.08)' : 'rgba(190,225,255,0.18)'; g.beginPath(); g.moveTo(x + 0.5, 0); g.lineTo(x + 0.5, H); g.stroke(); }
+    for (let i = 0, y = 0; y < H; y += step, i++) { g.strokeStyle = i % 5 ? 'rgba(190,225,255,0.08)' : 'rgba(190,225,255,0.18)'; g.beginPath(); g.moveTo(0, y + 0.5); g.lineTo(W, y + 0.5); g.stroke(); }
+    g.strokeStyle = 'rgba(225,242,255,0.38)'; g.fillStyle = 'rgba(225,242,255,0.45)';
+    g.lineWidth = Math.max(1, U * 0.003);
+    g.font = `700 ${Math.round(U * 0.022)}px monospace`;
+    // окружность с осями и размером
+    const cx = W * 0.82, cy = H * 0.1, r = U * 0.09;
+    g.beginPath(); g.arc(cx, cy, r, 0, Math.PI * 2); g.stroke();
+    g.beginPath(); g.arc(cx, cy, r * 0.45, 0, Math.PI * 2); g.stroke();
+    g.setLineDash([U * 0.012, U * 0.008]);
+    g.beginPath(); g.moveTo(cx - r * 1.3, cy); g.lineTo(cx + r * 1.3, cy); g.moveTo(cx, cy - r * 1.3); g.lineTo(cx, cy + r * 1.3); g.stroke();
+    g.setLineDash([]);
+    g.beginPath(); g.moveTo(cx - r, cy + r * 1.5); g.lineTo(cx + r, cy + r * 1.5); g.stroke();
+    for (const sx of [-1, 1]) { g.beginPath(); g.moveTo(cx + sx * r, cy + r * 1.5); g.lineTo(cx + sx * (r - U * 0.012), cy + r * 1.5 - U * 0.006); g.lineTo(cx + sx * (r - U * 0.012), cy + r * 1.5 + U * 0.006); g.closePath(); g.fill(); }
+    g.textAlign = 'center'; g.fillText('Ø48', cx, cy + r * 1.5 - U * 0.012);
+    // шестерня
+    gearPath(g, W * 0.12, H * 0.88, U * 0.1, 12, 0.1); g.stroke();
+    gearPath(g, W * 0.12 + U * 0.17, H * 0.88 - U * 0.06, U * 0.065, 9, 0.3); g.stroke();
+    // деталь с отверстиями
+    const px = W * 0.04, py = H * 0.06, pw = U * 0.22, ph = U * 0.12;
+    g.strokeRect(px, py, pw, ph);
+    for (const fx of [0.2, 0.8]) { g.beginPath(); g.arc(px + pw * fx, py + ph / 2, ph * 0.18, 0, Math.PI * 2); g.stroke(); }
+    g.beginPath(); g.moveTo(px, py + ph + U * 0.02); g.lineTo(px + pw, py + ph + U * 0.02); g.stroke();
+    g.fillText('120', px + pw / 2, py + ph + U * 0.045);
+    // штамп в углу
+    const bw = U * 0.3, bh = U * 0.1, bx = W - bw - U * 0.03, by = H - bh - U * 0.03;
+    g.strokeRect(bx, by, bw, bh);
+    g.beginPath(); g.moveTo(bx, by + bh * 0.5); g.lineTo(bx + bw, by + bh * 0.5); g.moveTo(bx + bw * 0.6, by); g.lineTo(bx + bw * 0.6, by + bh); g.stroke();
+    g.textAlign = 'left'; g.fillText('ГОЛОВОЛОМКА', bx + U * 0.01, by + bh * 0.36); g.fillText('ЛИСТ 1', bx + bw * 0.62, by + bh * 0.36);
+    g.fillText('М 1:1', bx + U * 0.01, by + bh * 0.84);
+  } else if (k === 'chess') {
+    // доски тёмного дерева, шахматный пол в перспективе и силуэты фигур
+    const rnd = seeded(321), pw = U * 0.12;
+    for (let x = 0; x < W; x += pw) {
+      g.fillStyle = `rgba(${rnd() < 0.5 ? '0,0,0' : '255,220,170'},${0.03 + rnd() * 0.05})`; g.fillRect(x, 0, pw, H);
+      g.fillStyle = 'rgba(0,0,0,0.25)'; g.fillRect(x, 0, 1, H);
+      g.strokeStyle = 'rgba(0,0,0,0.12)'; g.lineWidth = 1;
+      for (let j = 0; j < 5; j++) { const xx = x + pw * rnd(); g.beginPath(); g.moveTo(xx, 0); g.bezierCurveTo(xx + pw * 0.2, H * 0.3, xx - pw * 0.2, H * 0.6, xx + pw * 0.1, H); g.stroke(); }
+    }
+    const hz = H * 0.7, vx = W / 2, rows = 6, cols = 12;
+    const yAt = t => hz + (H - hz) * t * t, cw = W * 1.6 / cols;
+    for (let i = 0; i < rows; i++) for (let j = 0; j < cols; j++) {
+      const t0 = i / rows, t1 = (i + 1) / rows, y0 = yAt(t0), y1 = yAt(t1);
+      const sx = (jj, t) => vx + (jj * cw - W * 0.8) * (0.25 + 0.75 * t);
+      g.beginPath(); g.moveTo(sx(j, t0 * t0), y0); g.lineTo(sx(j + 1, t0 * t0), y0); g.lineTo(sx(j + 1, t1 * t1), y1); g.lineTo(sx(j, t1 * t1), y1); g.closePath();
+      g.fillStyle = (i + j) % 2 ? 'rgba(20,10,4,0.55)' : 'rgba(240,210,160,0.22)'; g.fill();
+    }
+    const fade = g.createLinearGradient(0, hz - U * 0.05, 0, hz + U * 0.12);
+    fade.addColorStop(0, th.bg[2]); fade.addColorStop(1, rgba(th.bg[2], 0));
+    g.fillStyle = fade; g.fillRect(0, hz - U * 0.05, W, U * 0.17);
+    const piece = (x, by, s, kind) => {
+      g.save(); g.translate(x, by); g.scale(s, s);
+      g.beginPath();
+      g.moveTo(-0.5, 0); g.lineTo(0.5, 0); g.lineTo(0.42, -0.12); g.lineTo(0.3, -0.16); g.lineTo(0.2, -0.22);
+      if (kind === 'king') {
+        g.lineTo(0.14, -0.75); g.lineTo(0.28, -0.82); g.lineTo(0.22, -0.95); g.lineTo(0.06, -1.0); g.lineTo(0.06, -1.1); g.lineTo(0.14, -1.1); g.lineTo(0.14, -1.18);
+        g.lineTo(0.06, -1.18); g.lineTo(0.06, -1.28); g.lineTo(-0.06, -1.28); g.lineTo(-0.06, -1.18); g.lineTo(-0.14, -1.18); g.lineTo(-0.14, -1.1); g.lineTo(-0.06, -1.1);
+        g.lineTo(-0.06, -1.0); g.lineTo(-0.22, -0.95); g.lineTo(-0.28, -0.82); g.lineTo(-0.14, -0.75);
+      } else if (kind === 'rook') {
+        g.lineTo(0.18, -0.7); g.lineTo(0.28, -0.74); g.lineTo(0.28, -0.95); g.lineTo(0.17, -0.95); g.lineTo(0.17, -0.87); g.lineTo(0.06, -0.87); g.lineTo(0.06, -0.95);
+        g.lineTo(-0.06, -0.95); g.lineTo(-0.06, -0.87); g.lineTo(-0.17, -0.87); g.lineTo(-0.17, -0.95); g.lineTo(-0.28, -0.95); g.lineTo(-0.28, -0.74); g.lineTo(-0.18, -0.7);
+      } else if (kind === 'knight') {
+        g.lineTo(0.22, -0.5); g.quadraticCurveTo(0.3, -0.85, 0.05, -1.0); g.lineTo(0.0, -1.1); g.lineTo(-0.08, -0.98);
+        g.quadraticCurveTo(-0.3, -0.9, -0.38, -0.7); g.lineTo(-0.36, -0.62); g.quadraticCurveTo(-0.25, -0.6, -0.12, -0.66); g.quadraticCurveTo(-0.2, -0.45, -0.22, -0.22);
+      } else {
+        g.lineTo(0.12, -0.55); g.lineTo(0.2, -0.58); g.lineTo(0.12, -0.62);
+        g.arc(0, -0.74, 0.15, 0.6, Math.PI - 0.6, true);
+        g.lineTo(-0.2, -0.58); g.lineTo(-0.12, -0.55);
+      }
+      g.lineTo(-0.2, -0.22); g.lineTo(-0.3, -0.16); g.lineTo(-0.42, -0.12); g.closePath();
+      const pg = g.createLinearGradient(-0.5, 0, 0.5, 0);
+      pg.addColorStop(0, '#120a05'); pg.addColorStop(0.7, '#2a1a0e'); pg.addColorStop(1, '#5a3a1e');
+      g.fillStyle = pg; g.fill();
+      g.lineWidth = 0.025; g.strokeStyle = 'rgba(255,214,140,0.55)'; g.stroke();
+      g.restore();
+    };
+    piece(W * 0.1, H * 0.97, U * 0.24, 'king');
+    piece(W * 0.88, H * 0.96, U * 0.21, 'knight');
+    piece(W * 0.26, H * 0.93, U * 0.13, 'pawn');
+    piece(W * 0.72, H * 0.92, U * 0.15, 'rook');
+    // мягкий свет сверху
+    const lg = g.createRadialGradient(W / 2, -H * 0.1, 0, W / 2, -H * 0.1, H * 0.7);
+    lg.addColorStop(0, 'rgba(255,214,150,0.22)'); lg.addColorStop(1, 'rgba(255,214,150,0)');
+    g.fillStyle = lg; g.fillRect(0, 0, W, H);
+  } else if (k === 'crystal') {
+    // пещера: тёмные своды и друзы кристаллов по углам
+    const vg = g.createRadialGradient(W / 2, H * 0.45, U * 0.3, W / 2, H * 0.45, Math.hypot(W, H) * 0.6);
+    vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,0.55)');
+    g.fillStyle = vg; g.fillRect(0, 0, W, H);
+    const rnd = seeded(77);
+    const pal = [['#b98cff', '#5a2aa8'], ['#7ae0ff', '#2a6aa8'], ['#ff8fd8', '#9a2a7a'], ['#d8b8ff', '#6a3ab8']];
+    const cluster = (x, y, n, sz, up) => {
+      const gl = g.createRadialGradient(x, y, 0, x, y, sz * 1.6);
+      gl.addColorStop(0, 'rgba(197,140,255,0.35)'); gl.addColorStop(1, 'rgba(197,140,255,0)');
+      g.fillStyle = gl; g.fillRect(x - sz * 1.6, y - sz * 1.6, sz * 3.2, sz * 3.2);
+      for (let i = 0; i < n; i++) {
+        const [c1, c2] = pal[(rnd() * pal.length) | 0];
+        const ang = (rnd() - 0.5) * 1.3 + (up ? 0 : Math.PI);
+        crystalShard(g, x + (rnd() - 0.5) * sz * 0.9, y, sz * (0.18 + 0.14 * rnd()), sz * (0.5 + 0.7 * rnd()), ang, c1, c2);
+      }
+    };
+    cluster(W * 0.08, H * 1.0, 9, U * 0.3, true);
+    cluster(W * 0.92, H * 1.0, 8, U * 0.26, true);
+    cluster(W * 0.5, H * 1.02, 5, U * 0.18, true);
+    cluster(W * 0.1, 0, 6, U * 0.2, false);
+    cluster(W * 0.85, 0, 7, U * 0.22, false);
+  }
+}
+// Анимация фона тем «Головоломки» (в лёгком режиме не вызывается)
+const PUZ_DECOR = {
+  jigsaw(arr, ts, dt, U) {
+    // медленно всплывающие прозрачные детали пазла
+    const cols = ['#ffe0b0', '#ffffff', '#ffd08a'];
+    for (const d of arr) {
+      d.y -= dt * 0.012 * d.sp; d.r += dt * 0.15 * (d.sp - 1);
+      if (d.y < -0.1) { d.y = 1.1; d.x = Math.random(); }
+      const s = U * (0.035 + 0.035 * d.s);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.translate(d.x * W + Math.sin(ts * 0.5 + d.ph) * U * 0.02, d.y * H); ctx.rotate(d.r);
+      ctx.globalAlpha = 0.16 + 0.1 * d.s;
+      jigPath(ctx, -s / 2, -s / 2, s, [d.ph > 3 ? 1 : -1, 1, d.s > 0.5 ? 1 : -1, -1]);
+      ctx.fillStyle = cols[(d.ph * 10 | 0) % 3]; ctx.fill();
+    }
+  },
+  blueprint(arr, ts, dt, U) {
+    // крутятся шестерни, по узлам сетки мигают метки
+    ctx.strokeStyle = 'rgba(225,242,255,0.5)'; ctx.lineWidth = Math.max(1, U * 0.003);
+    ctx.globalAlpha = 1;
+    gearPath(ctx, W * 0.12, H * 0.88, U * 0.1, 12, 0.1 + ts * 0.25); ctx.stroke();
+    gearPath(ctx, W * 0.12 + U * 0.17, H * 0.88 - U * 0.06, U * 0.065, 9, 0.3 - ts * 0.25 * 12 / 9); ctx.stroke();
+    const step = U * 0.03;
+    for (const d of arr) {
+      const a = 0.5 + 0.5 * Math.sin(ts * 1.2 * d.sp + d.ph);
+      if (a < 0.4) continue;
+      const x = Math.round(d.x * W / step) * step, y = Math.round(d.y * H / step) * step, L = step * 0.35;
+      ctx.globalAlpha = (a - 0.4) * 1.2;
+      ctx.beginPath(); ctx.moveTo(x - L, y); ctx.lineTo(x + L, y); ctx.moveTo(x, y - L); ctx.lineTo(x, y + L); ctx.stroke();
+    }
+  },
+  chess(arr, ts, dt, U) {
+    // тёплые пылинки в луче света
+    ctx.globalCompositeOperation = 'lighter';
+    for (const d of arr) {
+      d.y += dt * 0.01 * (d.sp - 0.9); d.x += dt * 0.006 * Math.sin(ts * 0.3 + d.ph);
+      if (d.y > 1.05) d.y = -0.05; if (d.y < -0.05) d.y = 1.05;
+      if (d.x > 1.05) d.x = -0.05; if (d.x < -0.05) d.x = 1.05;
+      const sz = U * (0.006 + 0.01 * d.s);
+      ctx.globalAlpha = 0.25 + 0.4 * Math.abs(Math.sin(ts * 0.9 * d.sp + d.ph));
+      ctx.drawImage(getGlow('#ffd08a'), d.x * W - sz, d.y * H - sz, sz * 2, sz * 2);
+    }
+    ctx.globalCompositeOperation = 'source-over';
+  },
+  crystal(arr, ts, dt, U) {
+    // искры-звёздочки и поднимающиеся огоньки
+    ctx.globalCompositeOperation = 'lighter';
+    for (const d of arr) {
+      if (d.s > 0.5) {
+        const a = Math.max(0, Math.sin(ts * 1.4 * d.sp + d.ph));
+        if (a < 0.05) continue;
+        const x = d.x * W, y = d.y * H, L = U * (0.01 + 0.02 * d.s) * a;
+        ctx.globalAlpha = a;
+        ctx.fillStyle = '#f0e0ff';
+        ctx.beginPath(); ctx.moveTo(x, y - L); ctx.lineTo(x + L * 0.15, y - L * 0.15); ctx.lineTo(x + L, y); ctx.lineTo(x + L * 0.15, y + L * 0.15);
+        ctx.lineTo(x, y + L); ctx.lineTo(x - L * 0.15, y + L * 0.15); ctx.lineTo(x - L, y); ctx.lineTo(x - L * 0.15, y - L * 0.15); ctx.closePath(); ctx.fill();
+      } else {
+        d.y -= dt * 0.02 * d.sp; if (d.y < -0.05) { d.y = 1.05; d.x = Math.random(); }
+        const sz = U * (0.006 + 0.012 * d.s);
+        ctx.globalAlpha = 0.5 + 0.4 * Math.sin(ts * 2 * d.sp + d.ph);
+        ctx.drawImage(getGlow(d.ph > 3 ? '#c58cff' : '#7ae0ff'), d.x * W - sz, d.y * H - sz, sz * 2, sz * 2);
+      }
+    }
+    ctx.globalCompositeOperation = 'source-over';
+  },
+};
 // Неоновая сетка: пол и потолок бегут навстречу от горизонта в центре поля
 function drawSynthGrid(th, ts) {
   const hz = boardY + boardH / 2, ph = (ts * 0.22) % 1;
@@ -4387,7 +4822,7 @@ function frame(now) {
   }
 
   // Подсказка, если игрок задумался (только в классике)
-  if (mode !== 'sand' && settings.hints && state === 'play' && !paused && !drag && !hint && settingsOv.hidden) {
+  if (mode !== 'sand' && mode !== 'puzzle' && settings.hints && state === 'play' && !paused && !drag && !hint && settingsOv.hidden) {
     const delay = best === 0 && score < 60 ? HINT_DELAY_FIRST : HINT_DELAY;
     if (now - idleT > delay && hand.every(h => !h || now > h.t0 + 400)) {
       hint = computeHint();
@@ -4450,10 +4885,12 @@ function drawBackground(now) {
   if (tp < 1) {
     // Смена темы: новая тема раскрывается кругом от центра поля
     const cx = boardX + board / 2, cy = boardY + boardH / 2, R = Math.max(0.1, themeRadius(tp));
-    bctx.drawImage(getBgImage(themeFx.prev), 0, 0, W, H);
+    // обе картинки готовим до clip(), чтобы ошибка внутри не оставила обрезку на холсте
+    const prevImg = getBgImage(themeFx.prev), curImg = getBgImage(themeIdx);
+    bctx.drawImage(prevImg, 0, 0, W, H);
     bctx.save();
     bctx.beginPath(); bctx.arc(cx, cy, R, 0, Math.PI * 2); bctx.clip();
-    bctx.drawImage(getBgImage(themeIdx), 0, 0, W, H);
+    bctx.drawImage(curImg, 0, 0, W, H);
     bctx.restore();
     bctx.save();
     bctx.globalCompositeOperation = 'lighter';
@@ -4482,14 +4919,13 @@ function isActive(now) {
 }
 
 // Автопроверка: если первые секунды игры идут ниже ~40 FPS — включаем лёгкий режим
-const perf = { start: 0, samples: [] };
+const perf = { t: 0, samples: [] };
 function autoLite(now, dt) {
   if (settings.lite || settings.liteChecked || document.hidden || paused) return;
-  if (!perf.start) perf.start = now;
-  const t = now - perf.start;
-  if (t < 1500) return;
+  perf.t += Math.min(dt, 0.25) * 1000;   // только время активной игры (пауза и настройки не считаются)
+  if (perf.t < 1500) return;
   perf.samples.push(dt * 1000);
-  if (t < 5000) return;
+  if (perf.t < 5000 || perf.samples.length < 60) return;
   const s = perf.samples.sort((a, b) => a - b), med = s[s.length >> 1];
   settings.liteChecked = true;
   if (med > 24) {
@@ -5060,7 +5496,7 @@ function refreshSandFit() {
     if (!h) continue;
     const pc = SHAPE_COLS[h.s];
     h.fit = false;
-    for (let gx = 0; gx <= SCOLS - pc.w && !h.fit; gx += 2) if (sandMaxY(h.s, gx) >= 0) h.fit = true;
+    for (let gx = 0; gx <= SCOLS - pc.w && !h.fit; gx++) if (sandMaxY(h.s, gx) >= 0) h.fit = true;
   }
 }
 
@@ -5245,7 +5681,7 @@ function sandPlace(i, gx, gy) {
   const pan = ((gx + pc.w / 2) / SCOLS - 0.5) * 1.2;
   sfx('place', SHAPES[h.s].n, pan); sfx('sandPour', pan); vib(10);
   sand.chain = 0; sand.phase = 'falling'; sand.dirty = true;
-  checkBest(); updateSandBar(); updateHint();
+  checkBest(); sandCheckLevel(); updateHint();
 }
 function sandUpdate(now) {
   if (paused || state === 'over') return;
@@ -5305,7 +5741,6 @@ function sandMoveEnd(now) {
     addText('All Clear!', boardX + board / 2, boardY + boardH * 0.45, 'gold', 150);
     addText('+' + bonus, boardX + board / 2, boardY + boardH * 0.58, 'score', 300);
     allClearBurst(now + 60); sfx('allClear'); vib(70);
-    setTimeout(() => changeTheme(nextTheme()), 450);
     checkBest(); sandCheckLevel();
   }
   sand.chain = 0;
@@ -5382,10 +5817,17 @@ function sandRevive() {
     sand.hand.forEach((h, k) => { h.t0 = now + 400 + k * 90; });
   }
   refreshSandFit();
+  // оставшиеся фигуры могут не влезть и после расчистки — тогда даём новые
+  if (!sand.hand.some(h => h && h.fit)) {
+    sand.hand = sandGenerateHand();
+    sand.hand.forEach((h, k) => { h.t0 = now + 400 + k * 90; });
+    refreshSandFit();
+  }
   sfx('revive'); vib(40);
   if (engine) engine.duck(false);
   addText('Второй шанс!', boardX + board / 2, boardY + boardH * 0.45, 'gold', 100);
   save();
+  if (!sand.hand.some(h => h && h.fit)) triggerNoMoves('Нет места!');   // второй шанс уже использован — конец игры
 }
 
 /* ---------- Сохранение песка ---------- */
@@ -5401,7 +5843,7 @@ function snapSand() {
     best,
     game: state !== 'over' ? {
       cells, w: SCOLS, hand: sand.hand.map(h => h ? [h.s, h.k] : null),
-      score, level: sand.level, sb: startBest, nbs: newBestShown, lines: linesTotal, mc: maxCombo, ru: reviveUsed,
+      score, level: sand.level, sb: startBest, nbs: newBestShown, lines: linesTotal, mc: maxCombo, ru: reviveUsed, ch: sand.chain,
     } : null,
   };
 }
@@ -5421,13 +5863,13 @@ function loadSand(snap) {
   }
   sand.hand = [0, 1, 2].map(k => {
     const h = (g.hand || [])[k];
-    return Array.isArray(h) && SHAPES[h[0]] && h[1] >= 1 && h[1] <= SAND_COLOR_IDX.length ? makeSandPiece(h[0], h[1]) : null;
+    return Array.isArray(h) && Number.isInteger(h[0]) && SHAPES[h[0]] && Number.isInteger(h[1]) && h[1] >= 1 && h[1] <= SAND_COLOR_IDX.length ? makeSandPiece(h[0], h[1]) : null;
   });
   score = Math.max(0, +g.score || 0); displayScore = score; banked = score;
-  sand.level = Math.max(0, Math.min(LEVELS.length - 1, +g.level || 0));
+  sand.level = Math.max(0, Math.min(LEVELS.length - 1, g.level | 0));
   startBest = g.sb != null ? +g.sb : best; newBestShown = !!g.nbs;
   linesTotal = +g.lines || 0; maxCombo = +g.mc || 0; reviveUsed = !!g.ru;
-  state = 'play'; overT0 = 0; sand.chain = 0; sand.clearCells = null;
+  state = 'play'; overT0 = 0; sand.chain = Math.max(0, Math.min(99, +g.ch | 0)); sand.clearCells = null;
   sand.phase = 'falling';                 // досыпаем песок, если сохранились посреди падения
   sand.dirty = true;
   const now = performance.now();
@@ -5710,20 +6152,23 @@ function sandDraw(now, dt) {
 function switchMode(m, initial) {
   if (m === mode) return;
   drag = null; hint = null; epoch++;
-  if (mode === 'sand') stash.sand = snapSand(); else stash[mode] = snapClassic();
+  if (mode === 'sand') stash.sand = snapSand(); else if (mode === 'puzzle') puz.game = puzSnap(); else stash[mode] = snapClassic();
   mode = m; settings.mode = m;
   const t = themeOk(themeByMode[m]) ? themeByMode[m] : defaultTheme(m);   // у каждого режима своя тема
   if (t !== themeIdx) setTheme(t, !initial);
   clearAnims = []; flashes = []; particles = []; sparkles = []; texts = []; rings = [];
   placeAnims.clear(); shake.amp = 0;
-  overOv.hidden = true; reviveOv.hidden = true;
+  bombs.clear();   // бомбы партии уже лежат в stash.bomb и вернутся через applyClassic
+  overOv.hidden = true; reviveOv.hidden = true; puzOv.hidden = true; lvlOv.hidden = true;
   layout();
   if (m === 'sand') loadSand(stash.sand || readSandStore());
+  else if (m === 'puzzle') puzLoad();
   else if (applyClassic(m === 'bomb' ? stash.bomb || readBombStore() : stash.classic)) {
     refreshFit();
-    if (!hand.some(h => h && h.fit)) triggerNoMoves();
+    if (pendingNm || !hand.some(h => h && h.fit)) triggerNoMoves(pendingNm || undefined);
   } else { state = 'play'; grid.fill(-1); newGame(); }
   gameLogged = state === 'over';
+  if (engine && state === 'play') engine.duck(false);
   bestEl.textContent = best;
   scoreEl.textContent = displayScore;
   updateModeUi(); updateComboUI('reset'); updateHint();
@@ -5732,7 +6177,9 @@ function switchMode(m, initial) {
 function updateModeUi() {
   const sandMode = mode === 'sand';
   sandBar.classList.toggle('hidden', !sandMode);
-  if (sandMode) comboBadge.classList.add('hidden');
+  puzBar.classList.toggle('hidden', mode !== 'puzzle');
+  if (sandMode || mode === 'puzzle') comboBadge.classList.add('hidden');
+  bestBox.querySelector('use').setAttribute('href', mode === 'puzzle' ? '#starIco' : '#crown');
   $('modeName').textContent = MODE_NAME[mode];
   renderThemePicker();
   document.querySelectorAll('.mode-card').forEach(b => {
@@ -5744,6 +6191,7 @@ function updateModeUi() {
     : mode === 'bomb' ? 'Обезвредим все бомбы, уберём 3 самые заполненные линии и дадим новые фигуры. Второй шанс — один раз за игру.'
     : 'Уберём 3 самые заполненные линии и дадим новые фигуры. Второй шанс — один раз за игру.';
   if (sandMode) updateSandBar();
+  updatePuzBar();
 }
 function shakeOffset(now) {
   if (!shake.amp) return [0, 0];
@@ -5791,7 +6239,8 @@ $('btnGiveUp').addEventListener('click', () => { ensureAudio(); sfx('tap'); give
 $('btnAgain').addEventListener('click', () => { ensureAudio(); sfx('tap'); overOv.hidden = true; newGame(); });
 window.addEventListener('keydown', e => {
   if (e.key === 'Escape' && !lbOv.hidden) { closeLb(); return; }
-  if (e.key === 'Escape' && overOv.hidden && reviveOv.hidden) settingsOv.hidden ? openSettings() : closeSettings();
+  if (e.key === 'Escape' && !lvlOv.hidden) { lvlOv.hidden = true; return; }
+  if (e.key === 'Escape' && overOv.hidden && reviveOv.hidden && puzOv.hidden) settingsOv.hidden ? openSettings() : closeSettings();
 });
 
 /* =====================================================================
@@ -5830,7 +6279,7 @@ function lbSeed() {
 }
 // Партия закончилась (или начата заново) — записываем результат один раз
 function logGame() {
-  if (gameLogged || score <= 0) return;
+  if (gameLogged || score <= 0 || mode === 'puzzle') return;
   gameLogged = true;
   const r = lbMode(mode), e = { s: score, c: maxCombo, d: Date.now() };
   r.score.push(e); r.score.sort((a, b) => b.s - a.s || (b.c || 0) - (a.c || 0)); r.score.length = Math.min(r.score.length, 10);
@@ -5852,12 +6301,14 @@ async function lbSubmit(m) {
   const r = lb[m];
   if (!lbOnline() || !lb.nick || !r || !(r.bs || r.bc)) return false;
   try {
+    const bs = r.bs || 0, bc = r.bc || 0, nick = lb.nick;
     const res = await fetch(LB_URL + '/rest/v1/rpc/submit_score', {
       method: 'POST', headers: lbHeaders(),
-      body: JSON.stringify({ p_id: lbPlayerId(), p_mode: m, p_name: lb.nick, p_score: r.bs || 0, p_combo: r.bc || 0 }),
+      body: JSON.stringify({ p_id: lbPlayerId(), p_mode: m, p_name: nick, p_score: bs, p_combo: bc }),
     });
     if (!res.ok) return false;
-    r.unsent = false; lbSave();
+    // отмечаем «отправлено», только если за время запроса рекорд и имя не поменялись
+    if ((r.bs || 0) === bs && (r.bc || 0) === bc && lb.nick === nick) { r.unsent = false; lbSave(); }
     return true;
   } catch (_) { return false; }
 }
@@ -5893,6 +6344,7 @@ function lbSegs() {
   $('lbHeadName').textContent = lbView.scope === 'all' ? 'Игрок' : 'Дата';
 }
 async function renderLb() {
+  const req = ++lbView.req;   // любой новый вид отменяет ожидающий ответ сервера
   lbSegs();
   const { m, sort, scope } = lbView, key = sort === 'combo' ? 'c' : 's';
   nickForm.hidden = scope !== 'all';
@@ -5911,7 +6363,6 @@ async function renderLb() {
     ? 'В общей таблице — лучший результат каждого игрока.'
     : 'Введите имя, чтобы ваши рекорды появились в общей таблице.';
   lbMessage('Загрузка…');
-  const req = ++lbView.req;
   try {
     const col = sort === 'combo' ? 'combo' : 'score', other = col === 'score' ? 'combo' : 'score';
     const res = await fetch(`${LB_URL}/rest/v1/scores?select=name,score,combo&mode=eq.${m}&order=${col}.desc,${other}.desc&limit=30`, { headers: lbHeaders(), cache: 'no-store' });
@@ -5928,7 +6379,7 @@ async function renderLb() {
   }
 }
 function openLb() {
-  lbView.m = mode; lbView.scope = 'me';
+  lbView.m = mode === 'puzzle' ? 'classic' : mode; lbView.scope = 'me';
   lbOv.hidden = false;
   if (lbOnline()) lbSync(false);
   renderLb();
@@ -5948,8 +6399,10 @@ nickForm.addEventListener('submit', e => {
   const nick = nickIn.value.replace(/\s+/g, ' ').trim().slice(0, 16);
   nickIn.blur();
   if (!nick) return;
-  lb.nick = nick; lbSave();
-  lbSync(true);
+  lb.nick = nick;
+  for (const m of ['classic', 'sand', 'bomb']) if (lb[m]) lb[m].unsent = true;
+  lbSave();
+  lbSync(false);
   setTimeout(renderLb, 600);
   sfx('tap');
 });
@@ -5957,6 +6410,219 @@ $('btnLb').addEventListener('click', openLb);
 $('btnOverLb').addEventListener('click', openLb);
 $('lbClose').addEventListener('click', closeLb);
 lbOv.addEventListener('click', e => { if (e.target === lbOv) closeLb(); });
+
+/* =====================================================================
+   Режим «Головоломка»: готовые уровни. На поле уже стоят блоки, фигуры
+   выдаются по очереди (в лотке 3, освободившийся слот сразу пополняется).
+   Цель — очистить всё поле. Звёзды: 3 — без отмен и перезапусков,
+   2 — до 3 отмен/перезапусков, 1 — больше. За каждую новую звезду —
+   PUZ_COIN очков в копилку «Головоломки». Главы открываются звёздами.
+   Уровни сгенерированы заранее «с конца» (gen/gen.cjs), у каждого есть решение.
+   ===================================================================== */
+const PUZ_KEY = 'blockblast.puzzle.v1';
+const PUZ_LEVELS = [{"b":"..5.......2.......4.......6.......................3.......2.....","p":[[2,3]],"k":1},{"b":"...2.......3.......2.......4.......................4.......4....","p":[[2,2]],"k":1},{"b":"1....3..........................4....2..4....1..6....3..2....3..","p":[[4,5],[4,5]],"k":2},{"b":"..1.............52.13356................34214.....1.......1.....","p":[[3,0],[8,3]],"k":2},{"b":"..25......51......56......65....30.25465450.0422..3.......12....","p":[[2,5],[15,3]],"k":2},{"b":"40324...6356514.40143..........0.......5.......2.......2.......3","p":[[3,5],[3,6],[4,6]],"k":3},{"b":"...4.0.3.....4.3.....1.3.....4.03232..02...5.......4.5.2...2.4.1","p":[[16,4],[2,5],[6,2]],"k":3},{"b":"...................421056..40115............4.......5.......2...","p":[[14,3],[1,6],[8,0],[35,6]],"k":3},{"b":".....0..55.6500164.0446450......52305.32.............3.......2..","p":[[4,3],[7,0],[12,1],[8,2]],"k":3},{"b":"65......44......64......45......6...56500.041150.5......0.....52","p":[[7,4],[13,1],[14,1],[5,1],[22,5]],"k":4},{"b":"...041.....056.......4.......1..2403..4446065.46...664.....650..","p":[[15,5],[30,3],[30,6],[28,1]],"k":3},{"b":"26633..4650.0..403....2326...443...66......26......61......41...","p":[[11,1],[25,3],[11,0],[33,2],[6,0]],"k":4},{"b":"...2.3.....0.4.....3.1.....0.4...2.......3...45..2...56..6...32.","p":[[14,2],[4,1],[6,6],[6,1],[30,4]],"k":4},{"b":"...60054...3120406...6.2....201....30011...61440...53..2...26646","p":[[1,0],[29,4],[5,4],[14,1],[2,4]],"k":4},{"b":".6660.62.3241....5621203.0230240..........323503.6...210.154....","p":[[23,1],[26,2],[3,3],[13,3],[6,5],[27,4]],"k":5},{"b":"..005.5...44..5...5..42.123.50.4....406....5466....4.42......65.","p":[[36,6],[12,0],[14,4],[6,3],[32,6],[5,6]],"k":5},{"b":"465335.3205..3.66..1.....2.124...206.2.4.524.3.5.614.3.64622.4.0","p":[[6,4],[2,3],[34,6],[4,0],[6,4],[16,5]],"k":5},{"b":"..........242422....343065546..565.255..554.4231..4.......4.....","p":[[9,4],[17,2],[21,0],[34,2],[4,6],[1,4],[7,6]],"k":5},{"b":".0......5..045530.5513.55...46...23.....3.0150201.521120..3.....","p":[[36,5],[13,1],[17,2],[22,6],[34,1],[36,0],[2,3]],"k":6},{"b":"011....0432....6216....4..4.2615..3550554.1..6.......5.3144..0.3","p":[[3,2],[31,3],[13,6],[10,3],[5,4],[4,4],[12,0],[8,6]],"k":6},{"b":"2015.....46.....6.02..32.264.....3305....4134...05204......55...","p":[[3,0],[14,6],[15,4],[3,0],[5,4],[2,1],[8,2]],"k":5},{"b":"15654...........40.....525...335416.6004354.....4250.124465...26","p":[[35,2],[3,6],[3,0],[32,4],[3,5],[3,3],[7,5],[3,6]],"k":6},{"b":"....54..1446..16....3.......0...15611.4634.34.1243.5340640.3.203","p":[[4,4],[21,5],[6,0],[26,4],[16,2],[23,2],[14,0],[1,2]],"k":6},{"b":".62..124.1...234.....356.6...62..01.22...6....3..1..3.5..6..6.64","p":[[32,1],[6,6],[4,6],[18,4],[14,1],[2,2],[24,4],[6,2]],"k":6},{"b":".53560...51.23...34......605206..44.345...5..22......50..20..50.","p":[[5,0],[2,6],[22,5],[11,5],[25,6],[22,2],[13,4],[5,3],[5,3]],"k":7},{"b":"..421004......15.....41.22...10.26...6..56603...0143...31022..12","p":[[9,5],[32,2],[36,6],[6,3],[10,2],[13,0],[34,6],[3,2],[5,1]],"k":7},{"b":"1...2..444.13.4644601.06...054...5.355...5..20..40....2161..6622","p":[[12,2],[19,2],[29,3],[2,4],[4,3],[1,6],[23,3],[6,0],[1,1]],"k":7},{"b":".4045......542....2..4....6..0.3525..0.024545..46352...342051.64","p":[[4,0],[28,2],[27,3],[12,4],[32,6],[24,4],[2,4],[14,2],[2,5],[6,0]],"k":8},{"b":"...646..465624.463.13305......2.251...6.165.......62203...213324","p":[[15,2],[33,1],[3,6],[9,3],[4,1],[16,0],[11,4],[28,5],[2,3],[3,0]],"k":8},{"b":"0....454..2203334.1416622.3...132512.1264423..1....525..255554.5","p":[[5,0],[36,1],[14,6],[31,5],[29,2],[4,6],[1,3],[29,0],[19,1],[8,6]],"k":8}];
+const PUZ_REQ = [0, 12, 35];            // сколько звёзд нужно, чтобы открыть главу
+const PUZ_COIN = 400;
+const PUZ_THEME0 = THEMES.findIndex(t => t.id === 'cork');
+themeByMode.puzzle = PUZ_THEME0;
+const puz = (() => {
+  let v = null;
+  try { v = JSON.parse(localStorage.getItem(PUZ_KEY)); } catch (_) {}
+  v = v && typeof v === 'object' ? v : {};
+  return {
+    stars: Array.isArray(v.stars) ? v.stars.map(n => Math.max(0, Math.min(3, n | 0))) : [],
+    lvl: Math.max(0, Math.min(PUZ_LEVELS.length - 1, v.lvl | 0)),
+    game: v.game && typeof v.game === 'object' ? v.game : null,
+    pens: v.pens && typeof v.pens === 'object' && !Array.isArray(v.pens) ? v.pens : {},   // штраф уровня до победы: не сбрасывается выходом в список и перезапуском игры
+    qi: 0, pen: 0, undo: [], won: false,
+  };
+})();
+function puzTotal() { return puz.stars.reduce((a, b) => a + (b || 0), 0); }
+function puzChapterOpen(ch) { return puzTotal() >= PUZ_REQ[ch]; }
+function puzOpen(i) { return i >= 0 && i < PUZ_LEVELS.length && puzChapterOpen(Math.floor(i / 10)) && (i === 0 || (puz.stars[i - 1] || 0) > 0 || (puz.stars[i] || 0) > 0); }
+function puzStarsFor(pen) { return pen === 0 ? 3 : pen <= 3 ? 2 : 1; }
+function puzSnap() {
+  if (state !== 'play') return null;
+  return { lvl: puz.lvl, grid: Array.from(grid), hand: hand.map(h => (h ? [h.s, h.c] : null)), qi: puz.qi, pen: puz.pen, score };
+}
+function puzSave() {
+  try { localStorage.setItem(PUZ_KEY, JSON.stringify({ stars: puz.stars, lvl: puz.lvl, game: mode === 'puzzle' ? puzSnap() : puz.game, pens: puz.pens })); } catch (_) {}
+}
+function puzPiece(k, t0) {
+  const p = PUZ_LEVELS[puz.lvl].p[k];
+  return p ? { s: p[0], c: p[1], t0, fit: true, ret: null } : null;
+}
+function puzLeft() { return hand.filter(Boolean).length + Math.max(0, PUZ_LEVELS[puz.lvl].p.length - puz.qi); }
+function puzResetRun() {
+  combo = 0; movesSinceClear = 0; linesTotal = 0; maxCombo = 0; recent = []; reviveUsed = true;
+  state = 'play'; overT0 = 0; drag = null; hint = null; puz.won = false;
+  puzOv.hidden = true; lvlOv.hidden = true; overOv.hidden = true; reviveOv.hidden = true;
+}
+function puzStart(i, keepPen) {
+  epoch++;
+  const now = performance.now();
+  puz.lvl = i; if (!keepPen) puz.pen = Math.max(0, puz.pens[i] | 0); puz.undo = []; puz.game = null;
+  const L = PUZ_LEVELS[i];
+  grid.fill(-1); placeAnims.clear(); clearAnims = []; flashes = []; rings = [];
+  [...L.b].forEach((ch, k) => { if (ch !== '.') { grid[k] = +ch; placeAnims.set(k, now + 120); } });
+  hand = [0, 1, 2].map(k => puzPiece(k, now + 320 + k * 90));
+  puz.qi = Math.min(3, L.p.length);
+  score = 0; banked = 0; displayScore = 0; scoreEl.textContent = '0';
+  best = puzTotal(); bestEl.textContent = best;
+  puzResetRun();
+  refreshFit(); updatePuzBar(); updateComboUI('reset'); updateHint();
+  setTimeout(() => sfx('appear'), 260);
+  save();
+}
+// Загрузка сохранённой попытки при входе в режим
+function puzLoad() {
+  const g = puz.game;
+  best = puzTotal();
+  if (!g || !PUZ_LEVELS[g.lvl] || !Array.isArray(g.grid) || g.grid.length !== N * N) {
+    if (puz.pens[puz.lvl]) puzStart(puz.lvl);                // попытка не закончена победой — тот же уровень со штрафом
+    else if ((puz.stars[puz.lvl] || 0) > 0 && puzOpen(puz.lvl + 1)) puzStart(puz.lvl + 1);   // уровень уже пройден — сразу следующий
+    else puzStart(puz.lvl);
+    return;
+  }
+  puz.lvl = g.lvl; puz.qi = Math.max(0, Math.min(PUZ_LEVELS[g.lvl].p.length, g.qi | 0)); puz.pen = Math.max(0, g.pen | 0); puz.undo = [];
+  for (let k = 0; k < N * N; k++) { const v = g.grid[k]; grid[k] = Number.isInteger(v) && v >= 0 && v < 7 ? v : -1; }
+  const now = performance.now();
+  hand = [0, 1, 2].map(k => { const h = (g.hand || [])[k]; return Array.isArray(h) && Number.isInteger(h[0]) && SHAPES[h[0]] && Number.isInteger(h[1]) && h[1] >= 0 && h[1] < 7 ? { s: h[0], c: h[1], t0: now + 150 + k * 90, fit: true, ret: null } : null; });
+  score = Math.max(0, +g.score || 0); displayScore = score; banked = score;
+  puzResetRun();
+  placeAnims.clear();
+  refreshFit(); updatePuzBar();
+  if (!hand.some(h => h && h.fit)) puzFail(now, hand.some(Boolean));
+}
+function puzPush() {
+  puz.undo.push({ grid: Array.from(grid), hand: hand.map(h => h && { s: h.s, c: h.c }), qi: puz.qi, score, combo, msc: movesSinceClear, lines: linesTotal, mc: maxCombo });
+  if (puz.undo.length > 80) puz.undo.shift();
+}
+function puzUndo() {
+  const u = puz.undo.pop();
+  if (!u || puz.won) { sfx('bad'); vib(20); return; }
+  epoch++;
+  puzBumpPen();
+  for (let k = 0; k < N * N; k++) grid[k] = u.grid[k];
+  placeAnims.clear(); clearAnims = []; flashes = []; rings = [];
+  const now = performance.now();
+  hand = u.hand.map((h, k) => h && { s: h.s, c: h.c, t0: now + k * 60, fit: true, ret: null });
+  puz.qi = u.qi; score = u.score; displayScore = score; scoreEl.textContent = score;
+  combo = u.combo; movesSinceClear = u.msc; linesTotal = u.lines; maxCombo = u.mc;
+  state = 'play'; drag = null; hint = null; puzOv.hidden = true;
+  refreshFit(); updatePuzBar(); updateComboUI('reset'); updateHint();
+  sfx('tap'); save();
+}
+function puzBumpPen() { puz.pens[puz.lvl] = ++puz.pen; }
+function puzRestart() { puzBumpPen(); puzStart(puz.lvl, true); }
+// Вызывается из place() после хода
+function puzAfterMove(now) {
+  updatePuzBar();
+  if (countFilled(grid) === 0) { puzWin(now); return; }
+  if (!hand.some(h => h && h.fit)) puzFail(now, hand.some(Boolean));
+}
+function puzWin(now) {
+  state = 'done'; drag = null; hint = null; puz.won = true;
+  const st = puzStarsFor(puz.pen), prev = puz.stars[puz.lvl] || 0, gain = Math.max(0, st - prev) * PUZ_COIN;
+  if (st > prev) puz.stars[puz.lvl] = st;
+  delete puz.pens[puz.lvl];
+  if (gain) wallet.puzzle += gain;
+  puz.game = null;
+  best = puzTotal(); bestEl.textContent = best;
+  if (st > prev) { bestBox.classList.remove('pulse'); void bestBox.offsetWidth; bestBox.classList.add('pulse'); }
+  const ep = epoch;
+  setTimeout(() => { if (ep === epoch) showPuzResult(true, st, gain); }, 1300);
+  save();
+}
+function puzFail(now, piecesLeft) {
+  state = 'done'; drag = null; hint = null;
+  puz.pens[puz.lvl] = puz.pen + 1;   // проигрыш: следующая попытка уже со штрафом
+  const ep = epoch, msg = piecesLeft ? 'Не помещается!' : 'Фигуры кончились';
+  setTimeout(() => {
+    if (ep !== epoch) return;
+    sfx('noMoves');
+    addText(msg, boardX + board / 2, boardY + boardH / 2, 'praise', 0);
+  }, 350);
+  setTimeout(() => { if (ep === epoch) showPuzResult(false, 0, 0, piecesLeft); }, 1300);
+  save();
+}
+
+/* ---------- Окна режима ---------- */
+const puzOv = $('puzOv'), lvlOv = $('lvlOv'), puzBar = $('puzBar');
+let puzResWin = false;
+function showPuzResult(win, st, gain, piecesLeft) {
+  puzResWin = win;
+  const n = puz.lvl + 1, last = n === PUZ_LEVELS.length;
+  const nextOk = win && !last && puzOpen(puz.lvl + 1);
+  $('pzTitle').textContent = win ? `Уровень ${n} пройден!` : 'Не получилось';
+  const stars = $('pzResStars');
+  stars.hidden = !win;
+  [...stars.children].forEach((el, k) => { el.classList.toggle('on', k < st); el.style.animationDelay = (0.15 + k * 0.22) + 's'; });
+  let text;
+  if (win) {
+    text = gain ? `+${fmtNum(gain)} в копилку «Головоломки».` : st < 3 ? 'Для трёх звёзд пройдите уровень без отмен и перезапусков.' : 'Звёзды за этот уровень уже получены.';
+    if (last) text += ' Это был последний уровень!';
+    else if (!nextOk) text += ` Следующая глава откроется, когда наберёте ★${PUZ_REQ[Math.floor((puz.lvl + 1) / 10)]}.`;
+  } else {
+    text = piecesLeft ? 'Оставшиеся фигуры не помещаются на поле.' : 'Фигуры закончились, а поле не очищено.';
+    text += ' Отмените ход или начните уровень заново.';
+  }
+  $('pzText').textContent = text;
+  const b1 = $('pzNext');
+  b1.hidden = win ? !nextOk : !puz.undo.length;
+  b1.textContent = win ? 'Следующий уровень' : 'Отменить ход';
+  $('pzAgain').textContent = win ? 'Ещё раз' : 'Заново';
+  puzOv.hidden = false;
+  if (win) sfx('record');
+}
+$('pzNext').addEventListener('click', () => { ensureAudio(); sfx('tap'); if (puzResWin) puzStart(puz.lvl + 1); else puzUndo(); });
+$('pzAgain').addEventListener('click', () => { ensureAudio(); sfx('tap'); if (puzResWin) puzStart(puz.lvl); else puzRestart(); });
+$('pzToLevels').addEventListener('click', () => { ensureAudio(); openLevels(); });
+function updatePuzBar() {
+  if (mode !== 'puzzle') return;
+  $('pzLvl').textContent = 'Уровень ' + (puz.lvl + 1);
+  const left = puzLeft();
+  $('pzLeft').textContent = left + ' ' + (left % 10 === 1 && left % 100 !== 11 ? 'фигура' : [2, 3, 4].includes(left % 10) && ![12, 13, 14].includes(left % 100) ? 'фигуры' : 'фигур');
+  const st = puzStarsFor(puz.pen);
+  $('pzStars').textContent = '★'.repeat(st) + '☆'.repeat(3 - st);
+  $('pzUndo').disabled = !puz.undo.length || puz.won;
+}
+function openLevels() {
+  const list = $('lvList');
+  list.textContent = '';
+  const total = puzTotal();
+  $('lvTotal').textContent = total + ' / ' + PUZ_LEVELS.length * 3;
+  for (let ch = 0; ch * 10 < PUZ_LEVELS.length; ch++) {
+    const head = document.createElement('div');
+    head.className = 'lv-head';
+    const open = puzChapterOpen(ch);
+    head.textContent = `Глава ${ch + 1}` + (open ? '' : ` — нужно ★${PUZ_REQ[ch]}`);
+    list.appendChild(head);
+    const gridEl = document.createElement('div');
+    gridEl.className = 'lv-grid';
+    for (let i = ch * 10; i < Math.min(PUZ_LEVELS.length, ch * 10 + 10); i++) {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'lv-btn';
+      const ok = puzOpen(i), st = puz.stars[i] || 0;
+      if (!ok) b.classList.add('locked');
+      if (i === puz.lvl && mode === 'puzzle') b.classList.add('cur');
+      b.innerHTML = `<b>${i + 1}</b><span>${ok ? '★'.repeat(st) + '<i>' + '★'.repeat(3 - st) + '</i>' : '🔒'}</span>`;
+      b.setAttribute('aria-label', `Уровень ${i + 1}` + (ok ? `, звёзд: ${st}` : ', закрыт'));
+      b.addEventListener('click', () => {
+        if (!ok) { sfx('bad'); vib(20); b.classList.remove('nope'); void b.offsetWidth; b.classList.add('nope'); return; }
+        sfx('tap'); lvlOv.hidden = true; puzOv.hidden = true; puzStart(i);
+      });
+      gridEl.appendChild(b);
+    }
+    list.appendChild(gridEl);
+  }
+  lvlOv.hidden = false;
+  sfx('tap');
+}
+$('lvClose').addEventListener('click', () => { lvlOv.hidden = true; sfx('tap'); });
+$('pzLevels').addEventListener('click', () => { ensureAudio(); if (!drag) openLevels(); });
+$('pzUndo').addEventListener('click', () => { ensureAudio(); if (!drag && !puz.won) puzUndo(); });   // после проигрыша тоже можно отменить ход
+$('pzRestart').addEventListener('click', () => { ensureAudio(); if (!drag) { sfx('tap'); puzRestart(); } });
 
 window.addEventListener('resize', layout);
 window.addEventListener('orientationchange', () => setTimeout(layout, 120));
@@ -5972,7 +6638,7 @@ document.addEventListener('visibilitychange', () => {
 layout();
 if (restore()) {
   refreshFit();
-  if (!hand.some(h => h && h.fit)) triggerNoMoves();
+  if (pendingNm || !hand.some(h => h && h.fit)) triggerNoMoves(pendingNm || undefined);
 } else {
   startBest = best;
   hand = generateHand();
@@ -5980,6 +6646,7 @@ if (restore()) {
   hand.forEach((h, k) => h.t0 = now + 200 + k * 90);
   refreshFit();
 }
+layout();   // повторно: настройки (лёгкий режим) уже загружены
 if (settings.mode !== 'classic') switchMode(settings.mode, true);
 applyThemeDom();
 bestEl.textContent = best;
@@ -6005,6 +6672,7 @@ window.__bb = {
   place, SHAPES, THEMES, newGame, changeTheme, SoundEngine, generateHand, computeHint, helpLevel, revive, giveUp, frame,
   get mode() { return mode; }, bombs, explode, lb, logGame, openLb, sand, switchMode, wallet, owned, renderThemePicker, save, setTheme, sandPlace, sandFindSpans, sandComputeTops, sandMaxY, sandCanClear, sandLabel,
   SHAPE_COLS, SCOLS, SROWS, SDANGER,
+  puz, puzStart, puzUndo, puzRestart, PUZ_LEVELS, openLevels, updatePuzBar,
 };
 })();
 </script>
