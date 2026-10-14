@@ -229,6 +229,7 @@
   .mini.st-gem i.blk { background: radial-gradient(circle at 35% 35%, rgba(255,255,255,.7) 0 12%, transparent 30%), var(--k); box-shadow: inset 0 0 0 2px rgba(0,0,0,.22), inset 0 0 0 4px rgba(255,255,255,.25); }
   .mini.st-blossom i.blk { border-radius: 40%; background: radial-gradient(circle at 50% 52%, #ffe9a8 0 21%, transparent 25%), conic-gradient(from -90deg, #fff 0 18%, transparent 18% 24%, #fff 24% 42%, transparent 42% 48%, #fff 48% 66%, transparent 66% 72%, #fff 72% 90%, transparent 90%), linear-gradient(180deg, #ffffffcc, var(--k) 58%); box-shadow: inset 0 0 0 1px rgba(255,255,255,.7), inset 0 -2px 0 rgba(120,10,60,.25), 0 0 5px rgba(255,150,195,.65); }
   .mini.st-void i.blk { background: radial-gradient(circle at 30% 30%, var(--k) 0 25%, #0a0618 80%); box-shadow: inset 0 0 0 1.5px var(--k), 0 0 4px var(--k); }
+  .mini.st-burger i.blk { border-radius: 50% 50% 26% 26% / 62% 62% 26% 26%; background: linear-gradient(180deg, #f6b65e 0 40%, #6cc644 40% 50%, #e2412f 50% 56%, #ffcf3f 56% 62%, #6b3a1f 62% 78%, #e09a48 78%); box-shadow: inset 0 0 0 1px rgba(80,40,15,.55); }
   .mini.st-pixel, .mini.st-pixel i { border-radius: 0; }
   .mini.st-pixel i.blk { box-shadow: inset 2px 2px 0 rgba(255,255,255,.4), inset -2px -2px 0 rgba(0,0,0,.35); }
   .mini.st-sand { gap: 0; }
@@ -586,6 +587,10 @@ const THEMES = [
   { id: 'dima', mode: 'classic', code: 'дима009', blocks: 'void', fx: 'void', name: 'Дима',
     bg: ['#020108', '#07051a', '#120a2e'], glow: '#9d7bff', board: '#06051a', edge: '#1d1446', cell: '#0d0b24',
     panel: ['#5a3fc0', '#35238a', '#b7a2ff', '#160d40'], ui: '#e0d6ff', decor: 'blackhole' },
+  // «Андрюша»: все блоки — одинаковые бургеры; по экрану летают брейнроты (рисуются кодом, см. BR_CHARS)
+  { id: 'andrey', mode: 'classic', code: 'андрюша', blocks: 'burger', name: 'Андрюша',
+    bg: ['#2f8fe0', '#7fcdf5', '#f7d58b'], glow: '#fff3b0', board: '#2a1a10', edge: '#5a3418', cell: '#3a2416',
+    panel: ['#e8823a', '#b85a1f', '#ffd08a', '#5a2a0c'], ui: '#fff1c9', decor: 'brainrot' },
 ];
 const PIXEL_FONT = "'Press Start 2P', 'Courier New', monospace";
 // Эффекты текущей темы (только в классике): 'sakura' | 'pixel' | 'void' | undefined
@@ -2108,6 +2113,67 @@ BLOCK_STYLES.pixel = (g, col, s) => {
     g.fillStyle = c; g.fillRect(at(x), at(y), at(x + 1) - at(x), at(y + 1) - at(y));
   }
 };
+// «Андрюша»: все блоки — одинаковый обычный бургер (булка с кунжутом, салат, помидор, сыр, котлета)
+const BURGER_BITS = ['#f2b25a', '#e08a3a', '#6cc644', '#e2412f', '#ffcf3f', '#6b3a1f'];   // цвета крошек при очистке
+BLOCK_STYLES.burger = (g, col, s) => {
+  if (col === COLORS[GREY]) {
+    // конец игры: тот же бургер, только серый
+    const t = makeCanvas(s, s);
+    BLOCK_STYLES.burger(t.getContext('2d'), COLORS[0], s);
+    g.filter = 'grayscale(1) brightness(0.8)'; g.drawImage(t, 0, 0); g.filter = 'none';
+    return;
+  }
+  const P = d => new Path2D(d), ink = '#5a2e12';
+  const lin = (y0, y1, ...cs) => { const q = g.createLinearGradient(0, y0, 0, y1); cs.forEach((c, i) => q.addColorStop(i / (cs.length - 1), c)); return q; };
+  const part = (d, fill) => { const p = P(d); g.fillStyle = fill; g.fill(p); g.stroke(p); return p; };
+  g.save(); g.scale(s / 100, s / 100);
+  g.lineJoin = 'round'; g.lineCap = 'round'; g.lineWidth = 2.6; g.strokeStyle = ink;
+  // тень
+  g.fillStyle = 'rgba(0,0,0,0.28)'; g.beginPath(); g.ellipse(50, 91, 40, 5, 0, 0, Math.PI * 2); g.fill();
+  // нижняя булка со срезом
+  part('M12 74 L88 74 Q90 88 78 89 L22 89 Q10 88 12 74 Z', lin(74, 89, '#eea852', '#c9792f'));
+  g.fillStyle = '#f7d9a2'; g.fillRect(14, 75.5, 72, 2.5);
+  // котлета с неровным краем и прожаркой
+  const patty = part('M8 64 Q12 60 20 61 Q30 59 40 61 Q50 59 60 61 Q70 59 80 61 Q88 60 92 64 Q94 70 90 74 Q80 77 70 75 Q60 77 50 75 Q40 77 30 75 Q20 77 10 74 Q6 70 8 64 Z',
+    lin(60, 76, '#8a4f2a', '#5c3218', '#40210e'));
+  g.save(); g.clip(patty);
+  let seed = 11; const rnd = () => (seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff;
+  for (let i = 0; i < 22; i++) {
+    g.fillStyle = i % 3 ? 'rgba(30,12,4,0.45)' : 'rgba(190,120,70,0.5)';
+    g.beginPath(); g.arc(10 + 80 * rnd(), 62 + 13 * rnd(), 0.8 + 1.1 * rnd(), 0, Math.PI * 2); g.fill();
+  }
+  g.strokeStyle = 'rgba(255,190,140,0.3)'; g.lineWidth = 1.6;
+  g.beginPath(); g.moveTo(16, 66); g.quadraticCurveTo(50, 63.5, 84, 66); g.stroke();
+  g.restore();
+  // сыр, свисающий уголками
+  part('M10 59 L90 59 L92 62.5 L81 64 L75 73 L69 64 L41 64 L33.5 70.5 L27 64 L11 63.5 Z', lin(59, 73, '#ffe873', '#ffc72c', '#f0a512'));
+  // помидор
+  part('M14 54 L86 54 Q89 57.5 86 61 L14 61 Q11 57.5 14 54 Z', lin(54, 61, '#ff6a4f', '#d9311f'));
+  g.fillStyle = '#ffb199';
+  for (const x of [24, 40, 58, 74]) { g.beginPath(); g.ellipse(x, 57.5, 2.2, 1.2, 0, 0, Math.PI * 2); g.fill(); }
+  // салат волнами
+  let d = 'M5 50 L95 50 L96 54';
+  for (let i = 7; i > 0; i--) { const xa = 4 + 92 * i / 7, xb = 4 + 92 * (i - 1) / 7; d += ` Q${(xa + xb) / 2} ${i % 2 ? 63 : 60} ${xb} 54`; }
+  part(d + ' Z', lin(49, 62, '#a6ec6c', '#62c040', '#3a8f28'));
+  g.strokeStyle = 'rgba(225,255,190,0.7)'; g.lineWidth = 1.2;
+  for (const x of [18, 44, 70]) { g.beginPath(); g.moveTo(x, 52); g.quadraticCurveTo(x + 4, 55, x + 2, 58.5); g.stroke(); }
+  g.strokeStyle = ink; g.lineWidth = 2.6;
+  // верхняя булка-купол
+  const tg = g.createRadialGradient(36, 22, 2, 50, 36, 52);
+  tg.addColorStop(0, '#ffdc9c'); tg.addColorStop(0.45, '#f2a84e'); tg.addColorStop(1, '#bf6424');
+  part('M10 51 C8 22 30 9 50 9 C70 9 92 22 90 51 Q90 55.5 84 55.5 L16 55.5 Q10 55.5 10 51 Z', tg);
+  g.fillStyle = 'rgba(255,255,255,0.45)';
+  g.beginPath(); g.ellipse(33, 23, 13, 5.5, -0.55, 0, Math.PI * 2); g.fill();
+  g.fillStyle = 'rgba(255,255,255,0.7)'; g.beginPath(); g.ellipse(25, 31, 2.6, 1.6, -1, 0, Math.PI * 2); g.fill();
+  // кунжут
+  for (const [x, y, a] of [[50, 17, 0.2], [64, 21, -0.6], [38, 33, 0.9], [56, 31, 0.1], [72, 34, -0.3], [28, 42, -0.8], [46, 45, 0.5], [64, 45, -0.1], [80, 44, 0.7], [20, 30, 1.1]]) {
+    g.save(); g.translate(x, y); g.rotate(a);
+    g.fillStyle = 'rgba(120,60,20,0.35)'; g.beginPath(); g.ellipse(0.6, 0.9, 3, 1.7, 0, 0, Math.PI * 2); g.fill();
+    g.fillStyle = '#fff3d6'; g.beginPath(); g.ellipse(0, 0, 3, 1.6, 0, 0, Math.PI * 2); g.fill();
+    g.restore();
+  }
+  g.restore();
+};
 function renderBlock(col, s, style) {
   const c = makeCanvas(s, s), g = c.getContext('2d');
   if (BLOCK_STYLES[style]) { BLOCK_STYLES[style](g, col, s); return c; }
@@ -2247,6 +2313,491 @@ function getBgImage(ti) {
   return img;
 }
 
+/* ---------- Тема «Андрюша»: брейнроты, нарисованные кодом ----------
+   Каждый персонаж рисуется в квадрате 240×240 (смотрит вправо), подпись — отдельной картинкой,
+   чтобы при развороте персонажа она не отражалась. */
+const BR_S = 240, BR_INK = '#1d1622';
+const brSprites = new Map();
+// SVG-путь: заливка + обводка
+function brP(g, d, fill, lw = 3.5) {
+  const p = typeof d === 'string' ? new Path2D(d) : d;
+  if (fill) { g.fillStyle = fill; g.fill(p); }
+  if (lw) { g.lineWidth = lw; g.strokeStyle = BR_INK; g.lineJoin = 'round'; g.lineCap = 'round'; g.stroke(p); }
+  return p;
+}
+function brE(g, x, y, rx, ry, fill, lw = 3.5, rot = 0) { const p = new Path2D(); p.ellipse(x, y, rx, ry, rot, 0, Math.PI * 2); return brP(g, p, fill, lw); }
+// толстая линия с обводкой (руки, ноги, ветки); light — светлый блик поверх
+function brS(g, d, w, col, light) {
+  const p = new Path2D(d);
+  g.lineCap = 'round'; g.lineJoin = 'round';
+  g.lineWidth = w + 7; g.strokeStyle = BR_INK; g.stroke(p);
+  g.lineWidth = w; g.strokeStyle = col; g.stroke(p);
+  if (light) { g.save(); g.translate(-w * 0.18, -w * 0.18); g.lineWidth = w * 0.3; g.strokeStyle = light; g.stroke(p); g.restore(); }
+}
+function brLin(g, x0, y0, x1, y1, ...cs) { const q = g.createLinearGradient(x0, y0, x1, y1); cs.forEach((c, i) => q.addColorStop(i / (cs.length - 1), c)); return q; }
+function brRad(g, x, y, r0, x1, y1, r1, ...cs) { const q = g.createRadialGradient(x, y, r0, x1, y1, r1); cs.forEach((c, i) => q.addColorStop(i / (cs.length - 1), c)); return q; }
+// рисовать внутри пути (тени, текстуры)
+function brIn(g, p, fn) { g.save(); g.clip(typeof p === 'string' ? new Path2D(p) : p); fn(); g.restore(); }
+function brEye(g, x, y, r, dx = 0, dy = 0, iris = '#3a2a1a') {
+  brE(g, x, y, r, r * 1.05, brRad(g, x - r * 0.3, y - r * 0.3, 0, x, y, r, '#ffffff', '#ffffff', '#d9dde6'), 3);
+  const ix = x + dx * r * 0.38, iy = y + dy * r * 0.38;
+  g.fillStyle = iris; g.beginPath(); g.arc(ix, iy, r * 0.55, 0, Math.PI * 2); g.fill();
+  g.fillStyle = BR_INK; g.beginPath(); g.arc(ix, iy, r * 0.32, 0, Math.PI * 2); g.fill();
+  g.fillStyle = '#ffffff'; g.beginPath(); g.arc(ix - r * 0.2, iy - r * 0.22, r * 0.17, 0, Math.PI * 2); g.fill();
+  g.globalAlpha = 0.7; g.beginPath(); g.arc(ix + r * 0.18, iy + r * 0.18, r * 0.08, 0, Math.PI * 2); g.fill(); g.globalAlpha = 1;
+}
+function brTeeth(g, x0, y0, x1, y1, h, n) {      // ряд зубов вдоль отрезка; h > 0 — вниз
+  g.lineWidth = 1.4; g.strokeStyle = BR_INK;
+  for (let i = 0; i < n; i++) {
+    const t0 = i / n, t1 = (i + 1) / n, tm = (t0 + t1) / 2;
+    const ax = x0 + (x1 - x0) * t0, ay = y0 + (y1 - y0) * t0, bx = x0 + (x1 - x0) * t1, by = y0 + (y1 - y0) * t1;
+    g.beginPath(); g.moveTo(ax, ay); g.lineTo(x0 + (x1 - x0) * tm, y0 + (y1 - y0) * tm + h); g.lineTo(bx, by); g.closePath();
+    g.fillStyle = brLin(g, 0, Math.min(ay, ay + h), 0, Math.max(ay, ay + h), '#ffffff', '#e6e1d4'); g.fill(); g.stroke();
+  }
+}
+// кроссовок носком вправо; (x, y) — щиколотка
+function brSneaker(g, x, y, dark) {
+  g.save(); g.translate(x, y);
+  const up = dark ? ['#3d74e6', '#1f4cb8'] : ['#5b8cff', '#2c62e8'];
+  brP(g, 'M-15 14 L32 14 Q39 14 39 8 L39 5 L-15 5 Q-18 9 -15 14 Z', brLin(g, 0, 5, 0, 14, '#ffffff', '#cfd4dc'), 3);
+  g.strokeStyle = 'rgba(0,0,0,0.25)'; g.lineWidth = 1;
+  for (let i = -10; i < 36; i += 5) { g.beginPath(); g.moveTo(i, 11); g.lineTo(i + 2, 14); g.stroke(); }
+  brP(g, 'M-14 6 L-14 -10 Q-9 -16 2 -14 L7 -8 Q18 -5 29 -3 Q38 -1 38 6 Z', brLin(g, 0, -15, 0, 6, ...up), 3);
+  brP(g, 'M-14 -10 Q-16 -2 -14 6 L-9 6 L-9 -9 Z', '#ffffff', 2);
+  g.strokeStyle = '#ffffff'; g.lineWidth = 2.2; g.lineCap = 'round';
+  for (const [a, b] of [[3, -11], [8, -8], [13, -6]]) { g.beginPath(); g.moveTo(a - 2, b + 1); g.lineTo(a + 3, b - 1); g.stroke(); }
+  g.lineWidth = 3; g.beginPath(); g.moveTo(-6, 1); g.quadraticCurveTo(6, 5, 24, -4); g.stroke();
+  g.fillStyle = 'rgba(255,255,255,0.35)'; g.beginPath(); g.ellipse(24, -1, 6, 2, -0.2, 0, Math.PI * 2); g.fill();
+  g.restore();
+}
+
+const BR_CHARS = {
+  // Тралалеро Тралала: акула на трёх ногах в синих кроссовках
+  tralalero: ['Tralalero Tralala', g => {
+    const fin = brLin(g, 0, 20, 0, 160, '#6a9bd0', '#3d6c9f');
+    for (const [x, dk] of [[140, 1], [100, 0], [180, 0]]) {
+      brS(g, `M${x} 128 Q${x + 6} 168 ${x - 2} 206`, 14, dk ? '#d39a72' : '#f0c39c', dk ? null : 'rgba(255,240,220,0.7)');
+      brSneaker(g, x - 2, 210, dk);
+    }
+    brP(g, 'M54 100 C42 80 30 60 8 40 C34 44 56 64 66 92 Z', fin);
+    brP(g, 'M52 108 C40 120 28 136 14 154 C36 146 56 130 66 114 Z', fin);
+    brP(g, 'M106 68 C110 46 118 30 132 12 C136 32 146 52 160 64 Z', fin);
+    brIn(g, 'M106 68 C110 46 118 30 132 12 C136 32 146 52 160 64 Z', () => {
+      g.fillStyle = 'rgba(255,255,255,0.25)'; g.beginPath(); g.moveTo(112, 66); g.lineTo(131, 16); g.lineTo(124, 66); g.fill();
+    });
+    const body = 'M44 104 C70 66 150 54 200 70 C222 78 236 92 234 104 C232 118 214 128 196 132 C150 146 84 140 44 112 Z';
+    brP(g, body, brLin(g, 0, 58, 0, 140, '#3f6e9e', '#6d9fcb', '#8ab8dd'));
+    brIn(g, body, () => {
+      g.fillStyle = brLin(g, 0, 104, 0, 145, '#f7fbfe', '#c9d7e3');
+      g.fill(new Path2D('M40 116 C100 122 170 116 240 102 L240 160 L30 160 Z'));
+      g.strokeStyle = 'rgba(255,255,255,0.45)'; g.lineWidth = 5;
+      g.beginPath(); g.moveTo(78, 78); g.bezierCurveTo(120, 63, 170, 61, 205, 73); g.stroke();
+      g.fillStyle = 'rgba(20,40,70,0.18)'; g.beginPath(); g.ellipse(70, 116, 40, 26, 0, 0, Math.PI * 2); g.fill();
+    });
+    brP(g, body, null);
+    brP(g, 'M146 124 C134 142 114 158 96 164 C120 164 144 152 162 128 Z', fin);
+    g.strokeStyle = 'rgba(30,60,95,0.75)'; g.lineWidth = 2.6;
+    for (const x of [166, 175, 184]) { g.beginPath(); g.moveTo(x, 90); g.quadraticCurveTo(x + 6, 104, x, 118); g.stroke(); }
+    brEye(g, 205, 88, 10, 0.6, -0.1, '#1d3b5c');
+    g.strokeStyle = BR_INK; g.lineWidth = 3; g.beginPath(); g.moveTo(193, 77); g.quadraticCurveTo(205, 72, 217, 78); g.stroke();
+    const mouth = 'M180 116 Q206 136 232 108 Q212 118 180 116 Z';
+    brP(g, mouth, brLin(g, 0, 108, 0, 130, '#7a1a2a', '#4a0c18'), 3);
+    brIn(g, mouth, () => { g.fillStyle = '#e0607a'; g.beginPath(); g.ellipse(206, 128, 12, 5, -0.2, 0, Math.PI * 2); g.fill(); });
+    brTeeth(g, 183, 116.5, 229, 110.5, 6, 7);
+    brTeeth(g, 193, 125.5, 221, 120, -4.5, 4);
+    g.fillStyle = BR_INK; g.beginPath(); g.ellipse(226, 95, 2.2, 1.5, 0.3, 0, Math.PI * 2); g.fill();
+  }],
+
+  // Бомбардиро Крокодило: крокодил-бомбардировщик
+  bombardiro: ['Bombardiro Crocodilo', g => {
+    g.translate(2, 10); g.scale(0.97, 0.97);
+    const prop = (x, y, r) => {
+      g.fillStyle = 'rgba(225,235,245,0.55)'; g.beginPath(); g.ellipse(x, y, r * 0.18, r, 0, 0, Math.PI * 2); g.fill();
+      g.strokeStyle = 'rgba(40,40,40,0.55)'; g.lineWidth = 2.5;
+      g.beginPath(); g.moveTo(x, y - r * 0.95); g.lineTo(x, y + r * 0.95); g.stroke();
+      brE(g, x + 2, y, 5, 4.5, '#d23a3a', 2);
+    };
+    brP(g, 'M96 92 L156 92 L130 24 L106 24 Z', brLin(g, 0, 24, 0, 92, '#5c6a4f', '#46523c'));
+    brE(g, 126, 58, 17, 8, brLin(g, 0, 50, 0, 66, '#6b7760', '#3d4735'), 3); prop(145, 58, 15);
+    brP(g, 'M44 98 L22 34 L48 34 L76 92 Z', brLin(g, 0, 34, 0, 98, '#9aa785', '#6b785a'));
+    brP(g, 'M27 48 L49 48 L55 60 L31 60 Z', '#c83a2e', 2);
+    for (const [x, y] of [[92, 130], [130, 132]]) {
+      brP(g, `M${x - 22} ${y} L${x - 30} ${y - 6} L${x - 30} ${y + 6} Z`, '#2d322a', 2);
+      brE(g, x, y, 20, 7.5, brLin(g, 0, y - 7, 0, y + 7, '#5a6052', '#24281f'), 3);
+      g.fillStyle = '#c8a23a'; g.fillRect(x + 8, y - 6, 3, 12);
+    }
+    const fus = 'M18 100 C40 82 120 74 184 78 L200 92 L200 118 C150 130 60 128 18 108 Z';
+    brP(g, fus, brLin(g, 0, 74, 0, 128, '#bcc8a7', '#8c997b', '#56624b'));
+    brIn(g, fus, () => {
+      g.strokeStyle = 'rgba(30,35,25,0.35)'; g.lineWidth = 1.5;
+      for (const x of [56, 92, 128, 162]) { g.beginPath(); g.moveTo(x, 70); g.lineTo(x - 2, 130); g.stroke(); }
+      g.fillStyle = 'rgba(30,35,25,0.45)';
+      for (let x = 30; x < 190; x += 9) { g.beginPath(); g.arc(x, 104 - (x < 60 ? 2 : 0), 0.9, 0, Math.PI * 2); g.fill(); }
+      g.fillStyle = 'rgba(255,255,255,0.3)'; g.fillRect(20, 84, 170, 4);
+    });
+    brP(g, 'M40 104 L4 120 L18 127 L66 112 Z', brLin(g, 0, 104, 0, 127, '#7f8c6c', '#5a664c'));
+    brE(g, 150, 80, 20, 11, brLin(g, 0, 69, 0, 91, '#e8f8ff', '#8cc6ea', '#3f7fae'), 3);
+    g.strokeStyle = 'rgba(29,22,34,0.7)'; g.lineWidth = 2; g.beginPath(); g.moveTo(150, 69); g.lineTo(150, 91); g.stroke();
+    g.fillStyle = 'rgba(255,255,255,0.75)'; g.beginPath(); g.ellipse(141, 76, 6, 2.2, -0.4, 0, Math.PI * 2); g.fill();
+    const wing = 'M86 116 L164 116 L138 208 L100 208 Z';
+    brP(g, wing, brLin(g, 0, 116, 0, 208, '#a3b08d', '#76835f'));
+    brIn(g, wing, () => {
+      g.strokeStyle = 'rgba(30,35,25,0.3)'; g.lineWidth = 1.5;
+      for (const y of [140, 166, 190]) { g.beginPath(); g.moveTo(80, y); g.lineTo(170, y); g.stroke(); }
+    });
+    brE(g, 118, 182, 13, 13, '#ffffff', 2.5); g.fillStyle = '#d23a3a'; drawStar(118, 182, 11, g);
+    brE(g, 128, 150, 26, 10, brLin(g, 0, 140, 0, 160, '#7b8770', '#3d4735'), 3);
+    g.fillStyle = '#2a2a2a'; g.fillRect(102, 147, 6, 6);
+    prop(156, 150, 24);
+    // голова крокодила
+    const jawL = 'M166 108 L236 116 Q242 123 232 127 L168 129 Z';
+    brP(g, jawL, brLin(g, 0, 108, 0, 129, '#4f9a3e', '#cfdc95'));
+    brP(g, 'M168 104 L232 108 L232 117 L168 112 Z', '#8a2232', 2.5);
+    brTeeth(g, 172, 112.5, 230, 116.5, -6, 7);
+    const jawU = 'M160 72 C190 68 216 80 234 92 C243 98 241 108 232 108 L166 106 Z';
+    brP(g, jawU, brLin(g, 0, 66, 0, 108, '#82cf62', '#4c9e3a', '#357a2b'));
+    brTeeth(g, 172, 106, 230, 108, 7, 7);
+    brIn(g, jawU, () => {
+      g.fillStyle = 'rgba(25,70,20,0.45)';
+      for (const [x, y, r] of [[186, 84, 3], [198, 88, 2.5], [210, 92, 2.5], [192, 95, 2], [176, 90, 2.5], [220, 98, 2]]) { g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2); g.fill(); }
+      g.fillStyle = 'rgba(255,255,255,0.3)'; g.beginPath(); g.ellipse(196, 79, 22, 3, 0.35, 0, Math.PI * 2); g.fill();
+    });
+    for (const [x, y] of [[178, 70], [192, 73], [206, 78], [219, 85]]) brE(g, x, y, 4.5, 3.5, '#5fae46', 2);
+    brE(g, 232, 94, 5, 4.5, '#5fae46', 2.5);
+    g.fillStyle = BR_INK; g.beginPath(); g.arc(233, 93, 1.4, 0, Math.PI * 2); g.fill();
+    brE(g, 172, 70, 14, 13, brRad(g, 168, 64, 1, 172, 70, 14, '#8fd86c', '#4c9e3a'), 3);
+    brE(g, 174, 67, 8.5, 7.5, brRad(g, 172, 65, 1, 174, 67, 9, '#fff3a0', '#ffc928', '#e08a12'), 2.5);
+    g.fillStyle = BR_INK; g.beginPath(); g.ellipse(175, 67, 1.8, 6, 0, 0, Math.PI * 2); g.fill();
+    g.fillStyle = '#ffffff'; g.beginPath(); g.arc(171.5, 64.5, 1.6, 0, Math.PI * 2); g.fill();
+    g.strokeStyle = BR_INK; g.lineWidth = 3.5; g.beginPath(); g.moveTo(160, 57); g.lineTo(186, 62); g.stroke();
+  }],
+
+  // Тунг Тунг Тунг Сахур: деревянное полено с битой
+  tung: ['Tung Tung Tung Sahur', g => {
+    const limb = '#8a5a30', limbL = 'rgba(220,170,110,0.6)';
+    brS(g, 'M106 196 L100 224', 11, limb, limbL); brS(g, 'M134 196 L140 224', 11, limb, limbL);
+    brE(g, 94, 229, 15, 6.5, brLin(g, 0, 222, 0, 236, '#9a6a3a', '#5e3a1a'), 3); brE(g, 146, 229, 15, 6.5, brLin(g, 0, 222, 0, 236, '#9a6a3a', '#5e3a1a'), 3);
+    brS(g, 'M86 112 Q62 130 54 168', 10, limb, limbL);
+    brE(g, 54, 172, 8, 8, '#9a6a3a', 3);
+    const log = new Path2D('M116 28 L126 28 A36 36 0 0 1 162 64 L162 170 A36 36 0 0 1 126 206 L116 206 A36 36 0 0 1 80 170 L80 64 A36 36 0 0 1 116 28 Z');
+    brP(g, log, brLin(g, 80, 0, 162, 0, '#7e4e24', '#c68c52', '#dba76c', '#b07440', '#7a4a22'));
+    brIn(g, log, () => {
+      g.lineWidth = 1.6;
+      for (const [x, y0, y1, a] of [[86, 40, 196, 0.5], [93, 120, 200, 0.4], [150, 36, 140, 0.45], [156, 110, 200, 0.5], [143, 150, 204, 0.4], [100, 150, 204, 0.35], [121, 140, 204, 0.3]]) {
+        g.strokeStyle = `rgba(70,35,10,${a})`; g.beginPath(); g.moveTo(x, y0);
+        g.bezierCurveTo(x + 4, y0 + (y1 - y0) * 0.33, x - 4, y0 + (y1 - y0) * 0.66, x, y1); g.stroke();
+      }
+      g.fillStyle = 'rgba(255,230,190,0.18)'; g.fillRect(112, 28, 14, 180);
+      g.fillStyle = 'rgba(40,20,5,0.25)'; g.beginPath(); g.ellipse(121, 210, 44, 16, 0, 0, Math.PI * 2); g.fill();
+    });
+    brE(g, 146, 178, 6, 9, brRad(g, 146, 178, 0, 146, 178, 9, '#3a200c', '#7a4a22'), 2.5);
+    g.strokeStyle = 'rgba(60,30,10,0.6)'; g.lineWidth = 1.3; g.beginPath(); g.ellipse(146, 178, 9, 13, 0, 0, Math.PI * 2); g.stroke();
+    brE(g, 121, 34, 39, 10, brRad(g, 121, 34, 0, 121, 34, 39, '#f6d39f', '#e5b276', '#c98c50'), 3);
+    g.strokeStyle = 'rgba(150,95,45,0.7)'; g.lineWidth = 1.3;
+    for (const k of [0.25, 0.5, 0.75]) { g.beginPath(); g.ellipse(121, 34, 39 * k, 10 * k, 0, 0, Math.PI * 2); g.stroke(); }
+    g.beginPath(); g.moveTo(121, 34); g.lineTo(146, 39); g.stroke();
+    brEye(g, 104, 86, 16, 0.25, 0.15, '#2a1a0c'); brEye(g, 139, 86, 16, 0.25, 0.15, '#2a1a0c');
+    brS(g, 'M86 64 L116 70', 5, '#4a2a10'); brS(g, 'M126 70 L156 63', 5, '#4a2a10');
+    brE(g, 122, 108, 7, 6, brRad(g, 120, 105, 0, 122, 108, 7, '#e2aa6c', '#a86c38'), 2.5);
+    const mouth = 'M90 120 Q122 158 154 120 Q122 132 90 120 Z';
+    brP(g, mouth, brLin(g, 0, 120, 0, 150, '#3a1708', '#1a0703'), 3);
+    brIn(g, mouth, () => { g.fillStyle = '#8a2e1c'; g.beginPath(); g.ellipse(124, 146, 16, 7, 0, 0, Math.PI * 2); g.fill(); });
+    brS(g, 'M156 114 Q182 126 194 104', 10, limb, limbL);
+    g.save(); g.translate(194, 108); g.rotate(0.33);
+    const bat = 'M-4 16 L-4.5 -28 Q-12 -52 -11 -92 Q0 -108 11 -92 Q12 -52 4.5 -28 L4 16 Z';
+    brP(g, bat, brLin(g, -11, 0, 11, 0, '#c9925a', '#f0cf98', '#d9a970', '#a8743e'));
+    brIn(g, bat, () => {
+      g.strokeStyle = 'rgba(120,70,30,0.45)'; g.lineWidth = 1.2;
+      for (const x of [-5, 1, 6]) { g.beginPath(); g.moveTo(x, -96); g.quadraticCurveTo(x * 0.5, -50, x * 0.3, -20); g.stroke(); }
+      g.fillStyle = '#2a2a2a'; for (let y = -26; y < 14; y += 6) g.fillRect(-6, y, 12, 3);
+    });
+    brE(g, 0, 18, 7, 3.5, '#b07a42', 2.5);
+    g.restore();
+    brE(g, 194, 104, 8.5, 8.5, '#9a6a3a', 3);
+  }],
+
+  // Балерина Капучина: балерина с чашкой капучино вместо головы
+  ballerina: ['Ballerina Cappuccina', g => {
+    const skin = '#f3cba8', skinL = 'rgba(255,240,228,0.8)', pink = '#ff7fb2';
+    brS(g, 'M110 122 Q66 106 70 62 Q74 26 112 14', 8, skin, skinL);
+    brS(g, 'M130 122 Q174 106 170 62 Q166 26 128 14', 8, skin, skinL);
+    brE(g, 114, 14, 6.5, 5.5, skin, 2.5); brE(g, 126, 14, 6.5, 5.5, skin, 2.5);
+    brS(g, 'M116 170 L116 226', 10, skin, skinL);
+    brS(g, 'M126 168 L160 190 L124 202', 10, skin, skinL);
+    brP(g, 'M110 222 Q116 218 122 222 L120 236 Q116 240 112 236 Z', brLin(g, 0, 220, 0, 238, '#ffb3d1', '#ff6fa6'), 3);
+    brE(g, 122, 202, 8, 5.5, brLin(g, 0, 196, 0, 208, '#ffb3d1', '#ff6fa6'), 3, -0.2);
+    g.strokeStyle = '#ff8fbf'; g.lineWidth = 1.8;
+    g.beginPath(); g.moveTo(110, 222); g.lineTo(122, 212); g.moveTo(122, 222); g.lineTo(110, 212); g.stroke();
+    // пачка: нижний пышный слой и верхний
+    const tutu = (cx, cy, rx, ry, n, depth, fill) => {
+      const p = new Path2D(); p.moveTo(cx - rx, cy);
+      for (let i = 0; i < n; i++) {
+        const a0 = Math.PI * (1 - i / n), a1 = Math.PI * (1 - (i + 1) / n), am = (a0 + a1) / 2;
+        p.quadraticCurveTo(cx + Math.cos(am) * (rx + depth), cy + Math.sin(am) * (ry + depth) + depth * 0.5, cx + Math.cos(a1) * rx, cy + Math.sin(a1) * ry);
+      }
+      p.bezierCurveTo(cx + rx * 0.6, cy - ry * 1.3, cx - rx * 0.6, cy - ry * 1.3, cx - rx, cy);
+      brP(g, p, fill, 3);
+      brIn(g, p, () => {
+        g.strokeStyle = 'rgba(255,255,255,0.45)'; g.lineWidth = 1.2;
+        for (let i = 0; i <= 14; i++) { const a = Math.PI * i / 14; g.beginPath(); g.moveTo(cx, cy - ry * 0.4); g.lineTo(cx + Math.cos(a) * rx * 1.1, cy + Math.sin(a) * ry * 1.4); g.stroke(); }
+      });
+    };
+    tutu(120, 166, 66, 16, 10, 7, brLin(g, 0, 150, 0, 190, '#ffe0ee', '#ffb6d4'));
+    tutu(120, 162, 52, 11, 8, 5, brLin(g, 0, 150, 0, 178, '#ffd0e4', '#ff94c0'));
+    const body = 'M106 118 Q120 112 134 118 L131 160 Q120 164 109 160 Z';
+    brP(g, body, brLin(g, 106, 0, 134, 0, '#ff9cc4', pink, '#e0508e'), 3);
+    brIn(g, body, () => {
+      g.strokeStyle = 'rgba(255,255,255,0.5)'; g.lineWidth = 1.2;
+      for (const y of [132, 140, 148]) { g.beginPath(); g.moveTo(110, y); g.lineTo(130, y + 3); g.moveTo(110, y + 3); g.lineTo(130, y); g.stroke(); }
+    });
+    brS(g, 'M120 104 L120 116', 9, skin);
+    brE(g, 120, 107, 38, 7.5, brLin(g, 0, 100, 0, 115, '#ffffff', '#d8cfc6'), 3);
+    // чашка
+    g.lineCap = 'round';
+    g.beginPath(); g.arc(160, 58, 14, -1.25, 1.25); g.lineWidth = 13; g.strokeStyle = BR_INK; g.stroke();
+    g.lineWidth = 6.5; g.strokeStyle = '#efe9e2'; g.stroke();
+    const cup = 'M80 36 L160 36 C158 70 150 92 130 102 L110 102 C90 92 82 70 80 36 Z';
+    brP(g, cup, brLin(g, 80, 0, 160, 0, '#d9d0c6', '#ffffff', '#f6f1eb', '#cfc4b8'));
+    brIn(g, cup, () => {
+      g.fillStyle = 'rgba(255,255,255,0.8)'; g.beginPath(); g.ellipse(94, 62, 4, 20, -0.15, 0, Math.PI * 2); g.fill();
+      g.fillStyle = 'rgba(120,90,60,0.12)'; g.beginPath(); g.ellipse(120, 104, 40, 10, 0, 0, Math.PI * 2); g.fill();
+    });
+    brE(g, 120, 36, 40, 10.5, '#fbf8f4', 3);
+    brE(g, 120, 36.5, 34, 7.5, brRad(g, 120, 36, 1, 120, 36, 34, '#e9c28f', '#c98d55', '#8a5228'), 1.5);
+    g.save(); g.translate(120, 36.5); g.scale(1, 0.3);
+    g.fillStyle = '#fbf1e2'; g.beginPath(); g.moveTo(0, 14); g.bezierCurveTo(-26, -6, -12, -26, 0, -12); g.bezierCurveTo(12, -26, 26, -6, 0, 14); g.fill();
+    g.restore();
+    g.strokeStyle = 'rgba(255,255,255,0.6)'; g.lineWidth = 2.5;
+    for (const x of [104, 134]) { g.beginPath(); g.moveTo(x, 24); g.bezierCurveTo(x - 6, 16, x + 6, 10, x, 2); g.stroke(); }
+    g.strokeStyle = BR_INK; g.lineWidth = 2.6;
+    for (const x of [104, 136]) {
+      g.beginPath(); g.arc(x, 58, 7, 0.25, Math.PI - 0.25); g.stroke();
+      for (const a of [0.55, 1.2, 1.9, 2.6]) { g.beginPath(); g.moveTo(x + Math.cos(a) * 7, 58 + Math.sin(a) * 7); g.lineTo(x + Math.cos(a) * 11.5, 58 + Math.sin(a) * 11.5); g.stroke(); }
+      g.beginPath(); g.arc(x, 52, 9, -2.4, -0.7); g.stroke();
+    }
+    g.fillStyle = 'rgba(255,110,150,0.45)';
+    g.beginPath(); g.ellipse(94, 72, 8, 5, 0, 0, Math.PI * 2); g.ellipse(146, 72, 8, 5, 0, 0, Math.PI * 2); g.fill();
+    brP(g, 'M110 80 Q114 76 120 79 Q126 76 130 80 Q124 88 120 88 Q116 88 110 80 Z', brLin(g, 0, 76, 0, 88, '#ff6f8e', '#d22e55'), 2.2);
+  }],
+
+  // Шимпанзини Бананини: шимпанзе внутри банана
+  chimp: ['Chimpanzini Bananini', g => {
+    const fur = '#5a3519', face = '#ecc39a';
+    brS(g, 'M110 204 L104 226', 11, fur); brS(g, 'M134 204 L140 226', 11, fur);
+    brE(g, 98, 230, 14, 6.5, face, 3); brE(g, 146, 230, 14, 6.5, face, 3);
+    const ban = 'M82 92 C68 150 86 206 122 216 C152 212 170 168 160 92 Z';
+    brP(g, ban, brLin(g, 70, 0, 166, 0, '#fff0a0', '#ffde45', '#f2bd22', '#cf9312'));
+    brIn(g, ban, () => {
+      g.strokeStyle = 'rgba(170,110,10,0.55)'; g.lineWidth = 2;
+      g.beginPath(); g.moveTo(98, 100); g.bezierCurveTo(90, 140, 98, 182, 116, 208); g.stroke();
+      g.beginPath(); g.moveTo(140, 100); g.bezierCurveTo(146, 140, 140, 180, 126, 208); g.stroke();
+      g.fillStyle = 'rgba(110,70,20,0.55)';
+      for (const [x, y, r] of [[92, 150, 3], [100, 172, 2.2], [148, 132, 2.6], [140, 186, 3.2], [120, 160, 1.8], [88, 126, 1.8]]) { g.beginPath(); g.ellipse(x, y, r, r * 0.7, 0.4, 0, Math.PI * 2); g.fill(); }
+      g.fillStyle = 'rgba(255,255,255,0.35)'; g.beginPath(); g.ellipse(94, 140, 4, 34, 0.1, 0, Math.PI * 2); g.fill();
+    });
+    brE(g, 122, 216, 7, 5, '#4a2f12', 2.5);
+    brE(g, 121, 92, 38, 10, brLin(g, 0, 82, 0, 102, '#fffbe0', '#f6e6a8'), 3);
+    brE(g, 84, 60, 13, 14, fur, 3); brE(g, 158, 60, 13, 14, fur, 3);
+    brE(g, 85, 61, 7, 8, '#e3a289', 0); brE(g, 157, 61, 7, 8, '#e3a289', 0);
+    brP(g, 'M90 42 L94 24 L102 36 L110 18 L118 32 L126 16 L132 32 L140 20 L146 38 L152 30 L152 50 Z', fur, 3);
+    const head = new Path2D(); head.ellipse(121, 62, 36, 33, 0, 0, Math.PI * 2);
+    brP(g, head, brRad(g, 108, 44, 2, 121, 62, 40, '#8a5a34', '#5a3519', '#3e2410'));
+    brIn(g, head, () => {
+      g.strokeStyle = 'rgba(160,110,70,0.5)'; g.lineWidth = 1.4;
+      for (let i = 0; i < 16; i++) { const a = -Math.PI + i * Math.PI / 15, x = 121 + Math.cos(a) * 30, y = 62 + Math.sin(a) * 28; g.beginPath(); g.moveTo(x, y); g.lineTo(x + Math.cos(a) * 6, y + Math.sin(a) * 6); g.stroke(); }
+    });
+    const mask = 'M96 58 C94 40 117 38 121 50 C125 38 148 40 146 58 C152 74 142 92 121 93 C100 92 90 74 96 58 Z';
+    brP(g, mask, brRad(g, 121, 60, 2, 121, 66, 34, '#f6d3ac', face, '#cf9c70'), 3);
+    brEye(g, 110, 56, 7.5, 0.1, 0.2, '#5a3519'); brEye(g, 132, 56, 7.5, 0.1, 0.2, '#5a3519');
+    g.strokeStyle = 'rgba(90,50,20,0.8)'; g.lineWidth = 2.5;
+    g.beginPath(); g.moveTo(100, 46); g.quadraticCurveTo(110, 42, 118, 47); g.moveTo(124, 47); g.quadraticCurveTo(132, 42, 142, 46); g.stroke();
+    g.fillStyle = BR_INK; g.beginPath(); g.ellipse(117, 70, 2, 1.5, 0.3, 0, Math.PI * 2); g.ellipse(125, 70, 2, 1.5, -0.3, 0, Math.PI * 2); g.fill();
+    const mouth = 'M104 77 Q121 94 138 77 Q121 83 104 77 Z';
+    brP(g, mouth, '#5a1a14', 2.5);
+    brIn(g, mouth, () => { g.fillStyle = '#ffffff'; g.fillRect(104, 76, 34, 4.5); });
+    const flap = (d, inner) => brP(g, d, brLin(g, 0, 90, 0, 150, inner ? '#fff6cc' : '#ffe259', inner ? '#f6e3a0' : '#e8b11c'), 3);
+    flap('M88 94 C70 104 60 124 54 148 C70 132 84 118 106 100 Z', false);
+    flap('M154 94 C172 104 182 124 188 148 C172 132 158 118 136 100 Z', false);
+    flap('M104 97 Q121 104 138 97 Q132 126 121 144 Q110 126 104 97 Z', true);
+    brE(g, 92, 96, 8, 7, face, 3); brE(g, 150, 96, 8, 7, face, 3);
+  }],
+
+  // Лирили Ларила: слон-кактус в сандалиях
+  lirili: ['Lirili Larila', g => {
+    const grey = brLin(g, 0, 190, 0, 226, '#a9b1ba', '#78818c');
+    for (const x of [100, 138]) {
+      brP(g, `M${x - 11} 190 L${x - 12} 222 L${x + 12} 222 L${x + 11} 190 Z`, grey, 3);
+      g.fillStyle = '#f4efe6'; for (const k of [-7, 0, 7]) { g.beginPath(); g.ellipse(x + k, 221, 3, 2.2, 0, 0, Math.PI * 2); g.fill(); }
+      brP(g, `M${x - 17} 222 L${x + 17} 222 Q${x + 20} 228 ${x + 15} 230 L${x - 15} 230 Q${x - 20} 228 ${x - 17} 222 Z`, brLin(g, 0, 222, 0, 230, '#b9773a', '#7a4618'), 2.5);
+      g.strokeStyle = '#8a4f1e'; g.lineWidth = 4;
+      g.beginPath(); g.moveTo(x - 13, 212); g.lineTo(x + 13, 214); g.moveTo(x - 12, 204); g.lineTo(x, 214); g.lineTo(x + 12, 204); g.stroke();
+    }
+    brS(g, 'M164 150 C182 148 186 132 184 112', 13, '#57b04a');
+    brE(g, 184, 108, 8, 9, '#5fbb50', 3);
+    const body = 'M82 120 C78 100 92 94 122 94 C152 94 166 100 162 120 L162 192 C162 202 150 206 122 206 C94 206 82 202 82 192 Z';
+    brP(g, body, brLin(g, 80, 0, 164, 0, '#2f7d2c', '#5fbb50', '#7fd36a', '#3a8f34', '#2a6e27'));
+    brIn(g, body, () => {
+      g.strokeStyle = 'rgba(20,70,20,0.55)'; g.lineWidth = 2.2;
+      for (const x of [96, 110, 124, 138, 150]) { g.beginPath(); g.moveTo(x, 96); g.quadraticCurveTo(x + (x - 122) * 0.15, 150, x, 206); g.stroke(); }
+      g.strokeStyle = '#fbf6d8'; g.lineWidth = 1.3;
+      for (const x of [96, 110, 124, 138, 150]) for (let y = 112; y < 200; y += 16) {
+        const yy = y + (x % 3) * 4;
+        g.beginPath(); g.moveTo(x - 4, yy - 3); g.lineTo(x, yy); g.lineTo(x + 4, yy - 3); g.moveTo(x, yy); g.lineTo(x, yy - 5); g.stroke();
+      }
+    });
+    for (const s of [-1, 1]) {
+      const ear = s < 0 ? 'M90 50 C56 36 38 70 48 98 C58 118 88 110 98 88 Z' : 'M154 50 C188 36 206 70 196 98 C186 118 156 110 146 88 Z';
+      brP(g, ear, brLin(g, 0, 40, 0, 110, '#b5bcc4', '#858e99'));
+      brIn(g, ear, () => { g.fillStyle = 'rgba(240,170,180,0.75)'; g.beginPath(); g.ellipse(122 + s * 66, 76, 14, 22, s * 0.3, 0, Math.PI * 2); g.fill(); });
+    }
+    const head = new Path2D(); head.ellipse(122, 64, 36, 32, 0, 0, Math.PI * 2);
+    brP(g, head, brRad(g, 110, 48, 2, 122, 64, 40, '#d6dce2', '#a5adb7', '#7a838e'));
+    brS(g, 'M108 88 Q96 96 98 104', 5, '#fffaf0'); brS(g, 'M136 88 Q148 96 146 104', 5, '#fffaf0');
+    const trunk = 'M122 76 C122 104 114 124 98 128 C86 130 82 118 92 114';
+    brS(g, trunk, 17, '#9aa3ad', 'rgba(255,255,255,0.4)');
+    g.strokeStyle = 'rgba(60,65,75,0.5)'; g.lineWidth = 1.6;
+    for (const [x, y] of [[116, 96], [117, 104], [114, 112], [108, 119]]) { g.beginPath(); g.moveTo(x - 6, y - 2); g.quadraticCurveTo(x, y + 1, x + 7, y - 2); g.stroke(); }
+    brEye(g, 108, 58, 7, 0.2, 0.2, '#3a2a1a'); brEye(g, 136, 58, 7, 0.2, 0.2, '#3a2a1a');
+    g.strokeStyle = BR_INK; g.lineWidth = 2.6; g.beginPath(); g.moveTo(98, 47); g.lineTo(114, 49); g.moveTo(130, 49); g.lineTo(146, 47); g.stroke();
+    // розовый цветок кактуса на макушке
+    for (let k = 0; k < 5; k++) { const a = k * Math.PI * 2 / 5 - Math.PI / 2; brE(g, 122 + Math.cos(a) * 6, 31 + Math.sin(a) * 6, 5, 5, '#ff7fb5', 2); }
+    brE(g, 122, 31, 3.5, 3.5, '#ffe066', 1.5);
+  }],
+
+  // Брр Брр Патапим: лесной обезьяно-пень с огромными ступнями
+  patapim: ['Brr Brr Patapim', g => {
+    const skin = brLin(g, 0, 196, 0, 230, '#f6cfaa', '#d79c72'), bark = '#7a4a24';
+    brS(g, 'M106 180 L98 204', 13, bark); brS(g, 'M134 180 L142 204', 13, bark);
+    for (const s of [-1, 1]) {
+      const x = 120 + s * 26;
+      brP(g, `M${x - 26 * s} 230 C${x - 30 * s} 214 ${x - 10 * s} 198 ${x + 6 * s} 202 C${x + 24 * s} 206 ${x + 34 * s} 216 ${x + 30 * s} 226 Q${x + 28 * s} 232 ${x + 18 * s} 232 L${x - 22 * s} 232 Q${x - 28 * s} 232 ${x - 26 * s} 230 Z`, skin, 3);
+      for (let k = 0; k < 4; k++) brE(g, x + s * (14 + k * 5.5), 214 + k * 2.5, 4.2 - k * 0.5, 3.6 - k * 0.4, '#f8d6b6', 2);
+    }
+    for (const s of [-1, 1]) {
+      brS(g, `M${120 + s * 26} 132 C${120 + s * 50} 124 ${120 + s * 62} 110 ${120 + s * 68} 90`, 9, bark, 'rgba(200,150,100,0.5)');
+      brS(g, `M${120 + s * 56} 116 L${120 + s * 72} 112`, 5, bark);
+      for (const [dx, dy] of [[70, 84], [76, 108], [62, 96]]) brE(g, 120 + s * dx, dy, 7, 4.5, brLin(g, 0, dy - 4, 0, dy + 4, '#8fdc5a', '#3f9a2b'), 2, s * 0.6);
+    }
+    const trunk = 'M90 100 C86 140 88 170 96 190 L144 190 C152 170 154 140 150 100 Z';
+    brP(g, trunk, brLin(g, 86, 0, 154, 0, '#5e3618', '#9a6634', '#b07a44', '#6e4220'));
+    brIn(g, trunk, () => {
+      g.strokeStyle = 'rgba(50,25,8,0.5)'; g.lineWidth = 1.8;
+      for (const x of [98, 108, 120, 132, 142]) { g.beginPath(); g.moveTo(x, 100); g.bezierCurveTo(x + 5, 130, x - 5, 160, x + (x - 120) * 0.15, 192); g.stroke(); }
+      brE(g, 132, 150, 5, 7, '#3a200c', 2);
+    });
+    for (const [x, y, r] of [[88, 46, 24], [152, 46, 24], [120, 28, 27], [72, 72, 18], [168, 72, 18], [104, 40, 22], [138, 40, 22]]) {
+      brE(g, x, y, r, r * 0.92, brRad(g, x - r * 0.35, y - r * 0.4, 1, x, y, r, '#a8ec72', '#5fbf3c', '#2f7d24'), 3);
+    }
+    const head = new Path2D(); head.ellipse(120, 84, 36, 32, 0, 0, Math.PI * 2);
+    brP(g, head, brRad(g, 108, 70, 2, 120, 84, 40, '#9a6a3c', '#6e4520', '#4a2c12'));
+    brP(g, 'M94 82 C92 64 112 60 120 70 C128 60 148 64 146 82 C150 100 138 112 120 112 C102 112 90 100 94 82 Z', brRad(g, 120, 84, 2, 120, 90, 32, '#f7d9bd', '#e8b48e'), 3);
+    brEye(g, 108, 78, 7.5, 0.15, 0.1, '#3a2510'); brEye(g, 132, 78, 7.5, 0.15, 0.1, '#3a2510');
+    g.strokeStyle = BR_INK; g.lineWidth = 3.2;
+    g.beginPath(); g.moveTo(98, 66); g.lineTo(116, 71); g.moveTo(124, 71); g.lineTo(142, 66); g.stroke();
+    brP(g, 'M114 82 C110 100 106 118 112 128 C116 134 124 134 128 128 C134 118 130 100 126 82 Z', brLin(g, 110, 0, 132, 0, '#f6a88a', '#ff8f73', '#d9684f'), 3);
+    g.fillStyle = 'rgba(255,255,255,0.45)'; g.beginPath(); g.ellipse(117, 100, 2, 10, 0.05, 0, Math.PI * 2); g.fill();
+    g.fillStyle = BR_INK; g.beginPath(); g.ellipse(116, 128, 2, 1.5, 0, 0, Math.PI * 2); g.ellipse(124, 128, 2, 1.5, 0, 0, Math.PI * 2); g.fill();
+  }],
+};
+const BR_KEYS = Object.keys(BR_CHARS);
+// Картинка персонажа размером px×px (с мягкой тенью) и отдельная картинка подписи
+function brSprite(key, px) {
+  px = Math.max(16, Math.round(px));
+  const id = key + px;
+  let c = brSprites.get(id);
+  if (!c) {
+    if (brSprites.size > 60) brSprites.clear();
+    const k = px / BR_S, t = makeCanvas(px, px), tg = t.getContext('2d');
+    tg.translate(px * 0.03, px * 0.015); tg.scale(k * 0.94, k * 0.94); BR_CHARS[key][1](tg);
+    c = makeCanvas(px, px);
+    const g = c.getContext('2d');
+    g.shadowColor = 'rgba(0,0,0,0.35)'; g.shadowBlur = px * 0.03; g.shadowOffsetY = px * 0.02;
+    g.drawImage(t, 0, 0);
+    brSprites.set(id, c);
+  }
+  return c;
+}
+function brLabel(key, px) {
+  px = Math.max(8, Math.round(px));
+  const id = 'lbl_' + key + px;
+  let c = brSprites.get(id);
+  if (!c) {
+    const name = BR_CHARS[key][0], fs = px * 0.8;
+    const m = makeCanvas(1, 1).getContext('2d'); m.font = `900 ${fs}px ${FONT}`;
+    const w = Math.ceil(m.measureText(name).width + fs * 0.6);
+    c = makeCanvas(w, px);
+    const g = c.getContext('2d');
+    g.font = `900 ${fs}px ${FONT}`; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.lineJoin = 'round'; g.lineWidth = fs * 0.28; g.strokeStyle = BR_INK; g.strokeText(name, w / 2, px / 2);
+    g.fillStyle = '#ffffff'; g.fillText(name, w / 2, px / 2);
+    brSprites.set(id, c);
+  }
+  return c;
+}
+// Персонажи летают по экрану и отскакивают от краёв, как заставка DVD; на отскоке их чуть сплющивает,
+// при смене направления по горизонтали они разворачиваются
+const brActors = [];
+function brSize() { return Math.max(70, Math.min(Math.min(W, H) * 0.29, 180)); }
+function brStep(dt) {
+  const U = Math.min(W, H), sz = brSize(), hw = sz * 0.45, top = sz * 0.45, bot = sz * 0.6;
+  if (!brActors.length) BR_KEYS.forEach((key, i) => {
+    const a = Math.PI / 4 + (i % 4) * Math.PI / 2 + rand(-0.3, 0.3), sp = rand(0.1, 0.15);
+    brActors.push({ key, x: rand(hw, W - hw), y: rand(top, H - bot), vx: Math.cos(a) * sp, vy: Math.sin(a) * sp,
+      flip: Math.cos(a) < 0 ? -1 : 1, ph: Math.random() * 6.28, sq: 0, sqx: false });
+  });
+  for (const a of brActors) {
+    a.x += a.vx * U * dt; a.y += a.vy * U * dt;
+    let hx = false, hy = false;
+    if (a.x < hw) { a.x = hw; a.vx = Math.abs(a.vx); hx = true; }
+    else if (a.x > W - hw) { a.x = W - hw; a.vx = -Math.abs(a.vx); hx = true; }
+    if (a.y < top) { a.y = top; a.vy = Math.abs(a.vy); hy = true; }
+    else if (a.y > H - bot) { a.y = H - bot; a.vy = -Math.abs(a.vy); hy = true; }
+    if (hx || hy) { a.sq = 1; a.sqx = hx; }
+    if (hx && hy && !settings.lite) {
+      // попал точно в угол, как логотип DVD, — салют из искр
+      for (let k = 0; k < 10; k++) {
+        const ang = Math.random() * Math.PI * 2, v = rand(0.5, 1.6) * sz;
+        particles.push({ k: 'spark', x: a.x, y: a.y, vx: Math.cos(ang) * v, vy: Math.sin(ang) * v, g: 0.1,
+          s: sz * rand(0.06, 0.12), c: ['#ffffff', '#fff2a8', '#ffd23d'][k % 3], life: 0, max: rand(500, 900), rot: 0, vr: rand(-3, 3) });
+      }
+    }
+    a.sq = Math.max(0, a.sq - dt * 4);
+    a.flip += ((a.vx < 0 ? -1 : 1) - a.flip) * Math.min(1, dt * 8);
+  }
+}
+function drawBrainrots(g, ts, dt) {
+  brStep(dt);
+  const sz = brSize(), lh = sz * 0.14;
+  for (const a of brActors) {
+    const q = 0.14 * a.sq * Math.sin(a.sq * Math.PI);
+    g.save(); g.translate(a.x, a.y); g.rotate(Math.sin(ts * 2.2 + a.ph) * 0.07);
+    g.scale(a.flip * (a.sqx ? 1 - q : 1 + q), a.sqx ? 1 + q : 1 - q);
+    g.drawImage(brSprite(a.key, sz * dpr), -sz / 2, -sz / 2, sz, sz);
+    g.restore();
+    const lb = brLabel(a.key, lh * dpr), lw = lb.width / dpr;
+    g.drawImage(lb, a.x - lw / 2, a.y + sz * 0.44, lw, lh);
+  }
+}
+// Лёгкий режим: персонажи стоят неподвижно по углам (рисуются один раз в картинку фона)
+function drawBrainrotsStill(g) {
+  const U = Math.min(W, H), list = [];
+  if (boardX > U * 0.3) {
+    const h = Math.min(boardX * 0.9, H * 0.3), xl = boardX / 2, xr = W - boardX / 2;
+    list.push(['tralalero', xl, H * 0.28, h], ['tung', xl, H * 0.72, h], ['ballerina', xr, H * 0.28, h], ['chimp', xr, H * 0.72, h]);
+  } else {
+    const ht = Math.max(50, Math.min(U * 0.3, boardY - (hudY + hudH * 0.15 + board * 0.08) - 6));
+    const hb = Math.max(50, Math.min(U * 0.3, H - trayY - trayH * 0.7));
+    const yt = boardY - framePad - ht * 0.6, yb = H - hb * 0.62;
+    list.push(['tralalero', Math.max(ht / 2, boardX + ht * 0.4), yt, ht], ['ballerina', Math.min(W - ht / 2, boardX + board - ht * 0.4), yt, ht],
+      ['tung', Math.max(hb / 2, boardX + hb * 0.4), yb, hb], ['chimp', Math.min(W - hb / 2, boardX + board - hb * 0.4), yb, hb]);
+  }
+  for (const [key, x, y, h] of list) {
+    g.drawImage(brSprite(key, h * dpr), x - h / 2, y - h / 2, h, h);
+    const lh = h * 0.14, lb = brLabel(key, lh * dpr), lw = lb.width / dpr;
+    g.drawImage(lb, x - lw / 2, y + h * 0.44, lw, lh);
+  }
+}
+
 // Неподвижные детали фона особых тем (рисуются один раз в картинку фона)
 function drawBgScenery(g, th) {
   const U = Math.min(W, H);
@@ -2306,6 +2857,28 @@ function drawBgScenery(g, th) {
         if ((i * 7 + k * 3) % 11 === 0) { g.fillStyle = '#a4643a'; g.fillRect(i * P, top + P * 4, P, P); }
       }
     });
+  } else if (th.decor === 'brainrot') {
+    // пляж: облака, море и песок внизу; в лёгком режиме персонажи стоят здесь же неподвижно
+    g.fillStyle = 'rgba(255,255,255,0.75)';
+    for (const [x, y, r] of [[0.2, 0.2, 0.06], [0.75, 0.16, 0.05], [0.5, 0.33, 0.045], [0.12, 0.55, 0.05], [0.88, 0.5, 0.055]]) {
+      const cx = W * x, cy = H * y, R = U * r;
+      g.beginPath(); g.arc(cx, cy, R, 0, Math.PI * 2); g.arc(cx + R * 1.1, cy + R * 0.2, R * 0.8, 0, Math.PI * 2);
+      g.arc(cx - R * 1.1, cy + R * 0.25, R * 0.7, 0, Math.PI * 2); g.fill();
+    }
+    const sea = H * 0.84;
+    const sg = g.createLinearGradient(0, sea, 0, H);
+    sg.addColorStop(0, '#2aa7d8'); sg.addColorStop(1, '#1678b0');
+    g.fillStyle = sg; g.fillRect(0, sea, W, H - sea);
+    g.fillStyle = '#f3d08a'; g.beginPath(); g.moveTo(0, H);
+    for (let x = 0; x <= W + 8; x += 8) g.lineTo(x, H * 0.94 + Math.sin(x / W * 7) * H * 0.012);
+    g.lineTo(W, H); g.closePath(); g.fill();
+    g.strokeStyle = 'rgba(255,255,255,0.6)'; g.lineWidth = 2;
+    for (let k = 0; k < 3; k++) {
+      g.beginPath();
+      for (let x = 0; x <= W; x += 6) { const y = sea + H * (0.02 + k * 0.03) + Math.sin(x / 18 + k * 2) * 2; x ? g.lineTo(x, y) : g.moveTo(x, y); }
+      g.stroke();
+    }
+    if (settings.lite) drawBrainrotsStill(g);
   } else if (th.decor === 'synthwave') {
     // светящийся горизонт на уровне центра поля
     const hz = boardY + boardH / 2;
@@ -2409,7 +2982,7 @@ function getGlow(color) {
 
 /* ---------- Анимированный декор фона ---------- */
 const DECOR_COUNT = { squares: 16, bokeh: 14, bubbles: 20, fireflies: 24, stars: 70, embers: 32, snow: 55,
-  synthwave: 30, petals: 26, aurora: 50, glitter: 34, dunes: 30, galaxy: 80, pixelsky: 6, blackhole: 50 };
+  synthwave: 30, petals: 26, aurora: 50, glitter: 34, dunes: 30, galaxy: 80, pixelsky: 6, blackhole: 50, brainrot: 10 };
 let shootStar = null;                   // падающая звезда темы «Галактика»
 function getDecor(ti) {
   let arr = decorSets.get(ti);
@@ -2472,6 +3045,16 @@ function drawDecor(ti, now, dt) {
         ctx.fillRect(cx - P * 4, cy + P, P * 8, P);
         ctx.fillStyle = '#dcefff';
         ctx.fillRect(cx - P * 4, cy + P * 2, P * 8, P * 0.6);
+        break;
+      }
+      case 'brainrot': {
+        // маленькие бургеры всплывают и крутятся
+        d.y -= dt * 0.02 * d.sp; d.r += dt * (d.s - 0.5) * 1.5; wrapUp(d);
+        const sz = U * (0.04 + 0.03 * d.s);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.translate(d.x * W, d.y * H); ctx.rotate(d.r);
+        ctx.globalAlpha = 0.6;
+        ctx.drawImage(getBlock(0, trayCell), -sz / 2, -sz / 2, sz, sz);
         break;
       }
       case 'dunes': {
@@ -2549,6 +3132,7 @@ function drawDecor(ti, now, dt) {
   }
   ctx.globalAlpha = 1;
   if (kind === 'blackhole') drawBlackHole(ctx, dt);   // поверх звёзд
+  if (kind === 'brainrot') { ctx.setTransform(dpr, 0, 0, dpr, 0, 0); drawBrainrots(ctx, ts, dt); }
   ctx.restore();
 }
 // Неоновая сетка: пол и потолок бегут навстречу от горизонта в центре поля
@@ -2730,12 +3314,13 @@ function spawnClearFx(a) {
     return;
   }
   const n = a.quiet || settings.lite ? 2 : 4;
+  const bits = THEMES[themeIdx].blocks === 'burger' && a.color !== GREY ? BURGER_BITS : null;   // бургер разлетается на кусочки начинки
   for (let i = 0; i < n; i++) {
     const ang = Math.random() * Math.PI * 2, sp = rand(1.2, 4.2) * cell;
     particles.push({
       k: 'shard', x: cx + rand(-0.3, 0.3) * cell, y: cy + rand(-0.3, 0.3) * cell,
       vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp - cell * 3.2, g: 1,
-      s: cell * rand(0.12, 0.28), c: Math.random() < 0.55 ? col.c : col.t,
+      s: cell * rand(0.12, 0.28), c: bits ? bits[(Math.random() * bits.length) | 0] : Math.random() < 0.55 ? col.c : col.t,
       life: 0, max: rand(450, 850), rot: Math.random() * 6, vr: rand(-10, 10),
     });
   }
