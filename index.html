@@ -220,6 +220,16 @@
   .pz-stars i:nth-child(2) { font-size: 1.2em; }
   .pz-stars i.on { color: var(--gold); text-shadow: 0 3px 0 #b86f00, 0 0 18px rgba(251,222,0,.6); animation: starIn .55s cubic-bezier(.2,1.6,.4,1) both; }
   @keyframes starIn { from { transform: scale(0) rotate(-50deg); opacity: 0; } }
+  .st-grid { display: grid; gap: 5px; margin: 4px 0 2px; }
+  .st-grid > div { min-height: 36px; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 4px 12px; border-radius: 12px; background: rgba(0,0,0,.17); font-size: 15px; font-weight: 800; text-align: left; }
+  .st-grid b { color: var(--gold); font-size: 16px; font-weight: 900; text-align: right; }
+  .daily-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin: 6px 0 12px; }
+  .daily-days div { padding: 7px 0 6px; border-radius: 11px; background: rgba(0,0,0,.18); font-size: 11px; font-weight: 800; line-height: 1.25; opacity: .6; }
+  .daily-days div b { display: block; font-size: 13px; color: var(--gold); }
+  .daily-days div.done { opacity: 1; background: rgba(255,255,255,.14); }
+  .daily-days div.now { opacity: 1; background: linear-gradient(180deg, rgba(255,225,74,.35), rgba(245,163,18,.35)); box-shadow: inset 0 0 0 2px var(--gold); animation: starIn .5s cubic-bezier(.2,1.6,.4,1) both; }
+  .daily-gain { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 34px; font-weight: 900; color: var(--gold); text-shadow: 0 3px 0 rgba(0,0,0,.3); }
+  .daily-gain svg { width: 36px; height: 36px; }
   .lv-total { margin: -8px 0 4px; font-size: 17px; font-weight: 800; }
   .lv-total b { color: var(--gold); }
   .lv-head { margin: 12px 4px 7px; text-align: left; font-size: 17px; font-weight: 900; }
@@ -526,6 +536,7 @@
       <button type="submit">ОК</button>
     </form>
     <button class="btn btn-ghost" id="btnLb">Таблица рекордов</button>
+    <button class="btn btn-ghost" id="btnStats">Статистика</button>
     <button class="btn btn-orange" id="btnRestart">Начать заново</button>
     <button class="btn btn-green" id="btnResume">Продолжить</button>
   </div>
@@ -587,6 +598,26 @@
     <button class="btn btn-green" id="pzNext">Следующий уровень</button>
     <button class="btn btn-orange" id="pzAgain">Ещё раз</button>
     <button class="btn btn-ghost" id="pzToLevels">Все уровни</button>
+  </div>
+</div>
+
+<div class="overlay" id="statsOv" hidden>
+  <div class="panel" role="dialog" aria-label="Статистика">
+    <h2>Статистика</h2>
+    <div class="seg" id="stModes" role="group" aria-label="Режим"><button type="button" data-m="classic">Классика</button><button type="button" data-m="sand">Песок</button><button type="button" data-m="bomb">Бомбы</button></div>
+    <div class="st-grid" id="stGrid"></div>
+    <div class="opt-note" id="stNote"></div>
+    <button class="btn btn-green" id="stClose">Закрыть</button>
+  </div>
+</div>
+
+<div class="overlay" id="dailyOv" hidden>
+  <div class="panel" role="dialog" aria-label="Ежедневный бонус">
+    <div class="over-title">Ежедневный бонус</div>
+    <div class="daily-days" id="dlDays"></div>
+    <div class="daily-gain"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#coin"/></svg><span id="dlGain">+0</span></div>
+    <p class="revive-text" id="dlText"></p>
+    <button class="btn btn-green" id="dlTake">Забрать</button>
   </div>
 </div>
 
@@ -7849,7 +7880,10 @@ function sandMoveEnd(now) {
   if (!sand.hand.some(h => h && h.fit)) { triggerNoMoves('Нет места!'); return; }
   updateHint(); save();
 }
-function fmtK(n) { return n >= 1000 ? (n % 1000 === 0 ? n / 1000 : (n / 1000).toFixed(1)) + 'k' : String(n); }
+function fmtK(n) {
+  const f = (v, u) => (Number.isInteger(v) ? v : +v.toFixed(1)) + u;
+  return n >= 1e6 ? f(n / 1e6, 'm') : n >= 1000 ? f(n / 1000, 'k') : String(n);
+}
 function updateSandBar() {
   const from = LEVELS[sand.level], to = LEVELS[sand.level + 1] || from * 2;
   $('sbFrom').textContent = fmtK(from);
@@ -8389,7 +8423,7 @@ $('btnAgain').addEventListener('click', () => { ensureAudio(); sfx('tap'); overO
 window.addEventListener('keydown', e => {
   if (e.key === 'Escape' && !lbOv.hidden) { closeLb(); return; }
   if (e.key === 'Escape' && !lvlOv.hidden) { lvlOv.hidden = true; return; }
-  if (e.key === 'Escape' && overOv.hidden && reviveOv.hidden && puzOv.hidden) settingsOv.hidden ? openSettings() : closeSettings();
+  if (e.key === 'Escape' && overOv.hidden && reviveOv.hidden && puzOv.hidden && $('dailyOv').hidden && $('statsOv').hidden) settingsOv.hidden ? openSettings() : closeSettings();
 });
 
 /* =====================================================================
@@ -8430,6 +8464,7 @@ function lbSeed() {
 function logGame() {
   if (gameLogged || score <= 0 || mode === 'puzzle') return;
   gameLogged = true;
+  statsAdd(mode, score, linesTotal, maxCombo);
   const r = lbMode(mode), e = { s: score, c: maxCombo, d: Date.now() };
   r.score.push(e); r.score.sort((a, b) => b.s - a.s || (b.c || 0) - (a.c || 0)); r.score.length = Math.min(r.score.length, 10);
   r.combo.push(e); r.combo.sort((a, b) => (b.c || 0) - (a.c || 0) || b.s - a.s); r.combo.length = Math.min(r.combo.length, 10);
@@ -8559,6 +8594,115 @@ $('btnLb').addEventListener('click', openLb);
 $('btnOverLb').addEventListener('click', openLb);
 $('lbClose').addEventListener('click', closeLb);
 lbOv.addEventListener('click', e => { if (e.target === lbOv) closeLb(); });
+
+/* =====================================================================
+   Статистика партий по режимам (считается с версии, где она появилась)
+   ===================================================================== */
+const STATS_KEY = 'blockblast.stats.v1';
+let stats = {};
+try { stats = JSON.parse(localStorage.getItem(STATS_KEY)) || {}; } catch (_) { stats = {}; }
+if (!stats || typeof stats !== 'object') stats = {};
+function statsOf(m) {
+  const r = stats[m] && typeof stats[m] === 'object' ? stats[m] : {};
+  for (const k of ['g', 'sum', 'lines', 'bs', 'bc', 'last5']) if (k === 'last5' ? !Array.isArray(r[k]) : !Number.isFinite(r[k])) r[k] = k === 'last5' ? [] : 0;
+  return (stats[m] = r);
+}
+function statsAdd(m, sc, lines, mc) {
+  const r = statsOf(m);
+  r.g++; r.sum += sc; r.lines += lines;
+  r.bs = Math.max(r.bs, sc); r.bc = Math.max(r.bc, mc);
+  r.last5.unshift(sc); r.last5.length = Math.min(r.last5.length, 5);
+  if (!r.since) r.since = Date.now();
+  try { localStorage.setItem(STATS_KEY, JSON.stringify(stats)); } catch (_) {}
+}
+const statsView = { m: 'classic' };
+function renderStats() {
+  const m = statsView.m, r = statsOf(m), grid = $('stGrid');
+  document.querySelectorAll('#stModes button').forEach(b => b.classList.toggle('on', b.dataset.m === m));
+  const lbRec = lb[m] || {};
+  const own = THEMES.filter((t, i) => themeAvail(i, m) && !t.code && themeOwned(i)).length;
+  const total = THEMES.filter((t, i) => themeAvail(i, m) && !t.code).length;
+  const rows = [
+    ['Сыграно партий', fmtNum(r.g)],
+    ['Средний счёт', r.g ? fmtNum(r.sum / r.g) : '—'],
+    ['Лучший счёт', fmtNum(Math.max(r.bs, lbRec.bs || 0))],
+    ['Лучшее комбо', '×' + Math.max(r.bc, lbRec.bc || 0)],
+    [m === 'sand' ? 'Всего очисток' : 'Всего линий', fmtNum(r.lines)],
+    ['Всего очков', fmtNum(r.sum)],
+    ['Последние партии', r.last5.length ? r.last5.map(fmtK).join(' · ') : '—'],
+    ['Темы открыты', own + ' из ' + total],
+    ['В копилке', fmtNum(wallet[m])],
+  ];
+  grid.textContent = '';
+  for (const [a, b] of rows) {
+    const row = document.createElement('div'), s1 = document.createElement('span'), s2 = document.createElement('b');
+    s1.textContent = a; s2.textContent = b; row.append(s1, s2); grid.appendChild(row);
+  }
+  $('stNote').textContent = r.since ? 'Статистика ведётся с ' + new Date(r.since).toLocaleDateString('ru-RU') + '.' : 'Партии начнут считаться с этой версии игры.';
+}
+function openStats() { statsView.m = mode === 'puzzle' ? 'classic' : mode; renderStats(); $('statsOv').hidden = false; sfx('tap'); }
+function closeStats() { $('statsOv').hidden = true; sfx('tap'); }
+$('btnStats').addEventListener('click', openStats);
+$('stClose').addEventListener('click', closeStats);
+$('statsOv').addEventListener('click', e => { if (e.target === $('statsOv')) closeStats(); });
+$('stModes').addEventListener('click', e => {
+  const b = e.target.closest('button');
+  if (!b || b.dataset.m === statsView.m) return;
+  statsView.m = b.dataset.m; renderStats(); sfx('tap');
+});
+
+/* =====================================================================
+   Ежедневный бонус: раз в сутки в копилку текущего режима.
+   Дни подряд увеличивают бонус до 7-го дня; пропуск дня — снова с 1-го.
+   ===================================================================== */
+const DAILY_KEY = 'blockblast.daily.v1';
+const DAILY_GAIN = [1000, 1500, 2000, 3000, 4000, 5000, 7500];
+const dayKey = d => d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+let dailyPending = null;
+function dailyCheck() {
+  if (dailyPending || !$('dailyOv').hidden) return;
+  let d = null;
+  try { d = JSON.parse(localStorage.getItem(DAILY_KEY)); } catch (_) {}
+  const now = new Date(), today = dayKey(now);
+  if (d && d.last === today) return;
+  const y = new Date(now); y.setDate(y.getDate() - 1);
+  const streak = d && d.last === dayKey(y) ? (d.streak || 0) + 1 : 1;
+  dailyPending = { today, streak, gain: DAILY_GAIN[Math.min(streak, 7) - 1] };
+  const days = $('dlDays'); days.textContent = '';
+  const pos = Math.min(streak, 7);
+  DAILY_GAIN.forEach((g, i) => {
+    const c = document.createElement('div');
+    c.className = i + 1 < pos ? 'done' : i + 1 === pos ? 'now' : '';
+    c.innerHTML = 'День ' + (i + 1) + '<b>' + fmtK(g) + '</b>';
+    days.appendChild(c);
+  });
+  const m = mode;
+  $('dlGain').textContent = '+' + fmtNum(dailyPending.gain);
+  $('dlText').textContent = (streak > 1 ? 'Вы заходите ' + streak + ' ' + plural(streak, 'день', 'дня', 'дней') + ' подряд. ' : '') +
+    'Очки пойдут в копилку ' + MODE_GEN[m] + '. ' + (streak < 7 ? 'Заходите завтра — бонус вырастет.' : 'Это максимальный бонус, не пропускайте дни.');
+  paused = true; hint = null;
+  $('dailyOv').hidden = false;
+}
+function plural(n, a, b, c) { const t = n % 10, h = n % 100; return t === 1 && h !== 11 ? a : t >= 2 && t <= 4 && (h < 12 || h > 14) ? b : c; }
+function dailyTake() {
+  const p = dailyPending;
+  if (!p) return;
+  dailyPending = null;
+  const before = wallet[mode];
+  wallet[mode] += p.gain;
+  try { localStorage.setItem(DAILY_KEY, JSON.stringify({ last: p.today, streak: p.streak })); } catch (_) {}
+  $('dailyOv').hidden = true;
+  paused = !settingsOv.hidden;
+  ensureAudio(); sfx('record'); vib(30);
+  addText('+' + fmtNum(p.gain) + ' в копилку', boardX + board / 2, boardY + boardH * 0.45, 'gold', 0);
+  if (THEMES.some((t, i) => t.cost && themeAvail(i) && !themeOwned(i) && before < t.cost && wallet[mode] >= t.cost))
+    addText('Тема доступна!', boardX + board / 2, boardY + boardH * 0.6, 'gold', 700);
+  resetIdle();
+  save();
+}
+$('dlTake').addEventListener('click', dailyTake);
+$('dailyOv').addEventListener('click', e => { if (e.target === $('dailyOv')) dailyTake(); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden) dailyCheck(); });
 
 /* =====================================================================
    Режим «Головоломка»: готовые уровни. На поле уже стоят блоки, фигуры
@@ -8807,6 +8951,7 @@ updateComboUI('reset');
 lbSeed();
 if (lbOnline()) lbSync(false);
 requestAnimationFrame(frame);
+setTimeout(dailyCheck, 900);
 
 // Офлайн-режим и установка как приложение (работает только с https/localhost)
 if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
