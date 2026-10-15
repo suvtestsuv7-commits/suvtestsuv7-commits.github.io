@@ -813,6 +813,15 @@ const THEMES = [
   { id: 'seamine', mode: 'bomb', cost: 70000, blocks: 'porthole', fx: 'deep', name: 'Морские мины',
     bg: ['#0a6a84', '#05405e', '#021828'], glow: '#5ff0ff', board: '#04182a', edge: '#1a4a66', cell: '#082436',
     panel: ['#2a8ab0', '#16607e', '#9ff0ff', '#06283a'], ui: '#d8f6ff', decor: 'deepsea' },
+  // ---- «Песок»: ещё две темы за очки копилки ----
+  { id: 'candy', mode: 'sand', cost: 150000, sandFx: 'sprinkle', name: 'Сладости',
+    sand: ['#ff5c93', '#ffd84a', '#5fd99a', '#5aa8ff', '#ff9f5a', '#b98aff'],
+    bg: ['#ffd6ec', '#ffc8e2', '#cfe8ff'], glow: '#ffffff', board: '#5a2a4e', edge: '#7a3a68', cell: '#673258',
+    panel: ['#ff8fbe', '#e0609a', '#fff0f7', '#8a2f66'], ui: '#ffffff', decor: 'candyland' },
+  { id: 'lanterns', mode: 'sand', cost: 1000000, sandFx: 'lantern', name: 'Фонарики',
+    sand: ['#ff5a4a', '#ffcc4a', '#4ad18a', '#4a9cff', '#ff8f3a', '#b46cff'],
+    bg: ['#0a0a2e', '#2a1550', '#7a3a5a'], glow: '#ffb347', board: '#120c22', edge: '#3a2450', cell: '#1a1230',
+    panel: ['#c4572a', '#8a3416', '#ffcf8a', '#3a1408'], ui: '#ffe6c4', decor: 'lanterns' },
 ];
 const PIXEL_FONT = "'Press Start 2P', 'Courier New', monospace";
 // Эффекты текущей темы (только в классике): 'sakura' | 'pixel' | 'void' | undefined
@@ -4566,6 +4575,147 @@ function drawBgScenery(g, th) {
     }
     g.strokeStyle = 'rgba(255,225,74,0.35)'; g.lineWidth = Math.max(1.5, U * 0.004); g.setLineDash([U * 0.04, U * 0.03]);
     g.beginPath(); g.moveTo(0, hz + (H - hz) * 0.55); g.lineTo(W, hz + (H - hz) * 0.55); g.stroke(); g.setLineDash([]);
+  } else if (th.decor === 'candyland') {
+    // конфетная страна: сахарные облака, клубничные и мятные холмы с глазурью, леденцовые деревья, тросточки, пряничный домик
+    const rnd = seeded(314), port = W < H, hz = H * 0.8;
+    const cloud = (x, y, r, c) => { g.fillStyle = c; for (const [dx, dy, k] of [[0, 0, 1], [-0.9, 0.25, 0.7], [0.9, 0.2, 0.75], [-0.4, -0.35, 0.65], [0.45, -0.3, 0.6]]) { g.beginPath(); g.arc(x + dx * r, y + dy * r, r * k, 0, Math.PI * 2); g.fill(); } };
+    cloud(W * 0.15, H * 0.12, U * 0.06, 'rgba(255,255,255,0.75)');
+    cloud(W * 0.82, H * 0.2, U * 0.07, 'rgba(255,220,240,0.8)');
+    cloud(W * 0.55, H * 0.07, U * 0.045, 'rgba(220,240,255,0.8)');
+    // холмы: дальние клубничные, ближние мятные, у каждого край глазури с подтёками
+    const hill = (y0, amp, freq, ph, c, icing) => {
+      g.fillStyle = c; g.beginPath(); g.moveTo(0, H);
+      for (let x = 0; x <= W + 8; x += 8) g.lineTo(x, y0 - Math.abs(Math.sin(x / W * freq + ph)) * amp);
+      g.lineTo(W, H); g.closePath(); g.fill();
+      g.fillStyle = icing; g.beginPath();
+      for (let x = 0; x <= W + 8; x += 8) g.lineTo(x, y0 - Math.abs(Math.sin(x / W * freq + ph)) * amp - 1);
+      for (let x = W + 8; x >= 0; x -= 8) { const y = y0 - Math.abs(Math.sin(x / W * freq + ph)) * amp; g.lineTo(x, y + U * 0.012 + (Math.sin(x * 0.11) > 0.6 ? U * 0.02 : 0)); }
+      g.closePath(); g.fill();
+      for (let i = 0; i < 40; i++) {
+        const x = W * rnd(), y = y0 - Math.abs(Math.sin(x / W * freq + ph)) * amp + U * (0.03 + 0.1 * rnd());
+        g.save(); g.translate(x, y); g.rotate(rnd() * 3); g.fillStyle = ['#ff5c93', '#ffd84a', '#5fd99a', '#5aa8ff', '#ffffff'][i % 5];
+        g.fillRect(-U * 0.006, -U * 0.002, U * 0.012, U * 0.004); g.restore();
+      }
+    };
+    hill(H * 0.66, H * 0.12, 5, 0.4, '#f7a1c4', '#fff4fa');
+    hill(H * 0.76, H * 0.08, 7, 1.7, '#9fe3c8', '#ffffff');
+    // шоколадная речка
+    g.fillStyle = '#7a4326'; g.beginPath(); g.moveTo(0, H);
+    for (let x = 0; x <= W + 8; x += 8) g.lineTo(x, hz + Math.sin(x / W * 9) * U * 0.01);
+    g.lineTo(W, H); g.closePath(); g.fill();
+    g.strokeStyle = 'rgba(255,220,190,0.35)'; g.lineWidth = Math.max(1, U * 0.004);
+    for (let i = 0; i < 12; i++) { const x = W * rnd(), y = hz + (H - hz) * (0.2 + 0.7 * rnd()); g.beginPath(); g.moveTo(x, y); g.quadraticCurveTo(x + U * 0.02, y - U * 0.006, x + U * 0.04, y); g.stroke(); }
+    // леденцовые деревья
+    const lolly = (x, y, r, c) => {
+      g.fillStyle = '#f8efe4'; g.fillRect(x - r * 0.08, y - r * 2.6, r * 0.16, r * 2.6);
+      g.fillStyle = c; g.beginPath(); g.arc(x, y - r * 2.6, r, 0, Math.PI * 2); g.fill();
+      g.strokeStyle = 'rgba(255,255,255,0.85)'; g.lineWidth = r * 0.16; g.beginPath();
+      for (let a = 0; a < Math.PI * 6; a += 0.2) { const rr = r * 0.9 * a / (Math.PI * 6); g.lineTo(x + Math.cos(a) * rr, y - r * 2.6 + Math.sin(a) * rr); }
+      g.stroke();
+      g.fillStyle = 'rgba(255,255,255,0.4)'; g.beginPath(); g.ellipse(x - r * 0.4, y - r * 3, r * 0.3, r * 0.15, -0.6, 0, Math.PI * 2); g.fill();
+    };
+    // тросточка
+    const cane = (x, y, h) => {
+      g.lineCap = 'butt'; g.lineWidth = h * 0.12;
+      const path = () => { g.beginPath(); g.moveTo(x, y); g.lineTo(x, y - h * 0.8); g.arc(x - h * 0.15, y - h * 0.8, h * 0.15, 0, Math.PI, true); };
+      g.strokeStyle = '#ffffff'; path(); g.stroke();
+      g.strokeStyle = '#e8304a'; g.setLineDash([h * 0.08, h * 0.08]); path(); g.stroke(); g.setLineDash([]);
+    };
+    // пряничный домик
+    const house = (x, y, w) => {
+      g.fillStyle = '#b8743c'; g.fillRect(x - w / 2, y - w * 0.6, w, w * 0.6);
+      g.fillStyle = '#8a4f22'; g.beginPath(); g.moveTo(x - w * 0.62, y - w * 0.58); g.lineTo(x, y - w * 1.05); g.lineTo(x + w * 0.62, y - w * 0.58); g.closePath(); g.fill();
+      g.strokeStyle = '#ffffff'; g.lineWidth = w * 0.05; g.lineJoin = 'round';
+      g.beginPath(); g.moveTo(x - w * 0.62, y - w * 0.58); g.lineTo(x, y - w * 1.05); g.lineTo(x + w * 0.62, y - w * 0.58); g.stroke();
+      g.lineWidth = w * 0.025; g.beginPath();
+      for (let k = 0; k < 7; k++) g.arc(x - w * 0.45 + k * w * 0.15, y - w * 0.6, w * 0.06, 0, Math.PI);
+      g.stroke();
+      g.fillStyle = '#5a2e12'; rrPath(g, x - w * 0.1, y - w * 0.3, w * 0.2, w * 0.3, w * 0.08); g.fill();
+      g.fillStyle = '#ffe9a8'; for (const dx of [-0.3, 0.3]) g.fillRect(x + w * dx - w * 0.08, y - w * 0.45, w * 0.16, w * 0.14);
+      g.fillStyle = '#ffffff'; for (const dx of [-0.3, 0.3]) { g.fillRect(x + w * dx - w * 0.005, y - w * 0.45, w * 0.01, w * 0.14); g.fillRect(x + w * dx - w * 0.08, y - w * 0.385, w * 0.16, w * 0.01); }
+      ['#ff5c93', '#5fd99a', '#ffd84a', '#5aa8ff'].forEach((c, k) => { g.fillStyle = c; g.beginPath(); g.arc(x - w * 0.3 + k * w * 0.2, y - w * 0.7 + Math.abs(k - 1.5) * w * 0.08, w * 0.045, 0, Math.PI * 2); g.fill(); });
+    };
+    if (port) {
+      house(W * 0.82, hz + U * 0.01, U * 0.16);
+      lolly(W * 0.1, hz + U * 0.02, U * 0.045, '#ff5c93'); lolly(W * 0.28, hz + U * 0.02, U * 0.035, '#5aa8ff');
+      cane(W * 0.6, hz + U * 0.02, U * 0.12);
+    } else {
+      house(W * 0.13, hz + U * 0.01, U * 0.17);
+      lolly(W * 0.28, hz + U * 0.015, U * 0.04, '#ff5c93'); lolly(W * 0.74, hz + U * 0.02, U * 0.05, '#5aa8ff'); lolly(W * 0.9, hz + U * 0.015, U * 0.038, '#b98aff');
+      cane(W * 0.82, hz + U * 0.02, U * 0.13); cane(W * 0.32, hz + U * 0.02, U * 0.09);
+    }
+    // мармеладки у берега
+    for (let i = 0; i < 8; i++) {
+      const x = W * (0.04 + i * 0.13 + 0.03 * rnd()), r = U * (0.012 + 0.008 * rnd()), c = ['#ff5c93', '#ffd84a', '#5fd99a', '#5aa8ff', '#ff9f5a', '#b98aff'][i % 6];
+      g.fillStyle = c; g.beginPath(); g.ellipse(x, hz + U * 0.004, r, r * 1.1, 0, Math.PI, 0); g.fill();
+      g.fillStyle = 'rgba(255,255,255,0.6)'; for (let k = 0; k < 4; k++) g.fillRect(x - r * 0.6 + rnd() * r * 1.2, hz - r * (0.2 + 0.7 * rnd()), 1.5, 1.5);
+    }
+  } else if (th.decor === 'lanterns') {
+    // ночное озеро: звёзды, луна, горы, пагода с огнями, зарево у горизонта, отражения, сакура и камыш на берегу
+    const rnd = seeded(888), port = W < H, hz = H * 0.72;
+    g.fillStyle = '#ffffff';
+    for (let i = 0; i < 110; i++) { g.globalAlpha = 0.15 + 0.6 * rnd(); g.fillRect(W * rnd(), hz * 0.7 * rnd(), 1 + rnd() * 1.2, 1 + rnd() * 1.2); }
+    g.globalAlpha = 1;
+    const mx = port ? W * 0.16 : W * 0.8, my = H * (port ? 0.135 : 0.15), mr = U * 0.055;
+    const mg = g.createRadialGradient(mx, my, 0, mx, my, mr * 5);
+    mg.addColorStop(0, 'rgba(255,240,210,0.3)'); mg.addColorStop(1, 'rgba(255,240,210,0)');
+    g.fillStyle = mg; g.fillRect(0, 0, W, H);
+    g.fillStyle = '#fff3d6'; g.beginPath(); g.arc(mx, my, mr, 0, Math.PI * 2); g.fill();
+    g.fillStyle = 'rgba(200,180,150,0.35)'; for (const [dx, dy, r] of [[-0.3, -0.2, 0.2], [0.25, 0.15, 0.15], [-0.1, 0.35, 0.1]]) { g.beginPath(); g.arc(mx + dx * mr, my + dy * mr, r * mr, 0, Math.PI * 2); g.fill(); }
+    const hg = g.createLinearGradient(0, hz - H * 0.15, 0, hz);
+    hg.addColorStop(0, 'rgba(255,150,80,0)'); hg.addColorStop(1, 'rgba(255,150,80,0.3)');
+    g.fillStyle = hg; g.fillRect(0, 0, W, hz);
+    // горы
+    for (const [c, y0, amp, f, ph] of [['#2a1a48', 0.6, 0.14, 4, 0.3], ['#1a1032', 0.66, 0.09, 7, 2]]) {
+      g.fillStyle = c; g.beginPath(); g.moveTo(0, hz);
+      for (let x = 0; x <= W + 8; x += 8) { const t = x / W * f + ph; g.lineTo(x, H * y0 - (Math.abs(Math.sin(t)) * 0.7 + Math.abs(Math.sin(t * 2.3)) * 0.3) * H * amp); }
+      g.lineTo(W, hz); g.closePath(); g.fill();
+    }
+    // пагода
+    {
+      const px = port ? W * 0.7 : W * 0.22, base = hz, w = U * 0.09;
+      g.fillStyle = '#0d0820';
+      g.fillRect(px - w * 0.6, base - w * 0.15, w * 1.2, w * 0.15);
+      for (let k = 0; k < 5; k++) {
+        const fw = w * (1 - k * 0.14), y = base - w * 0.15 - k * w * 0.42;
+        g.fillRect(px - fw * 0.38, y - w * 0.3, fw * 0.76, w * 0.3);
+        g.beginPath(); g.moveTo(px - fw * 0.75, y - w * 0.26); g.quadraticCurveTo(px - fw * 0.5, y - w * 0.3, px - fw * 0.42, y - w * 0.42);
+        g.lineTo(px + fw * 0.42, y - w * 0.42); g.quadraticCurveTo(px + fw * 0.5, y - w * 0.3, px + fw * 0.75, y - w * 0.26); g.closePath(); g.fill();
+        g.fillStyle = '#ffbf5a'; for (const dx of [-0.18, 0, 0.18]) g.fillRect(px + fw * dx - w * 0.03, y - w * 0.22, w * 0.06, w * 0.1); g.fillStyle = '#0d0820';
+      }
+      const top = base - w * 0.15 - 5 * w * 0.42;
+      g.fillRect(px - w * 0.02, top - w * 0.4, w * 0.04, w * 0.4);
+    }
+    // озеро
+    const lg = g.createLinearGradient(0, hz, 0, H);
+    lg.addColorStop(0, '#2a1846'); lg.addColorStop(1, '#070514');
+    g.fillStyle = lg; g.fillRect(0, hz, W, H - hz);
+    g.globalCompositeOperation = 'lighter';
+    // лунная дорожка: короткие блики, к берегу шире и реже
+    for (let i = 0; i < 40; i++) {
+      const q = i / 40, y = hz + (H - hz) * q * 0.9, w = mr * (0.5 + 1.5 * q) * (0.4 + 0.6 * rnd());
+      g.fillStyle = `rgba(255,240,210,${0.28 * (1 - q)})`;
+      g.fillRect(mx - w / 2 + (rnd() - 0.5) * mr * q, y, w, Math.max(1, U * 0.003));
+    }
+    for (let i = 0; i < 50; i++) { g.fillStyle = `rgba(255,180,120,${0.04 + 0.06 * rnd()})`; g.fillRect(W * rnd(), hz + (H - hz) * rnd(), U * (0.01 + 0.03 * rnd()), Math.max(1, U * 0.002)); }
+    g.globalCompositeOperation = 'source-over';
+    // ближний берег: камыш и сакура
+    g.fillStyle = '#05030c'; g.beginPath(); g.moveTo(0, H);
+    for (let x = 0; x <= W + 8; x += 8) g.lineTo(x, H - U * 0.03 - Math.abs(Math.sin(x / W * 3)) * U * 0.03);
+    g.lineTo(W, H); g.closePath(); g.fill();
+    g.strokeStyle = '#05030c'; g.lineWidth = Math.max(1, U * 0.004);
+    for (let i = 0; i < 30; i++) { const x = W * rnd(), h = U * (0.04 + 0.06 * rnd()); g.beginPath(); g.moveTo(x, H - U * 0.03); g.quadraticCurveTo(x + U * 0.01, H - U * 0.03 - h * 0.6, x + U * 0.02 * (rnd() - 0.3), H - U * 0.03 - h); g.stroke(); }
+    {
+      const tx = port ? W * 0.9 : W * 0.93, ty = H - U * 0.04, th = U * 0.3;
+      g.strokeStyle = '#0a0612'; g.lineCap = 'round';
+      const branch = (x, y, a, len, w, d) => {
+        const x2 = x + Math.cos(a) * len, y2 = y + Math.sin(a) * len;
+        g.lineWidth = w; g.beginPath(); g.moveTo(x, y); g.lineTo(x2, y2); g.stroke();
+        if (d > 0) { branch(x2, y2, a - 0.5 - rnd() * 0.3, len * 0.7, w * 0.65, d - 1); branch(x2, y2, a + 0.4 + rnd() * 0.3, len * 0.72, w * 0.65, d - 1); }
+        else for (let k = 0; k < 5; k++) { g.fillStyle = rnd() < 0.5 ? 'rgba(255,170,210,0.85)' : 'rgba(255,210,230,0.75)'; g.beginPath(); g.arc(x2 + (rnd() - 0.5) * U * 0.03, y2 + (rnd() - 0.5) * U * 0.03, U * (0.008 + 0.008 * rnd()), 0, Math.PI * 2); g.fill(); }
+      };
+      branch(tx, ty, -Math.PI / 2 - 0.25, th * 0.45, U * 0.02, 4);
+    }
   } else if (th.decor === 'reef') {
     // лучи света сверху, песчаное дно, кораллы и водоросли
     g.save(); g.globalCompositeOperation = 'lighter';
@@ -5252,11 +5402,104 @@ function drawCyberDecor(arr, ts, dt, U) {
   }
 }
 
+/* ---------- Темы песка «Сладости» и «Фонарики» ---------- */
+const CANDY_COLS = ['#ff5c93', '#ffd84a', '#5fd99a', '#5aa8ff', '#ff9f5a', '#b98aff'];
+// Конфета в фантике: (x, y) центр, r — радиус, a — поворот
+function drawWrappedCandy(x, y, r, a, c) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(a);
+  ctx.fillStyle = mixHex(c, '#ffffff', 0.25);
+  for (const sgn of [-1, 1]) { ctx.beginPath(); ctx.moveTo(sgn * r * 0.8, 0); ctx.lineTo(sgn * r * 1.7, -r * 0.6); ctx.lineTo(sgn * r * 1.55, 0); ctx.lineTo(sgn * r * 1.7, r * 0.6); ctx.closePath(); ctx.fill(); }
+  ctx.fillStyle = c; ctx.beginPath(); ctx.ellipse(0, 0, r, r * 0.75, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,0.8)'; ctx.lineWidth = r * 0.2;
+  ctx.beginPath(); ctx.moveTo(-r * 0.4, -r * 0.6); ctx.lineTo(r * 0.2, r * 0.65); ctx.stroke();
+  ctx.fillStyle = 'rgba(255,255,255,0.55)'; ctx.beginPath(); ctx.ellipse(-r * 0.35, -r * 0.3, r * 0.25, r * 0.12, -0.5, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+}
+function drawCandyDecor(arr, ts, dt, U) {
+  // плывут сахарные облачка
+  for (let k = 0; k < 2; k++) {
+    const x = ((ts * 0.01 * (k + 1) + k * 0.5) % 1.4 - 0.2) * W, y = H * (0.28 + k * 0.1), r = U * (0.035 + k * 0.01);
+    ctx.globalAlpha = 0.7; ctx.fillStyle = k ? '#ffe4f2' : '#ffffff';
+    for (const [dx, dy, kk] of [[0, 0, 1], [-0.9, 0.25, 0.7], [0.9, 0.2, 0.75], [-0.4, -0.35, 0.65], [0.45, -0.3, 0.6]]) { ctx.beginPath(); ctx.arc(x + dx * r, y + dy * r, r * kk, 0, Math.PI * 2); ctx.fill(); }
+  }
+  ctx.globalAlpha = 1;
+  // конфеты медленно падают, крутясь и покачиваясь
+  for (let i = 0; i < 14; i++) {
+    const d = arr[i];
+    d.y += dt * 0.03 * d.sp; if (d.y > 1.08) { d.y = -0.08; d.x = Math.random(); }
+    const x = d.x * W + Math.sin(ts * 0.8 * d.sp + d.ph) * U * 0.03;
+    ctx.globalAlpha = 0.9;
+    drawWrappedCandy(x, d.y * H, U * (0.012 + 0.01 * d.s), Math.sin(ts * d.sp + d.ph) * 0.8 + d.r, CANDY_COLS[i % 6]);
+  }
+  // сахарные искорки
+  ctx.fillStyle = '#ffffff';
+  for (let i = 14; i < arr.length; i++) {
+    const d = arr[i];
+    ctx.globalAlpha = Math.max(0, Math.sin(ts * 1.4 * d.sp + d.ph)) * 0.9;
+    drawStar(d.x * W, d.y * H * 0.8, U * (0.006 + 0.008 * d.s));
+  }
+  ctx.globalAlpha = 1;
+}
+// Небесный фонарик: (x, y) центр, h — высота, f — мерцание 0..1
+function drawSkyLantern(x, y, h, f) {
+  ctx.save();
+  ctx.globalCompositeOperation = 'lighter';
+  ctx.globalAlpha *= 0.55 + 0.25 * f;
+  ctx.drawImage(getGlow('#ff9a3a'), x - h * 1.6, y - h * 1.5, h * 3.2, h * 3.2);
+  ctx.restore();
+  const w = h * 0.7;
+  const lg = ctx.createLinearGradient(0, y - h / 2, 0, y + h / 2);
+  lg.addColorStop(0, '#c4501e'); lg.addColorStop(0.6, '#ffb347'); lg.addColorStop(1, '#fff1b0');
+  ctx.fillStyle = lg;
+  ctx.beginPath(); ctx.moveTo(x - w * 0.5, y - h * 0.5); ctx.lineTo(x + w * 0.5, y - h * 0.5); ctx.lineTo(x + w * 0.38, y + h * 0.5); ctx.lineTo(x - w * 0.38, y + h * 0.5); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = 'rgba(120,40,10,0.5)'; ctx.fillRect(x - w * 0.5, y - h * 0.5, w, h * 0.08);
+  ctx.fillStyle = `rgba(255,255,220,${0.6 + 0.4 * f})`; ctx.beginPath(); ctx.ellipse(x, y + h * 0.42, w * 0.18, h * 0.06, 0, 0, Math.PI * 2); ctx.fill();
+}
+function drawLanternDecor(arr, ts, dt, U) {
+  const hz = H * 0.72;
+  // небесные фонарики поднимаются: дальние мельче и медленнее; ближние отражаются в озере
+  for (let i = 0; i < 22; i++) {
+    const d = arr[i], depth = 0.35 + 0.65 * d.s;
+    d.y -= dt * 0.012 * d.sp * depth; if (d.y < -0.06) { d.y = 0.75 + Math.random() * 0.3; d.x = Math.random(); }
+    const x = d.x * W + Math.sin(ts * 0.3 * d.sp + d.ph) * U * 0.03, y = d.y * H, h = U * 0.035 * depth;
+    const f = 0.5 + 0.5 * Math.sin(ts * (5 + d.sp * 3) + d.ph) * Math.sin(ts * 1.7 + d.r);
+    ctx.globalAlpha = Math.min(1, (hz + U * 0.05 - y) / (U * 0.1)) * (0.5 + 0.5 * depth);
+    if (ctx.globalAlpha <= 0) continue;
+    drawSkyLantern(x, y, h, f);
+    const ry = hz + (hz - y) * 0.3;
+    if (depth > 0.6 && ry < H) {
+      ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha *= 0.25;
+      ctx.drawImage(getGlow('#ff9a3a'), x - h, ry - h * 1.5, h * 2, h * 3); ctx.restore();
+    }
+  }
+  ctx.globalAlpha = 1;
+  // фонарики на воде медленно плывут и покачиваются
+  for (let i = 22; i < 30; i++) {
+    const d = arr[i];
+    d.x += dt * 0.006 * d.sp; if (d.x > 1.1) d.x = -0.1;
+    const y = hz + (H - hz) * (0.15 + 0.6 * d.s), sz = U * (0.012 + 0.014 * d.s), x = d.x * W, bob = Math.sin(ts * 1.5 + d.ph) * sz * 0.15;
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.5;
+    ctx.drawImage(getGlow('#ffb347'), x - sz * 2, y - sz * 2 + bob, sz * 4, sz * 4);
+    ctx.globalAlpha = 0.18; ctx.drawImage(getGlow('#ffb347'), x - sz * 0.8, y + bob, sz * 1.6, sz * 5);
+    ctx.restore();
+    ctx.fillStyle = '#ffcf7a'; ctx.fillRect(x - sz * 0.5, y - sz * 0.7 + bob, sz, sz * 0.7);
+    ctx.fillStyle = '#5a2a10'; ctx.fillRect(x - sz * 0.6, y + bob, sz * 1.2, sz * 0.15);
+  }
+  // светлячки у берега
+  ctx.globalCompositeOperation = 'lighter';
+  for (let i = 30; i < arr.length; i++) {
+    const d = arr[i], x = d.x * W + Math.sin(ts * 0.5 * d.sp + d.ph) * U * 0.04, y = H * (0.82 + 0.14 * d.y) + Math.cos(ts * 0.7 * d.sp + d.r) * U * 0.02;
+    ctx.globalAlpha = Math.max(0, Math.sin(ts * 2 * d.sp + d.ph)) * 0.9;
+    ctx.drawImage(getGlow('#d8ff7a'), x - U * 0.008, y - U * 0.008, U * 0.016, U * 0.016);
+  }
+  ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+}
+
 /* ---------- Анимированный декор фона ---------- */
 const DECOR_COUNT = { squares: 16, bokeh: 14, bubbles: 20, fireflies: 24, stars: 70, embers: 32, snow: 55,
   synthwave: 30, petals: 26, aurora: 50, glitter: 34, dunes: 30, galaxy: 80, pixelsky: 6, blackhole: 50, brainrot: 10,
   gummies: 14, holo: 12, volcano: 36, tanks: 30, egypt: 40, cyber: 70, reef: 22, rainbow: 40, storm: 70, camo: 9, fuse: 45, canyon: 26, radar: 14, fallout: 38,
-  jigsaw: 10, blueprint: 16, chess: 30, crystal: 36, salute: 9, deepsea: 40 };
+  jigsaw: 10, blueprint: 16, chess: 30, crystal: 36, salute: 9, deepsea: 40, candyland: 30, lanterns: 40 };
 let shootStar = null;                   // падающая звезда темы «Галактика»
 function getDecor(ti) {
   let arr = decorSets.get(ti);
@@ -5287,6 +5530,8 @@ function drawDecor(ti, now, dt) {
   if (kind === 'tanks') { drawTanksDecor(arr, ts, dt, U); ctx.restore(); return; }
   if (kind === 'egypt') { drawEgyptDecor(arr, ts, dt, U); ctx.restore(); return; }
   if (kind === 'cyber') { drawCyberDecor(arr, ts, dt, U); ctx.restore(); return; }
+  if (kind === 'candyland') { drawCandyDecor(arr, ts, dt, U); ctx.restore(); return; }
+  if (kind === 'lanterns') { drawLanternDecor(arr, ts, dt, U); ctx.restore(); return; }
   if (BOMB_DECOR[kind]) { BOMB_DECOR[kind](arr, ts, dt, U); ctx.restore(); return; }
   if (PUZ_DECOR[kind]) { PUZ_DECOR[kind](arr, ts, dt, U); ctx.restore(); return; }
   for (const d of arr) {
@@ -7296,7 +7541,7 @@ function sandColor(k) {
 const CANVAS_FILTER = 'filter' in CanvasRenderingContext2D.prototype;
 function sandFx() {
   const fx = settings.lite || state === 'over' ? null : THEMES[themeIdx].sandFx || null;
-  return fx === 'glow' && !CANVAS_FILTER ? null : fx;   // без ctx.filter свечение не размыть
+  return fx === 'glow' && !CANVAS_FILTER ? null : fx;   // без ctx.filter свечение не размыть («Фонарики» без него оставляют только огоньки)
 }
 
 // Профиль столбцов каждой фигуры в песчинках: верх, низ и высота столбика
@@ -7829,8 +8074,8 @@ function sandRender(now) {
     ic.globalCompositeOperation = 'source-atop';
     ic.fillStyle = gr; ic.fillRect(0, 0, SCOLS, SROWS);
     ic.globalCompositeOperation = 'source-over';
-  } else if (fx === 'glow') {
-    // размытая копия песка — неоновое свечение
+  } else if (fx === 'glow' || (fx === 'lantern' && CANVAS_FILTER)) {
+    // размытая копия песка — неоновое свечение (в «Фонариках» — тёплое, пульсирует)
     const gc = sand.glow.getContext('2d');
     gc.clearRect(0, 0, sand.glow.width, sand.glow.height);
     gc.filter = 'blur(2px)';
@@ -7884,6 +8129,47 @@ function drawSandBubbles(now, dt, gs) {
   ctx.restore();
 }
 // Электрические искры бегают по поверхности песка (тема «Гроза»)
+// Цветная посыпка на поверхности песка (тема «Сладости»)
+function drawSandSprinkles(now, dt, gs) {
+  const sp = sand.spr || (sand.spr = []), g = sand.grid;
+  if (sp.length < 90 && Math.random() < dt * 45) {
+    for (let a = 0; a < 40; a++) {
+      const p = (Math.random() * g.length) | 0;
+      if (g[p] && (p < SCOLS || !g[p - SCOLS])) { sp.push({ p, t0: now, a: Math.random() * Math.PI, c: (Math.random() * 7) | 0, life: rand(1200, 2200) }); break; }
+    }
+  }
+  ctx.save(); ctx.lineCap = 'round';
+  for (let k = sp.length - 1; k >= 0; k--) {
+    const s = sp[k], q = (now - s.t0) / s.life;
+    if (q >= 1 || !g[s.p]) { sp.splice(k, 1); continue; }
+    const x = s.p % SCOLS, y = (s.p - x) / SCOLS, X = boardX + (x + 0.5) * gs, Y = boardY + (y - 0.5) * gs, L = gs * 2.6;
+    ctx.globalAlpha = Math.min(1, q * 6, (1 - q) * 4);
+    ctx.strokeStyle = s.c === 6 ? '#ffffff' : CANDY_COLS[s.c]; ctx.lineWidth = Math.max(1.5, gs * 1.1);
+    ctx.beginPath(); ctx.moveTo(X - Math.cos(s.a) * L / 2, Y - Math.sin(s.a) * L / 2); ctx.lineTo(X + Math.cos(s.a) * L / 2, Y + Math.sin(s.a) * L / 2); ctx.stroke();
+  }
+  ctx.restore();
+}
+// Тёплые огоньки поднимаются с песка (тема «Фонарики»)
+function drawSandMotes(now, dt, gs) {
+  const ms = sand.mot || (sand.mot = []), g = sand.grid;
+  if (ms.length < 30 && Math.random() < dt * 8) {
+    for (let a = 0; a < 40; a++) {
+      const p = (Math.random() * g.length) | 0;
+      if (g[p] && (p < SCOLS || !g[p - SCOLS])) { const x = p % SCOLS; ms.push({ x: x + 0.5, y: (p - x) / SCOLS, vy: rand(4, 9), ph: Math.random() * 6, r: rand(1.2, 2.4), t0: now }); break; }
+    }
+  }
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  for (let k = ms.length - 1; k >= 0; k--) {
+    const m = ms[k], q = (now - m.t0) / 1800;
+    if (q >= 1) { ms.splice(k, 1); continue; }
+    m.y -= m.vy * dt;
+    const X = boardX + (m.x + Math.sin(now / 400 + m.ph) * 1.5) * gs, Y = boardY + m.y * gs, r = gs * m.r * 2;
+    if (Y < boardY) { ms.splice(k, 1); continue; }
+    ctx.globalAlpha = Math.sin(q * Math.PI) * 0.9;
+    ctx.drawImage(getGlow(m.ph > 3 ? '#ffcf6a' : '#ff9a3a'), X - r, Y - r, r * 2, r * 2);
+  }
+  ctx.restore();
+}
 function drawSandSparks(now, dt, gs) {
   const sp = sand.spk || (sand.spk = []), g = sand.grid;
   if (Math.random() < dt * 12) {
@@ -7940,6 +8226,16 @@ function sandDraw(now, dt) {
   } else if (fx === 'twinkle') drawSandTwinkles(now, dt, gs);
   else if (fx === 'bubbles') drawSandBubbles(now, dt, gs);
   else if (fx === 'spark') drawSandSparks(now, dt, gs);
+  else if (fx === 'sprinkle') drawSandSprinkles(now, dt, gs);
+  else if (fx === 'lantern') {
+    if (CANVAS_FILTER) {
+      ctx.save(); ctx.globalCompositeOperation = 'lighter';
+      ctx.globalAlpha = 0.32 + 0.12 * Math.sin(now / 700);
+      ctx.drawImage(sand.glow, boardX - 4 * gs, boardY - 4 * gs, (SCOLS + 8) * gs, (SROWS + 8) * gs);
+      ctx.restore();
+    }
+    drawSandMotes(now, dt, gs);
+  }
   // красная линия; когда песок близко — тревожная подсветка
   const near = state === 'play' && sand.phase === 'idle' && sandTopRow() < SDANGER + 16;
   if (near) {
