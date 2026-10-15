@@ -696,16 +696,16 @@ const THEMES = [
   { name: 'Арктика', bg: ['#4f83c2', '#86b5e4', '#d3ebfa'], glow: '#ffffff', board: '#1d3354', edge: '#142641', cell: '#243e63',
     panel: ['#6fa6dc', '#4a7fbd', '#d9efff', '#25497a'], ui: '#ffffff', decor: 'snow' },
   // ---- Особые темы классики ----
-  { id: 'neon', mode: 'classic', cost: 2000, blocks: 'neon', name: 'Неон',
+  { id: 'neon', mode: 'classic', cost: 5000, blocks: 'neon', name: 'Неон',
     bg: ['#0b0221', '#1a0638', '#2d0b4e'], glow: '#ff3df2', board: '#0d0420', edge: '#2a0c4d', cell: '#150833',
     panel: ['#6a2bb8', '#40177a', '#ff5cf0', '#1f0a3d'], ui: '#ffb8fb', decor: 'synthwave' },
-  { id: 'sakura', mode: 'classic', cost: 5000, blocks: 'candy', name: 'Сакура',
+  { id: 'sakura', mode: 'classic', cost: 12000, blocks: 'candy', name: 'Сакура',
     bg: ['#ffd1e3', '#f4a3c4', '#c088d4'], glow: '#ffffff', board: '#5a2747', edge: '#43183a', cell: '#6b3357',
     panel: ['#f59bc1', '#d06f9f', '#ffe0ee', '#8a3466'], ui: '#ffffff', decor: 'petals' },
-  { id: 'aurora', mode: 'classic', cost: 10000, blocks: 'glass', name: 'Сияние',
+  { id: 'aurora', mode: 'classic', cost: 25000, blocks: 'glass', name: 'Сияние',
     bg: ['#01060f', '#04192b', '#08303a'], glow: '#5dffc4', board: '#06131f', edge: '#020a12', cell: '#0b1f2e',
     panel: ['#1f8f86', '#13615e', '#7dffd8', '#08302f'], ui: '#b8fff0', decor: 'aurora' },
-  { id: 'royal', mode: 'classic', cost: 20000, blocks: 'gem', name: 'Роскошь',
+  { id: 'royal', mode: 'classic', cost: 50000, blocks: 'gem', name: 'Роскошь',
     bg: ['#160818', '#341040', '#4a1850'], glow: '#ffd36b', board: '#1a0f14', edge: '#c9a03a', cell: '#26151d',
     panel: ['#a8792b', '#6e4a17', '#ffe08a', '#3a2408'], ui: '#ffe9b0', decor: 'glitter' },
   // ---- Особые темы песка ----
@@ -741,13 +741,13 @@ const THEMES = [
     bg: ['#2f8fe0', '#7fcdf5', '#f7d58b'], glow: '#fff3b0', board: '#2a1a10', edge: '#5a3418', cell: '#3a2416',
     panel: ['#e8823a', '#b85a1f', '#ffd08a', '#5a2a0c'], ui: '#fff1c9', decor: 'brainrot' },
   // ---- Дорогие темы (добавлены после секретных: в сохранениях темы хранятся по индексу) ----
-  { id: 'gummy', mode: 'classic', cost: 50000, blocks: 'jelly', name: 'Мармелад',
+  { id: 'gummy', mode: 'classic', cost: 125000, blocks: 'jelly', name: 'Мармелад',
     bg: ['#ffc2e2', '#e9b5ff', '#b9d6ff'], glow: '#ffffff', board: '#4a2047', edge: '#6e2f68', cell: '#5a2a56',
     panel: ['#ff7fc0', '#d855a0', '#ffd0e8', '#7a2058'], ui: '#ffffff', decor: 'gummies' },
-  { id: 'holo', mode: 'classic', cost: 75000, blocks: 'holo', name: 'Голограмма',
+  { id: 'holo', mode: 'classic', cost: 190000, blocks: 'holo', name: 'Голограмма',
     bg: ['#060a1f', '#140a35', '#1f0b45'], glow: '#7af8ff', board: '#0a0820', edge: '#3d2a7a', cell: '#120f30',
     panel: ['#5b3fd1', '#3a2690', '#7af8ff', '#170d45'], ui: '#c9f8ff', decor: 'holo' },
-  { id: 'magma', mode: 'classic', cost: 120000, blocks: 'magma', name: 'Магма',
+  { id: 'magma', mode: 'classic', cost: 300000, blocks: 'magma', name: 'Магма',
     bg: ['#120404', '#3a0b06', '#7a1a08'], glow: '#ff7a1a', board: '#160c0a', edge: '#5a1e0c', cell: '#22120e',
     panel: ['#c4471e', '#7e2410', '#ffb36b', '#3a0c04'], ui: '#ffd2a0', decor: 'volcano' },
   { id: 'reef', mode: 'sand', cost: 200000, sandFx: 'bubbles', name: 'Риф',
@@ -769,13 +769,13 @@ const THEMES = [
   { id: 'fuse', mode: 'bomb', name: 'Фитиль',
     bg: ['#0c0a1c', '#1e1636', '#40203a'], glow: '#ff9a3d', board: '#110d22', edge: '#2e2148', cell: '#19132f',
     panel: ['#8a3fa8', '#5a2777', '#ffb36b', '#2a1040'], ui: '#ffe0c2', decor: 'fuse' },
-  { id: 'tnt', mode: 'bomb', cost: 15000, blocks: 'crate', name: 'Динамит',
+  { id: 'tnt', mode: 'bomb', cost: 38000, blocks: 'crate', name: 'Динамит',
     bg: ['#f2a65a', '#d9673b', '#7a2e1f'], glow: '#ffd08a', board: '#3a2014', edge: '#5e3420', cell: '#4a2a1a',
     panel: ['#d2643a', '#9a3f20', '#ffc48a', '#4a1a0a'], ui: '#fff0d8', decor: 'canyon' },
-  { id: 'radar', mode: 'bomb', cost: 40000, blocks: 'plate', name: 'Радар',
+  { id: 'radar', mode: 'bomb', cost: 100000, blocks: 'plate', name: 'Радар',
     bg: ['#020c08', '#062015', '#0b3322'], glow: '#3dff8f', board: '#06140d', edge: '#1d4a32', cell: '#0b1f15',
     panel: ['#1f8a55', '#135e39', '#7dffb8', '#073020'], ui: '#c8ffe0', decor: 'radar' },
-  { id: 'reactor', mode: 'bomb', cost: 100000, blocks: 'toxic', name: 'Реактор',
+  { id: 'reactor', mode: 'bomb', cost: 250000, blocks: 'toxic', name: 'Реактор',
     bg: ['#050a04', '#0f1f08', '#24380c'], glow: '#b6ff3d', board: '#0a1206', edge: '#3a5a12', cell: '#111d0a',
     panel: ['#6aa31c', '#45700f', '#d8ff7a', '#1d3305'], ui: '#efffc8', decor: 'fallout' },
   // ---- Режим «Головоломка»: две бесплатные темы и две за очки копилки «Головоломки» ----
@@ -792,11 +792,11 @@ const THEMES = [
     bg: ['#0c0620', '#1d0f3d', '#2e1858'], glow: '#c58cff', board: '#100a24', edge: '#4a2a8a', cell: '#181034',
     panel: ['#7a4ad8', '#4f2a9a', '#e2c8ff', '#22104a'], ui: '#f0e4ff', decor: 'crystal' },
   // ---- Классика: «Танки» (добавлена 15.10.2026) ----
-  { id: 'tanks', mode: 'classic', cost: 150000, blocks: 'armor', fx: 'tank', name: 'Танки',
+  { id: 'tanks', mode: 'classic', cost: 375000, blocks: 'armor', fx: 'tank', name: 'Танки',
     bg: ['#2e3324', '#55553a', '#a0743f'], glow: '#ffc86b', board: '#1c2015', edge: '#4f5a2c', cell: '#262b1b',
     panel: ['#6f7e36', '#4a5824', '#e0dc8e', '#222a0e'], ui: '#f2f0cc', decor: 'tanks' },
   // ---- Классика: «Египет» (добавлена 15.10.2026) ----
-  { id: 'egypt', mode: 'classic', cost: 100000, blocks: 'sandstone', fx: 'egypt', name: 'Египет',
+  { id: 'egypt', mode: 'classic', cost: 250000, blocks: 'sandstone', fx: 'egypt', name: 'Египет',
     bg: ['#2b6fb0', '#e8a35a', '#f2c97a'], glow: '#ffe08a', board: '#3a2614', edge: '#c9963a', cell: '#4a3119',
     panel: ['#d79a3c', '#a86a1e', '#ffe2a0', '#5a3410'], ui: '#fff3d6', decor: 'egypt' },
 ];
@@ -2122,7 +2122,9 @@ function renderThemePicker() {
   themesEl.textContent = '';
   confirmIdx = -1;
   themeNote.textContent = mode === 'puzzle' ? 'В «Головоломке» копилка пополняется только за новые звёзды: 400 очков за звезду.' : THEME_NOTE;
-  const order = THEMES.map((_, i) => i).sort((a, b) => (!!THEMES[a].code - !!THEMES[b].code) || a - b);   // секретные — в конце
+  // сначала бесплатные, затем платные по возрастанию цены, секретные — в конце
+  const grp = th => th.code ? 2 : th.cost ? 1 : 0;
+  const order = THEMES.map((_, i) => i).sort((a, b) => (grp(THEMES[a]) - grp(THEMES[b])) || ((THEMES[a].cost || 0) - (THEMES[b].cost || 0)) || a - b);
   order.forEach(i => {
     const th = THEMES[i];
     if (!themeAvail(i) || (th.code && !themeOwned(i))) return;   // секретные темы видны только после ввода кода
