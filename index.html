@@ -2427,6 +2427,8 @@ function save() {
     puzSave();
   } catch (_) {}
 }
+// число из сохранения: конечное и не меньше нуля (Infinity, NaN, строки и отрицательные дают 0)
+function nonNeg(v) { v = +v; return Number.isFinite(v) && v > 0 ? v : 0; }
 function restore() {
   let s = null;
   try { s = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); } catch (_) {}
@@ -2441,15 +2443,15 @@ function restore() {
     settings.mode = ['sand', 'bomb', 'puzzle'].includes(s.settings.mode) ? s.settings.mode : 'classic';
   }
   if (s.wallet) {
-    wallet.classic = Math.max(0, +s.wallet.classic || 0);
-    wallet.sand = Math.max(0, +s.wallet.sand || 0);
-    wallet.bomb = Math.max(0, +s.wallet.bomb || 0);
-    wallet.puzzle = Math.max(0, +s.wallet.puzzle || 0);
+    wallet.classic = nonNeg(s.wallet.classic);
+    wallet.sand = nonNeg(s.wallet.sand);
+    wallet.bomb = nonNeg(s.wallet.bomb);
+    wallet.puzzle = nonNeg(s.wallet.puzzle);
   } else {
     // первый запуск версии с копилкой: стартовый капитал — рекорды режимов
     const sd = readSandStore();
-    wallet.classic = Math.max(0, +s.best || 0);
-    wallet.sand = Math.max(0, +(sd && sd.best) || 0);
+    wallet.classic = nonNeg(s.best);
+    wallet.sand = nonNeg(sd && sd.best);
   }
   if (Array.isArray(s.owned)) s.owned.forEach(id => { if (typeof id === 'string') owned.add(id); });
   const valid = (i, m) => Number.isInteger(i) && themeOk(i, m);
@@ -2463,7 +2465,7 @@ function restore() {
 }
 // Загружает партию классики из снимка { best, game }; false — если партии нет
 function applyClassic(s) {
-  best = Math.max(0, +(s && s.best) || 0);
+  best = nonNeg(s && s.best);
   bombs.clear(); bombsDefused = 0; pendingNm = null;
   const g = s && s.game;
   if (!g || !Array.isArray(g.grid) || g.grid.length !== N * N) return false;
@@ -10562,7 +10564,7 @@ function snapSand() {
 }
 function readSandStore() { try { return JSON.parse(localStorage.getItem(SAND_KEY) || 'null'); } catch (_) { return null; } }
 function loadSand(snap) {
-  best = Math.max(0, +(snap && snap.best) || 0);
+  best = nonNeg(snap && snap.best);
   const g = snap && snap.game;
   // сохранение с поля другого размера (раньше было 80×100) переносим в низ поля по центру
   const ow = g && (+g.w || 80), oh = g && typeof g.cells === 'string' ? g.cells.length / ow : 0;
@@ -11397,7 +11399,8 @@ try { stats = JSON.parse(localStorage.getItem(STATS_KEY)) || {}; } catch (_) { s
 if (!stats || typeof stats !== 'object') stats = {};
 function statsOf(m) {
   const r = stats[m] && typeof stats[m] === 'object' ? stats[m] : {};
-  for (const k of ['g', 'sum', 'lines', 'bs', 'bc', 'last5']) if (k === 'last5' ? !Array.isArray(r[k]) : !Number.isFinite(r[k])) r[k] = k === 'last5' ? [] : 0;
+  for (const k of ['g', 'sum', 'lines', 'bs', 'bc']) if (!(Number.isFinite(r[k]) && r[k] >= 0)) r[k] = 0;   // испорченное сохранение: только конечные числа не меньше нуля
+  r.last5 = Array.isArray(r.last5) ? r.last5.filter(v => Number.isFinite(v) && v >= 0).slice(0, 5) : [];
   return (stats[m] = r);
 }
 function statsAdd(m, sc, lines, mc) {
