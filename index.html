@@ -230,6 +230,8 @@
   .daily-days div.now { opacity: 1; background: linear-gradient(180deg, rgba(255,225,74,.35), rgba(245,163,18,.35)); box-shadow: inset 0 0 0 2px var(--gold); animation: starIn .5s cubic-bezier(.2,1.6,.4,1) both; }
   .daily-gain { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 34px; font-weight: 900; color: var(--gold); text-shadow: 0 3px 0 rgba(0,0,0,.3); }
   .daily-gain svg { width: 36px; height: 36px; }
+  #rwList { margin: 2px 0 12px; }
+  #rwList > div { font-size: 14px; }   /* строка награды: «🥇 1-е место · Классика» и сумма справа */
   .lv-total { margin: -8px 0 4px; font-size: 17px; font-weight: 800; }
   .lv-total b { color: var(--gold); }
   .lv-head { margin: 12px 4px 7px; text-align: left; font-size: 17px; font-weight: 900; }
@@ -267,6 +269,8 @@
   .lb-name { text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .lb-sc, .lb-cb { text-align: right; color: rgba(255,255,255,.75); }
   .lb-sc.hot, .lb-cb.hot { color: #fff; font-weight: 900; }
+  .lb-head.season, .lb-list.season li { grid-template-columns: 28px 1fr 70px 66px; }
+  .lb-rw { text-align: right; color: var(--gold); font-size: 13px; font-weight: 900; white-space: nowrap; }
   #nickForm[hidden] { display: none; }
 
   /* ---------- Полоса уровня в режиме «Песок» ---------- */
@@ -586,8 +590,8 @@
     <h2>Рекорды</h2>
     <div class="seg" id="lbModes" role="group" aria-label="Режим"><button type="button" data-m="classic">Классика</button><button type="button" data-m="sand">Песок</button><button type="button" data-m="bomb">Бомбы</button></div>
     <div class="seg" id="lbSort" role="group" aria-label="Сортировка"><button type="button" data-s="score">По очкам</button><button type="button" data-s="combo">По комбо</button></div>
-    <div class="seg" id="lbScope" role="group" aria-label="Чьи рекорды" hidden><button type="button" data-g="me">Мои игры</button><button type="button" data-g="all">Все игроки</button></div>
-    <div class="lb-head"><span>#</span><span id="lbHeadName" style="text-align:left">Дата</span><span>Очки</span><span>Комбо</span></div>
+    <div class="seg" id="lbScope" role="group" aria-label="Чьи рекорды" hidden><button type="button" data-g="me">Мои игры</button><button type="button" data-g="all">Все игроки</button><button type="button" data-g="season">Сезон</button></div>
+    <div class="lb-head" id="lbHead"><span>#</span><span id="lbHeadName" style="text-align:left">Дата</span><span>Очки</span><span id="lbHeadCb">Комбо</span></div>
     <ol class="lb-list" id="lbList"></ol>
     <div class="opt-note" id="lbNote"></div>
     <form class="code-row" id="nickForm" autocomplete="off" hidden>
@@ -626,6 +630,15 @@
     <div class="daily-gain"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#coin"/></svg><span id="dlGain">+0</span></div>
     <p class="revive-text" id="dlText"></p>
     <button class="btn btn-green" id="dlTake">Забрать</button>
+  </div>
+</div>
+
+<div class="overlay" id="rewardOv" hidden>
+  <div class="panel" role="dialog" aria-label="Награда за сезон">
+    <div class="over-title">Награда за сезон</div>
+    <div class="st-grid" id="rwList"></div>
+    <p class="revive-text" id="rwText">Очки уже в копилке каждого режима.</p>
+    <button class="btn btn-green" id="rwTake">Забрать</button>
   </div>
 </div>
 
@@ -10861,7 +10874,7 @@ $('btnAgain').addEventListener('click', () => { ensureAudio(); sfx('tap'); overO
 window.addEventListener('keydown', e => {
   if (e.key === 'Escape' && !lbOv.hidden) { closeLb(); return; }
   if (e.key === 'Escape' && !lvlOv.hidden) { lvlOv.hidden = true; return; }
-  if (e.key === 'Escape' && overOv.hidden && reviveOv.hidden && puzOv.hidden && $('dailyOv').hidden && $('statsOv').hidden) settingsOv.hidden ? openSettings() : closeSettings();
+  if (e.key === 'Escape' && overOv.hidden && reviveOv.hidden && puzOv.hidden && $('dailyOv').hidden && $('rewardOv').hidden && $('statsOv').hidden) settingsOv.hidden ? openSettings() : closeSettings();
 });
 
 /* =====================================================================
@@ -10911,6 +10924,7 @@ function logGame() {
   if (better) r.unsent = true;
   lbSave();
   if (better) lbSubmit(mode);
+  lbQueueSeason(mode, score);   // в сезон идёт результат каждой партии, не только рекорд
 }
 // старый ключ anon — это JWT (начинается с eyJ) и идёт ещё и в Authorization; новый sb_publishable_ — только в apikey
 function lbHeaders() {
@@ -10934,7 +10948,104 @@ async function lbSubmit(m) {
     return true;
   } catch (_) { return false; }
 }
-function lbSync(all) { for (const m of ['classic', 'sand', 'bomb']) if (lb[m] && (all || lb[m].unsent)) lbSubmit(m); }
+// Сезон: лучший результат партии режима ждёт в lb.sp[m] = { s, d }, пока не уйдёт на сервер (нужно имя и сеть)
+async function lbSubmitSeason(m) {
+  try {
+    const sp = lb.sp, e = sp && sp[m];
+    if (!e) return false;
+    if (!(e.s > 0) || !(Date.now() - e.d <= 7200000)) { delete sp[m]; lbSave(); return false; }   // битое или старше 2 часов — сезон мог смениться, не шлём
+    if (!lbOnline() || !lb.nick) return false;
+    const s = e.s, nick = lb.nick;
+    const res = await fetch(LB_URL + '/rest/v1/rpc/submit_period_score', {
+      method: 'POST', headers: lbHeaders(),
+      body: JSON.stringify({ p_id: lbPlayerId(), p_mode: m, p_name: nick, p_score: s }),
+    });
+    if (!res.ok) return false;
+    // убираем из очереди, только если за время запроса результат не изменился
+    if (lb.sp && lb.sp[m] && lb.sp[m].s === s) { delete lb.sp[m]; lbSave(); }
+    return true;
+  } catch (_) { return false; }
+}
+function lbQueueSeason(m, s) {
+  try {
+    if (!['classic', 'sand', 'bomb'].includes(m) || !(s > 0)) return;
+    if (!lb.sp || typeof lb.sp !== 'object' || Array.isArray(lb.sp)) lb.sp = {};
+    const old = lb.sp[m];
+    lb.sp[m] = { s: Math.max((old && old.s) || 0, s), d: Date.now() };
+    lbSave();
+    lbSubmitSeason(m);
+  } catch (_) {}
+}
+function lbSync(all) {
+  for (const m of ['classic', 'sand', 'bomb']) if (lb[m] && (all || lb[m].unsent)) lbSubmit(m);
+  if (lb.sp && typeof lb.sp === 'object') for (const m of Object.keys(lb.sp)) lbSubmitSeason(m);
+}
+// Награды сезона: топ-3 завершённого сезона по режиму получает очки в копилку этого режима
+const LB_REWARDS = { classic: [15000, 8000, 4000], sand: [100000, 50000, 25000], bomb: [5000, 3000, 1500] };
+const LB_MIN = { classic: 1000, sand: 10000, bomb: 300 };   // минимум очков сезона для награды (как на сервере в my_season_places)
+let rewardBusy = false;   // запрос уже идёт: запуск и возврат на вкладку не должны выдать награду дважды
+async function checkSeasonRewards() {
+  if (rewardBusy || !lbOnline()) return;
+  rewardBusy = true;
+  try {
+    const res = await fetch(LB_URL + '/rest/v1/rpc/my_season_places', {
+      method: 'POST', headers: lbHeaders(), body: JSON.stringify({ p_id: lbPlayerId() }),
+    });
+    if (!res.ok) return;
+    const d = await res.json();
+    if (!d || typeof d !== 'object' || !Number.isInteger(d.season) || !Array.isArray(d.places)) return;
+    // сначала проверяем весь ответ: любая битая запись — не трогаем ни копилку, ни маркер
+    for (const p of d.places) if (!p || typeof p !== 'object' || !Number.isInteger(p.season) || !Number.isInteger(p.place)) return;
+    const rw = Number.isFinite(lb.rw) ? lb.rw : -Infinity;
+    const list = [], seen = new Set();
+    for (const p of d.places) {
+      const key = p.season + ':' + p.mode;
+      if (p.season <= rw || p.season >= d.season || p.place < 1 || p.place > 3 || !Object.prototype.hasOwnProperty.call(LB_REWARDS, p.mode) || seen.has(key)) continue;
+      seen.add(key);
+      list.push({ season: p.season, mode: p.mode, place: p.place, gain: LB_REWARDS[p.mode][p.place - 1] });
+    }
+    list.sort((a, b) => a.season - b.season);
+    for (const a of list) {
+      wallet[a.mode] += a.gain;
+      if (undoSnap && a.mode === mode) undoSnap.wallet += a.gain;   // иначе «Отменить ход» вернёт копилку из старого снимка и сотрёт награду
+    }
+    if (list.length) { updateUndoUi(); save(); }   // копилка — раньше маркера: сбой между ними может только выдать повторно, но не потерять награду
+    if (d.season - 1 > rw) { lb.rw = d.season - 1; lbSave(); }
+    if (list.length) showRewards(list);
+  } catch (_) {
+  } finally { rewardBusy = false; }
+}
+const rewardQueue = [];
+let rewardTimer = 0;
+function showRewards(list) {
+  rewardQueue.push(...list);
+  if (rewardTimer) return;
+  const tick = () => {
+    if (!$('dailyOv').hidden) return;   // ждём, пока закроют ежедневный бонус
+    clearInterval(rewardTimer); rewardTimer = 0;
+    const box = $('rwList');
+    if ($('rewardOv').hidden) box.textContent = '';
+    for (const a of rewardQueue.splice(0)) {
+      const row = document.createElement('div'), s1 = document.createElement('span'), s2 = document.createElement('b');
+      s1.textContent = ['🥇', '🥈', '🥉'][a.place - 1] + ' ' + a.place + '-е место · ' + MODE_NAME[a.mode];
+      s2.textContent = '+' + fmtNum(a.gain);
+      row.append(s1, s2); box.appendChild(row);
+    }
+    paused = true; hint = null;
+    $('rewardOv').hidden = false;
+    ensureAudio(); sfx('record'); vib(30);
+  };
+  rewardTimer = setInterval(tick, 400);
+  tick();
+}
+function rewardClose() {
+  if ($('rewardOv').hidden) return;
+  $('rewardOv').hidden = true;
+  paused = !settingsOv.hidden;
+  sfx('tap'); resetIdle();
+}
+$('rwTake').addEventListener('click', rewardClose);
+$('rewardOv').addEventListener('click', e => { if (e.target === $('rewardOv')) rewardClose(); });
 
 /* ---------- Окно таблицы ---------- */
 const lbOv = $('lbOv'), lbList = $('lbList'), lbNote = $('lbNote'), nickForm = $('nickForm'), nickIn = $('nickIn');
@@ -10963,13 +11074,49 @@ function lbSegs() {
   document.querySelectorAll('#lbSort button').forEach(b => b.classList.toggle('on', b.dataset.s === lbView.sort));
   document.querySelectorAll('#lbScope button').forEach(b => b.classList.toggle('on', b.dataset.g === lbView.scope));
   $('lbScope').hidden = !lbOnline();
-  $('lbHeadName').textContent = lbView.scope === 'all' ? 'Игрок' : 'Дата';
+  const se = lbView.scope === 'season';
+  $('lbHeadName').textContent = lbView.scope === 'me' ? 'Дата' : 'Игрок';
+  $('lbHeadCb').textContent = se ? 'Награда' : 'Комбо';
+  $('lbSort').hidden = se;                       // в сезоне только очки
+  $('lbHead').classList.toggle('season', se);
+  lbList.classList.toggle('season', se);
+}
+// Сезон: таймер «до конца» обновляет подпись раз в 30 с; живёт, пока открыта вкладка «Сезон» (останавливается при любой смене вида и в closeLb)
+let lbTimer = 0, lbEnd = 0;
+function lbStopTimer() { if (lbTimer) { clearInterval(lbTimer); lbTimer = 0; } }
+function lbTick() {
+  if (lbOv.hidden || lbView.scope !== 'season') { lbStopTimer(); return; }
+  const left = Math.max(0, Math.floor((lbEnd - Date.now()) / 60000));   // минут
+  lbNote.textContent = `До конца сезона: ${Math.floor(left / 1440)}д ${Math.floor(left % 1440 / 60)}ч ${left % 60}м` +
+    (LB_MIN[lbView.m] ? `. Награда — от ${fmtNum(LB_MIN[lbView.m])} очков` : '') + (lb.nick ? '' : '. Введите имя, чтобы попасть в таблицу.');
+}
+async function lbSeason(req, m) {
+  const res = await fetch(`${LB_URL}/rest/v1/rpc/season_top`, { method: 'POST', headers: lbHeaders(), body: JSON.stringify({ p_mode: m }), cache: 'no-store' });
+  if (!res.ok) throw new Error(res.status);
+  const d = await res.json();
+  if (req !== lbView.req) return;
+  if (!d || !Array.isArray(d.rows) || !isFinite(d.ends_in)) throw new Error('bad');
+  lbEnd = Date.now() + d.ends_in * 1000;
+  lbStopTimer(); lbTick();
+  lbTimer = setInterval(() => { lbTick(); if (lbEnd <= Date.now()) renderLb(); }, 30000);   // сезон сменился — берём новый список
+  const rows = d.rows.slice(0, 10);
+  if (!rows.length) { lbMessage('В этом сезоне пока никого нет — станьте первым!'); return; }
+  lbList.textContent = '';
+  const rw = LB_REWARDS[m] || [];
+  rows.forEach((r, i) => {
+    const li = lbRow(i + 1, r.name, r.score, null, !!lb.nick && r.name === lb.nick);   // «я» — по имени: лучший результат сезона локально не хранится
+    li.children[2].classList.add('hot');
+    const cb = li.children[3];
+    cb.className = 'lb-rw'; cb.textContent = rw[i] && r.score >= (LB_MIN[m] || Infinity) ? '+' + fmtNum(rw[i]) : '';
+    lbList.appendChild(li);
+  });
 }
 async function renderLb() {
   const req = ++lbView.req;   // любой новый вид отменяет ожидающий ответ сервера
+  lbStopTimer();
   lbSegs();
   const { m, sort, scope } = lbView, key = sort === 'combo' ? 'c' : 's';
-  nickForm.hidden = scope !== 'all';
+  nickForm.hidden = scope === 'me';
   lbNote.textContent = '';
   if (scope === 'me') {
     const rows = (lb[m] && lb[m][sort]) || [];
@@ -10981,6 +11128,12 @@ async function renderLb() {
     return;
   }
   nickIn.value = lb.nick || '';
+  if (scope === 'season') {
+    lbMessage('Загрузка…');
+    try { await lbSeason(req, m); }
+    catch (_) { if (req === lbView.req) lbMessage('Нет связи с общей таблицей. Проверьте интернет.'); }
+    return;
+  }
   lbNote.textContent = lb.nick
     ? 'В общей таблице — лучший результат каждого игрока.'
     : 'Введите имя, чтобы ваши рекорды появились в общей таблице.';
@@ -11007,7 +11160,7 @@ function openLb() {
   renderLb();
   sfx('tap');
 }
-function closeLb() { lbOv.hidden = true; lbView.req++; sfx('tap'); }
+function closeLb() { lbOv.hidden = true; lbView.req++; lbStopTimer(); sfx('tap'); }
 for (const [id, k, attr] of [['lbModes', 'm', 'm'], ['lbSort', 'sort', 's'], ['lbScope', 'scope', 'g']]) {
   $(id).addEventListener('click', e => {
     const b = e.target.closest('button');
@@ -11140,7 +11293,7 @@ function dailyTake() {
 }
 $('dlTake').addEventListener('click', dailyTake);
 $('dailyOv').addEventListener('click', e => { if (e.target === $('dailyOv')) dailyTake(); });
-document.addEventListener('visibilitychange', () => { if (!document.hidden) dailyCheck(); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { dailyCheck(); checkSeasonRewards(); if (lbOnline()) lbSync(false); } });
 
 /* =====================================================================
    Режим «Головоломка»: готовые уровни. На поле уже стоят блоки, фигуры
@@ -11390,6 +11543,7 @@ lbSeed();
 if (lbOnline()) lbSync(false);
 requestAnimationFrame(frame);
 setTimeout(dailyCheck, 900);
+setTimeout(checkSeasonRewards, 1500);
 
 // Офлайн-режим и установка как приложение (работает только с https/localhost)
 if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
@@ -11402,7 +11556,7 @@ window.__bb = {
   get combo() { return combo; }, get theme() { return themeIdx; }, get hint() { return hint; }, get reviveUsed() { return reviveUsed; },
   get layout() { return { boardX, boardY, cell, trayY, trayH, colX, colW }; },
   place, SHAPES, THEMES, newGame, changeTheme, SoundEngine, generateHand, computeHint, helpLevel, revive, giveUp, frame,
-  get mode() { return mode; }, bombs, explode, lb, logGame, openLb, sand, switchMode, wallet, owned, renderThemePicker, save, setTheme, sandPlace, sandFindSpans, sandComputeTops, sandMaxY, sandCanClear, sandLabel,
+  get mode() { return mode; }, bombs, explode, lb, logGame, openLb, lbQueueSeason, lbSubmitSeason, lbSync, checkSeasonRewards, sand, switchMode, wallet, owned, renderThemePicker, save, setTheme, sandPlace, sandFindSpans, sandComputeTops, sandMaxY, sandCanClear, sandLabel,
   SHAPE_COLS, SCOLS, SROWS, SDANGER,
   puz, puzStart, puzUndo, puzRestart, PUZ_LEVELS, openLevels, updatePuzBar,
 };
