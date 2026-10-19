@@ -74,6 +74,24 @@
   #undoBtn .uc { position: absolute; bottom: 9%; left: 0; right: 0; text-align: center; font-weight: 900; line-height: 1; color: var(--gold); text-shadow: 0 1px 0 rgba(0,0,0,.4); }
   #undoBtn.off { opacity: .35; }
   #undoBtn.hidden { display: none; }
+  #snPause {
+    position: absolute; transform: translateY(-50%);
+    pointer-events: auto; border: 0; padding: 0; cursor: pointer; border-radius: 50%;
+    background: rgba(0, 0, 0, .2);
+    box-shadow: inset 0 2px 0 rgba(0,0,0,.12), 0 1px 0 rgba(255,255,255,.12);
+    display: grid; place-items: center;
+  }
+  #snPause svg { width: 52%; height: 52%; fill: var(--ui); }
+  #snPause.hidden, #snLen.hidden, #snPauseMsg.hidden { display: none; }
+  #snLen {
+    position: absolute; left: 50%; transform: translate(-50%, -50%); white-space: nowrap;
+    color: rgba(255,255,255,.88); font-weight: 800; line-height: 1; text-shadow: 0 .08em 0 rgba(0,0,0,.3);
+  }
+  #snPauseMsg {
+    position: fixed; transform: translate(-50%, -50%); pointer-events: none; white-space: nowrap;
+    padding: .3em .9em; border-radius: 999px; background: rgba(0,0,0,.55);
+    color: #fff; font-weight: 900; letter-spacing: .04em; text-shadow: 0 .06em 0 rgba(0,0,0,.35);
+  }
   #gearBtn:hover svg { transform: rotate(60deg); }
 
   /* ---------- Значок комбо ---------- */
@@ -114,6 +132,7 @@
     position: fixed; left: 50%; transform: translate(-50%, -50%);
     color: rgba(255,255,255,.85); font-weight: 800; white-space: nowrap;
     text-shadow: 0 2px 0 rgba(0,0,0,.2);
+    padding: .32em .9em; border-radius: 999px; background: rgba(0,0,0,.45);
     pointer-events: none; opacity: 0; transition: opacity .4s;
   }
   #hint.show { opacity: 1; animation: hintBob 1.6s ease-in-out infinite; }
@@ -525,11 +544,14 @@
     <button type="button" id="pzRestart" aria-label="Начать уровень заново"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></button>
   </div>
   <button id="undoBtn" class="hidden" aria-label="Отменить ход за очки копилки"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg><span class="uc" id="undoCost"></span></button>
+  <button id="snPause" class="hidden" aria-label="Пауза"><svg id="snPauseIco" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg></button>
+  <div id="snLen" class="hidden">Длина 3</div>
   <button id="gearBtn" aria-label="Настройки">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
   </button>
 </div>
 <div id="hint">Перетащите фигуру на поле</div>
+<div id="snPauseMsg" class="hidden">Пауза</div>
 
 <div class="overlay" id="settingsOv" hidden>
   <div class="panel" role="dialog" aria-label="Настройки">
@@ -1510,6 +1532,7 @@ let banked = 0;                                // сколько очков те
 const themeFx = { prev: 0, t0: -1e9 };
 const THEME_DUR = 1500;
 
+let shint = null;   // подсказка хода в песке: { i, gx, gy, t0 }
 let drag = null, hint = null, idleT = performance.now();
 const placeAnims = new Map();
 let clearAnims = [], flashes = [], particles = [], sparkles = [], texts = [], rings = [];
@@ -1895,7 +1918,7 @@ function computeHint() {
   });
   return bestH;
 }
-function resetIdle() { idleT = performance.now(); hint = null; }
+function resetIdle() { idleT = performance.now(); hint = null; shint = null; }
 
 /* =====================================================================
    Ход игрока
@@ -2245,7 +2268,8 @@ function showOver() {
   $('statLinesLbl').textContent = mode === 'sand' ? 'Очисток' : mode === 'snake' ? 'Блоков' : 'Линий';
   $('statComboLbl').textContent = mode === 'snake' ? 'Длина' : 'Макс. комбо';
   const record = score > startBest && score > 0;
-  $('overTitle').textContent = record ? 'Новый рекорд!' : 'Игра окончена';
+  $('overTitle').textContent = record ? 'Новый рекорд!' : mode === 'snake' ? 'Врезались!' : 'Игра окончена';
+  if (mode === 'snake') snakeSetPause(false);
   $('overTitle').classList.toggle('record', record);
   $('overCrown').classList.toggle('show', record);
   $('overBest').textContent = best;
@@ -2618,6 +2642,15 @@ function layout() {
   undoBtn.style.left = (boardX + board - gs * 2.25) + 'px';
   undoBtn.style.top = row1 + 'px';
   $('undoCost').style.fontSize = gs * 0.27 + 'px';
+  const sp = $('snPause');
+  sp.style.width = sp.style.height = gs + 'px';
+  sp.style.left = (boardX + board - gs * 2.25) + 'px';
+  sp.style.top = row1 + 'px';
+  $('snLen').style.fontSize = board * 0.045 + 'px';
+  $('snLen').style.top = (hudY + hudH * 0.84) + 'px';
+  const pm = $('snPauseMsg');
+  pm.style.fontSize = board * 0.09 + 'px';
+  pm.style.left = (boardX + board / 2) + 'px'; pm.style.top = (boardY + board * 0.14) + 'px';
   scoreEl.style.fontSize = board * 0.13 + 'px';
   scoreEl.style.top = (hudY + hudH * 0.5) + 'px';
   comboBadge.style.fontSize = board * 0.05 + 'px';
@@ -3891,12 +3924,12 @@ BLOCK_STYLES.scale = (g, col, s) => {
 };
 // «Ретро»: пиксель ЖК-экрана — тёмная рамка, просвет и сердцевина с лёгким оттенком цвета, тень на «стекле»
 BLOCK_STYLES.lcd = (g, col, s) => {
-  const grey = COLORS.indexOf(col) === GREY, ink = grey ? '#6e7e52' : mixHex('#1c2810', col.c, 0.34);
+  const grey = COLORS.indexOf(col) === GREY, ink = grey ? '#4e5e36' : mixHex('#0c1404', col.c, 0.22);
   const p = Math.max(1, Math.round(s * 0.07)), w = s - 2 * p, sh = Math.max(1, Math.round(p * 0.8));
-  g.fillStyle = 'rgba(40,52,24,0.28)'; g.fillRect(p + sh, p + sh, w - sh, w - sh);
+  g.fillStyle = 'rgba(20,30,8,0.4)'; g.fillRect(p + sh, p + sh, w - sh, w - sh);
   g.fillStyle = ink; g.fillRect(p, p, w - sh, w - sh);
   const q = Math.max(2, Math.round(s * 0.2)), c = Math.max(3, Math.round(s * 0.32));
-  g.fillStyle = mixHex(ink, '#a3b86c', 0.62); g.fillRect(q, q, s - 2 * q - sh, s - 2 * q - sh);
+  g.fillStyle = mixHex(ink, '#a3b86c', 0.8); g.fillRect(q, q, s - 2 * q - sh, s - 2 * q - sh);
   g.fillStyle = ink; g.fillRect(c, c, s - 2 * c - sh, s - 2 * c - sh);
 };
 // «Террариум»: обкатанный камень цвета блока в крапинку, кварцевая жилка и кустик мха
@@ -11158,6 +11191,14 @@ function frame(now) {
     }
   }
 
+  if (mode === 'sand' && settings.hints && state === 'play' && !paused && !drag && !shint && sand.phase === 'idle' && settingsOv.hidden) {
+    const delay = best === 0 && score < 60 ? HINT_DELAY_FIRST : HINT_DELAY;
+    if (now - idleT > delay && sand.hand.every(h => !h || now > h.t0 + 400)) {
+      shint = computeSandHint();
+      if (shint) { shint.t0 = now; sfx('hint'); } else idleT = now;
+    }
+  }
+
   autoLite(now, dt);
 
   // Фон — на отдельном слое: перерисовываем только при изменениях и во время смены темы
@@ -12026,6 +12067,42 @@ function sandCanClear(s, k, info) {
   }
   return -1;
 }
+// Подсказка хода: один расчёт при срабатывании. Лучше всего — фигура, которой можно соединить края;
+// иначе — место, где песок ложится ниже всего и касается песка того же цвета (особенно связанного с краем).
+function computeSandHint() {
+  sandComputeTops();
+  const info = sandLabel(), g = sand.grid, lab = sand.label, C = SCOLS;
+  let best = null;
+  const consider = (i, gx, v) => { if (!best || v > best.v) best = { i, gx, gy: 0, v }; };
+  sand.hand.forEach((h, i) => {
+    if (!h || !h.fit) return;
+    const pc = SHAPE_COLS[h.s], k = h.k;
+    const cg = sandCanClear(h.s, k, info);
+    if (cg >= 0) { consider(i, cg, 1000); return; }
+    for (let gx = 0; gx <= C - pc.w; gx++) {
+      const gy = sandMaxY(h.s, gx);
+      if (gy < 0) continue;
+      let v = gy * 0.15 - pc.h * 0.2;
+      for (let X = 0; X < pc.w; X++) {
+        if (pc.bot[X] < 0) continue;
+        const bx = gx + X, yb = gy + pc.bot[X], y0 = yb - pc.cnt[X] + 1;
+        if (bx === 0 || bx === C - 1) v += 2;
+        if (yb + 1 < SROWS && g[(yb + 1) * C + bx] === k) v += 2;
+        for (const nx of [bx - 1, bx + 1]) {
+          if (nx < 0 || nx >= C) continue;
+          for (let y = Math.max(0, y0); y <= Math.min(SROWS - 1, yb); y++) {
+            if (g[y * C + nx] !== k) continue;
+            v += 1 + (info.L[lab[y * C + nx]] ? 2 : 0) + (info.R[lab[y * C + nx]] ? 2 : 0);
+          }
+        }
+      }
+      consider(i, gx, v);
+    }
+  });
+  if (!best) return null;
+  best.gy = sandMaxY(sand.hand[best.i].s, best.gx);
+  return best;
+}
 function sandColorsCount() { return sand.level < 2 ? 4 : sand.level < 5 ? 5 : 6; }
 function pickIdx(ws) {
   let total = 0; for (const w of ws) total += w;
@@ -12702,8 +12779,34 @@ function sandDraw(now, dt) {
     ctx.imageSmoothingEnabled = true;
     ctx.globalAlpha = 1;
   }
+  if (shint && !drag) {
+    const h = sand.hand[shint.i];
+    if (!h || sand.phase !== 'idle') shint = null;
+    else {
+      const pc = SHAPE_COLS[h.s], t = now - shint.t0, fade = clamp01(t / 400), pulse = 0.5 + 0.5 * Math.sin(t / 230);
+      const x0 = boardX + shint.gx * gs, y0 = boardY + shint.gy * gs;
+      ctx.fillStyle = 'rgba(255,255,255,' + (fade * (0.05 + 0.05 * pulse)) + ')';
+      ctx.fillRect(x0, boardY, pc.w * gs, y0 - boardY);
+      ctx.globalAlpha = fade * (0.4 + 0.3 * pulse);
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(h.tex, x0, y0, pc.w * gs, pc.h * gs);
+      ctx.imageSmoothingEnabled = true;
+      ctx.globalAlpha = fade * (0.55 + 0.45 * pulse);
+      ctx.strokeStyle = '#ffffff'; ctx.lineWidth = Math.max(2, cell * 0.06);
+      ctx.strokeRect(x0 + 1, y0 + 1, pc.w * gs - 2, pc.h * gs - 2);
+      ctx.globalAlpha = 1;
+    }
+  }
   ctx.restore();
   drawRings(now);
+  if (shint && !drag) {
+    const sc = slotCenter(shint.i), t = now - shint.t0, pulse = 0.5 + 0.5 * Math.sin(t / 230), r = trayCell * 2.3;
+    ctx.save();
+    ctx.globalAlpha = clamp01(t / 400) * (0.45 + 0.45 * pulse);
+    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = Math.max(2, cell * 0.06);
+    rrPath(ctx, sc.x - r, sc.y - r, r * 2, r * 2, cell * 0.3); ctx.stroke();
+    ctx.restore();
+  }
   // лоток
   for (let i = 0; i < 3; i++) {
     const h = sand.hand[i];
@@ -12787,6 +12890,7 @@ function snakeNewGame() {
   snake.food = null; snake.gold = null;
   snakeSpawnFood();
   if (engine) engine.duck(false);
+  snakeSetPause(false); snakeLenUi();
   updateHint(); save();
 }
 function snapSnake() {
@@ -12842,8 +12946,23 @@ function snakeTurn(dx, dy) {
   if (!snake.started) { snake.started = true; snake.el = 0; snake.tPrev = performance.now(); updateHint(); }
   resetIdle();
 }
+let snakePaused = false;
+function snakeSetPause(on) {
+  snakePaused = !!on && mode === 'snake' && state === 'play';
+  $('snPauseMsg').classList.toggle('hidden', !snakePaused);
+  $('snPauseIco').innerHTML = snakePaused ? '<path d="M7 4.5v15l12-7.5z"/>' : '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
+  $('snPause').setAttribute('aria-label', snakePaused ? 'Продолжить' : 'Пауза');
+  if (snakePaused) hint = null;
+  else if (mode === 'snake') snake.tPrev = performance.now();
+}
+function snakeLenUi() {
+  const el = $('snLen'), on = mode === 'snake';
+  el.classList.toggle('hidden', !on);
+  if (on) { const t = 'Длина ' + snake.body.length; if (el.textContent !== t) el.textContent = t; }
+}
+$('snPause').addEventListener('click', () => { ensureAudio(); sfx('tap'); snakeSetPause(!snakePaused); });
 function snakeBlocked() {
-  return paused || document.hidden || !settingsOv.hidden || !lbOv.hidden || !$('statsOv').hidden
+  return paused || snakePaused || document.hidden || !settingsOv.hidden || !lbOv.hidden || !$('statsOv').hidden
     || !$('dailyOv').hidden || !$('rewardOv').hidden || !overOv.hidden;
 }
 function snakeUpdate(now) {
@@ -12873,6 +12992,7 @@ function snakeEat(c, gold, now) {
   const cs = snakeCell(), h = snake.body[0];
   const cx = boardX + (h.x + 0.5) * cs, cy = boardY + (h.y + 0.5) * cs;
   snake.grow++; snake.cols.push(c);
+  $('snLen').textContent = 'Длина ' + (snake.body.length + snake.grow);
   snake.eaten++; snake.eatT = now;
   linesTotal++;
   const pts = gold ? 50 : 10 + Math.floor(snake.eaten / 10) * 5;
@@ -13111,6 +13231,9 @@ function updateModeUi() {
   updateUndoUi();
   sandBar.classList.toggle('hidden', !sandMode);
   puzBar.classList.toggle('hidden', mode !== 'puzzle');
+  $('snPause').classList.toggle('hidden', mode !== 'snake');
+  snakeSetPause(false);
+  snakeLenUi();
   if (sandMode || mode === 'puzzle' || mode === 'snake') comboBadge.classList.add('hidden');
   bestBox.querySelector('use').setAttribute('href', mode === 'puzzle' ? '#starIco' : '#crown');
   $('modeName').textContent = MODE_NAME[mode];
@@ -13175,6 +13298,7 @@ $('btnAgain').addEventListener('click', () => { ensureAudio(); sfx('tap'); overO
 window.addEventListener('keydown', e => {
   if (e.key === 'Escape' && !lbOv.hidden) { closeLb(); return; }
   if (e.key === 'Escape' && !lvlOv.hidden) { lvlOv.hidden = true; return; }
+  if (e.key === 'Escape' && !$('rewardOv').hidden) { rewardClose(); return; }
   if (e.key === 'Escape' && overOv.hidden && reviveOv.hidden && puzOv.hidden && $('dailyOv').hidden && $('rewardOv').hidden && $('statsOv').hidden) settingsOv.hidden ? openSettings() : closeSettings();
 });
 
@@ -13344,6 +13468,7 @@ function rewardClose() {
   $('rewardOv').hidden = true;
   paused = !settingsOv.hidden;
   sfx('tap'); resetIdle();
+  dailyCheck();
 }
 $('rwTake').addEventListener('click', rewardClose);
 $('rewardOv').addEventListener('click', e => { if (e.target === $('rewardOv')) rewardClose(); });
@@ -13355,7 +13480,7 @@ const fmtDate = t => { const d = new Date(t), z = v => String(v).padStart(2, '0'
 function lbRow(rank, name, s, c, me) {
   const li = document.createElement('li');
   if (me) li.classList.add('me');
-  const cells = [['lb-rank', rank], ['lb-name', name], ['lb-sc', fmtNum(s)], ['lb-cb', c == null ? '—' : '×' + c]];
+  const cells = [['lb-rank', rank], ['lb-name', name], ['lb-sc', s >= 1e6 ? fmtK(s) : fmtNum(s)], ['lb-cb', c == null ? '—' : '×' + c]];
   for (const [cls, txt] of cells) {
     const sp = document.createElement('span');
     sp.className = cls + ((cls === 'lb-sc' && lbView.sort === 'score') || (cls === 'lb-cb' && lbView.sort === 'combo') ? ' hot' : '');
@@ -13554,7 +13679,7 @@ const DAILY_GAIN = [1000, 1500, 2000, 3000, 4000, 5000, 7500];
 const dayKey = d => d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
 let dailyPending = null;
 function dailyCheck() {
-  if (dailyPending || !$('dailyOv').hidden) return;
+  if (dailyPending || !$('dailyOv').hidden || !$('rewardOv').hidden) return;   // после окна награды — из rewardClose
   let d = null;
   try { d = JSON.parse(localStorage.getItem(DAILY_KEY)); } catch (_) {}
   const now = new Date(), today = dayKey(now);
