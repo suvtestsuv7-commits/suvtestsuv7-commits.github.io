@@ -175,6 +175,10 @@
   .mode-card:active { transform: translateY(2px); }
   .mode-card.on { box-shadow: 0 4px 0 rgba(0,0,0,.22), inset 0 0 0 3px var(--gold), 0 0 14px rgba(251,222,0,.45); }
   .mode-nm { font-size: 15px; font-weight: 900; }
+  .mode-card.wide { grid-column: span 2; flex-direction: row; justify-content: center; gap: 12px; }
+  .mode-card.wide .mode-txt { display: flex; flex-direction: column; align-items: flex-start; }
+  .mode-card.wide .mode-sub { font-size: 12px; font-weight: 800; opacity: .75; }
+  .ico-snake svg { width: 100%; height: 100%; display: block; }
   .mode-ico {
     width: 40px; height: 40px; flex: none; border-radius: 8px; background: #242c54;
     box-shadow: 0 0 0 2px #1a2147;
@@ -353,6 +357,13 @@
   .mini.st-crypt i.blk { border-radius: 1px; background: radial-gradient(circle at 50% 40%, rgba(230,225,240,.9) 0 14%, transparent 18%), linear-gradient(0deg, transparent 48%, rgba(0,0,0,.4) 48% 52%, transparent 52%), color-mix(in srgb, var(--k) 35%, #4a4452); box-shadow: inset 0 0 0 1.5px rgba(20,16,26,.8); }
   .mini.st-stained i.blk { border-radius: 2px; background: linear-gradient(135deg, transparent 47%, #1a1230 47% 53%, transparent 53%), linear-gradient(45deg, transparent 47%, #1a1230 47% 53%, transparent 53%), linear-gradient(160deg, rgba(255,255,255,.4), transparent 50%), var(--k); box-shadow: inset 0 0 0 2px #1a1230; }
   .mini.st-cap i.blk { border-radius: 45% 45% 3px 3px / 70% 70% 3px 3px; background: radial-gradient(circle at 30% 30%, #fff 0 9%, transparent 12%), radial-gradient(circle at 68% 42%, #fff 0 8%, transparent 11%), linear-gradient(0deg, #f2e6c8 0 28%, transparent 28%), var(--k); box-shadow: inset 0 -1px 0 rgba(0,0,0,.25); }
+  .mini.st-scale i.blk { border-radius: 5px; background: linear-gradient(180deg, rgba(255,255,255,.3), transparent 50%), linear-gradient(90deg, transparent 42%, rgba(0,0,0,.25) 42% 58%, transparent 58%), repeating-linear-gradient(45deg, rgba(0,0,0,.38) 0 1px, transparent 1px 3.5px), repeating-linear-gradient(-45deg, rgba(0,0,0,.38) 0 1px, transparent 1px 3.5px), var(--k); box-shadow: inset 0 0 0 1px rgba(0,0,0,.4); }
+  .mini.st-lcd, .mini.st-lcd i { border-radius: 0; }
+  .mini.st-lcd i:not(.blk) { background: #a3b86c; }
+  .mini.st-lcd i.blk { background: radial-gradient(closest-side, color-mix(in srgb, var(--k) 34%, #1c2810) 0 99%, transparent 100%) center / 40% 40% no-repeat, color-mix(in srgb, color-mix(in srgb, var(--k) 34%, #1c2810) 38%, #a3b86c); box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--k) 34%, #1c2810); }
+  .mini.st-pebble i.blk { border-radius: 40%; background: radial-gradient(circle at 30% 18%, #6aa23a 0 14%, transparent 16%), linear-gradient(170deg, transparent 58%, rgba(255,250,235,.45) 60% 64%, transparent 66%), radial-gradient(circle at 35% 30%, rgba(255,255,255,.4), transparent 60%), color-mix(in srgb, var(--k) 62%, #8a8070); box-shadow: inset 0 -1px 1px rgba(0,0,0,.35); }
+  .mini.st-neonline i.blk { border-radius: 3px; background: radial-gradient(circle, color-mix(in srgb, var(--k) 40%, #fff) 0 12%, transparent 15%), color-mix(in srgb, var(--k) 16%, #0a0618); box-shadow: inset 0 0 0 1.5px var(--k), 0 0 4px var(--k); }
+  .mini.st-seigaiha i.blk { border-radius: 2px; background: radial-gradient(circle at 50% 100%, transparent 0 20%, rgba(255,248,228,.85) 21% 30%, transparent 31% 45%, rgba(255,248,228,.85) 46% 55%, transparent 56%) 0 0 / 100% 60%, var(--k); box-shadow: inset 0 0 0 1px rgba(30,16,8,.7); }
   .mini.st-pixel, .mini.st-pixel i { border-radius: 0; }
   .mini.st-pixel i.blk { box-shadow: inset 2px 2px 0 rgba(255,255,255,.4), inset -2px -2px 0 rgba(0,0,0,.35); }
   .mini.st-sand { gap: 0; }
@@ -476,6 +487,7 @@
   .over-best svg { width: 30px; height: 23px; }
   .over-stats { display: flex; justify-content: center; gap: 10px; margin-top: 12px; font-size: 15px; font-weight: 800; }
   .over-stats span { background: rgba(0,0,0,.16); border-radius: 12px; padding: 6px 12px; }
+  .over-stats span span { background: none; padding: 0; }
   .over-stats b { color: var(--gold); }
   .over-crown { width: 92px; height: 70px; margin: 0 auto 4px; display: none; animation: crownIn .7s cubic-bezier(.2,1.5,.4,1); }
   .over-crown.show { display: block; }
@@ -540,6 +552,10 @@
         <span class="mode-ico ico-puzzle"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M5.0 9.0L10.6 9.0C11.3 8.1 8.6 5.4 12.5 5.4C16.4 5.4 13.7 8.1 14.4 9.0L20.0 9.0L20.0 14.6C19.1 15.3 16.4 12.6 16.4 16.5C16.4 20.4 19.1 17.7 20.0 18.4L20.0 24.0L5.0 24.0L5.0 9.0Z" fill="#f4be05" stroke="#1a2147" stroke-width="1.2"/><path d="M20.0 9.0L25.6 9.0C26.3 9.9 23.6 12.6 27.5 12.6C31.4 12.6 28.7 9.9 29.4 9.0L35.0 9.0L35.0 24.0L29.4 24.0C28.7 24.9 31.4 27.6 27.5 27.6C23.6 27.6 26.3 24.9 25.6 24.0L20.0 24.0L20.0 18.4C19.1 17.7 16.4 20.4 16.4 16.5C16.4 12.6 19.1 15.3 20.0 14.6L20.0 9.0Z" fill="#3862f0" stroke="#1a2147" stroke-width="1.2"/><path d="M5.0 24.0L20.0 24.0L20.0 29.6C20.9 30.3 23.6 27.6 23.6 31.5C23.6 35.4 20.9 32.7 20.0 33.5L20.0 39.0L5.0 39.0L5.0 24.0Z" fill="#ec3a3a" stroke="#1a2147" stroke-width="1.2"/></svg></span>
         <span class="mode-nm">Головоломка</span>
       </button>
+      <button type="button" class="mode-card wide" data-mode="snake" aria-label="Режим Змейка">
+        <span class="mode-ico ico-snake"><svg viewBox="0 0 40 40" aria-hidden="true"><rect x="5" y="27" width="7" height="7" rx="1.5" fill="#23c92f"/><rect x="12" y="27" width="7" height="7" rx="1.5" fill="#2bdb3b"/><rect x="12" y="20" width="7" height="7" rx="1.5" fill="#23c92f"/><rect x="12" y="13" width="7" height="7" rx="1.5" fill="#2bdb3b"/><rect x="19" y="13" width="7" height="7" rx="1.5" fill="#23c92f"/><rect x="26" y="13" width="8" height="8" rx="2" fill="#129d2a"/><circle cx="31" cy="15.5" r="1.6" fill="#fff"/><circle cx="31.5" cy="15.5" r=".8" fill="#111"/><circle cx="31" cy="19" r="1.6" fill="#fff"/><circle cx="31.5" cy="19" r=".8" fill="#111"/><rect x="26" y="27" width="7" height="7" rx="1.5" fill="#ec3a3a"/><rect x="27.2" y="28.2" width="2.5" height="1.6" rx=".6" fill="#ffa3a0"/></svg></span>
+        <span class="mode-txt"><span class="mode-nm">Змейка</span><span class="mode-sub">Собирайте блоки, не врезайтесь</span></span>
+      </button>
     </div>
     <div class="opt" style="margin-top:12px"><span>Звуки</span><button class="switch" id="swSound" aria-pressed="true" aria-label="Звуки"><i></i></button></div>
     <div class="opt"><span>Музыка</span><button class="switch" id="swMusic" aria-pressed="true" aria-label="Музыка"><i></i></button></div>
@@ -584,7 +600,7 @@
     </div>
     <div class="over-stats">
       <span><span id="statLinesLbl">Линий</span>: <b id="statLines">0</b></span>
-      <span>Макс. комбо: <b id="statCombo">0</b></span>
+      <span><span id="statComboLbl">Макс. комбо</span>: <b id="statCombo">0</b></span>
     </div>
     <div class="over-unlock" id="overUnlock" hidden><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#coin"/></svg><span id="overUnlockText"></span></div>
     <button class="btn btn-green" id="btnAgain">Играть снова</button>
@@ -595,7 +611,7 @@
 <div class="overlay" id="lbOv" hidden>
   <div class="panel" role="dialog" aria-label="Таблица рекордов">
     <h2>Рекорды</h2>
-    <div class="seg" id="lbModes" role="group" aria-label="Режим"><button type="button" data-m="classic">Классика</button><button type="button" data-m="sand">Песок</button><button type="button" data-m="bomb">Бомбы</button></div>
+    <div class="seg" id="lbModes" role="group" aria-label="Режим"><button type="button" data-m="classic">Классика</button><button type="button" data-m="sand">Песок</button><button type="button" data-m="bomb">Бомбы</button><button type="button" data-m="snake">Змейка</button></div>
     <div class="seg" id="lbSort" role="group" aria-label="Сортировка"><button type="button" data-s="score">По очкам</button><button type="button" data-s="combo">По комбо</button></div>
     <div class="seg" id="lbScope" role="group" aria-label="Чьи рекорды" hidden><button type="button" data-g="me">Мои игры</button><button type="button" data-g="all">Все игроки</button><button type="button" data-g="season">Сезон</button></div>
     <div class="lb-head" id="lbHead"><span>#</span><span id="lbHeadName" style="text-align:left">Дата</span><span>Очки</span><span id="lbHeadCb">Комбо</span></div>
@@ -623,7 +639,7 @@
 <div class="overlay" id="statsOv" hidden>
   <div class="panel" role="dialog" aria-label="Статистика">
     <h2>Статистика</h2>
-    <div class="seg" id="stModes" role="group" aria-label="Режим"><button type="button" data-m="classic">Классика</button><button type="button" data-m="sand">Песок</button><button type="button" data-m="bomb">Бомбы</button></div>
+    <div class="seg" id="stModes" role="group" aria-label="Режим"><button type="button" data-m="classic">Классика</button><button type="button" data-m="sand">Песок</button><button type="button" data-m="bomb">Бомбы</button><button type="button" data-m="snake">Змейка</button></div>
     <div class="st-grid" id="stGrid"></div>
     <div class="opt-note" id="stNote"></div>
     <button class="btn btn-green" id="stClose">Закрыть</button>
@@ -951,6 +967,22 @@ const THEMES = [
   { id: 'mushroom', mode: 'puzzle', cost: 18000, blocks: 'cap', fx: 'fairy', name: 'Сказочный лес',
     bg: ['#07140f', '#12382a', '#2a5a3a'], glow: '#9affb0', board: '#0c1c16', edge: '#5aa070', cell: '#12281e',
     panel: ['#3a8a5a', '#1f5a3a', '#d0ffd8', '#0a2416'], ui: '#e6fff0', decor: 'fairywood' },
+  // ---- 19.10.2026: темы режима «Змейка» (видны только в змейке; цена — из копилки «Классики») ----
+  { id: 'jungle', mode: 'snake', blocks: 'scale', fx: 'jungledrum', name: 'Джунгли',
+    bg: ['#06180e', '#0f3a20', '#2a6a32'], glow: '#c8ff7a', board: '#0e2416', edge: '#5a3e22', cell: '#14301e',
+    panel: ['#4aa04a', '#2a6a2e', '#e0ffc8', '#0b2410'], ui: '#f0ffe0', decor: 'jungle' },
+  { id: 'retro', mode: 'snake', blocks: 'lcd', fx: 'beep', square: true, name: 'Ретро',
+    bg: ['#4a525c', '#383e46', '#24282e'], glow: '#c8dc7a', board: '#a3b86c', edge: '#22272c', cell: '#9aaf62',
+    panel: ['#66707a', '#454c54', '#e2ecb0', '#15181c'], ui: '#eef4d0', decor: 'retro' },
+  { id: 'terrarium', mode: 'snake', cost: 2500, blocks: 'pebble', fx: 'terra', name: 'Террариум',
+    bg: ['#1c1a12', '#3a2e1c', '#4e3e24'], glow: '#ffcf7a', board: '#261c12', edge: '#3c4044', cell: '#30241a',
+    panel: ['#7a8a44', '#4e5a26', '#f2f0c8', '#1c220c'], ui: '#fbf4dc', decor: 'terrarium' },
+  { id: 'neonroad', mode: 'snake', cost: 7500, blocks: 'neonline', fx: 'neonrace', name: 'Неон-трасса',
+    bg: ['#04010e', '#170834', '#3a0a4e'], glow: '#ff4af0', board: '#0a0618', edge: '#2e1660', cell: '#110a24',
+    panel: ['#b03af0', '#6a18a8', '#ffd0ff', '#1c0634'], ui: '#ffe8ff', decor: 'neonroad' },
+  { id: 'zen', mode: 'snake', cost: 20000, blocks: 'seigaiha', fx: 'zenbell', name: 'Сад камней',
+    bg: ['#c8704e', '#e6a47c', '#f2dcbc'], glow: '#fff0d0', board: '#33251c', edge: '#6a4a30', cell: '#3e2e24',
+    panel: ['#b85a3a', '#8a3a22', '#ffe8d8', '#3a160a'], ui: '#ffffff', decor: 'zengarden' },
 ];
 const PIXEL_FONT = "'Press Start 2P', 'Courier New', monospace";
 // Эффекты текущей темы (только в классике): 'sakura' | 'pixel' | 'void' | undefined
@@ -1467,11 +1499,12 @@ let state = 'play';                     // 'play' | 'revive' | 'over'
 let overT0 = 0, paused = false;
 // lite — лёгкий режим для слабых телефонов; liteChecked — автопроверка FPS уже проводилась
 const settings = { sound: true, music: true, vibro: true, hints: true, lite: false, liteChecked: false, mode: 'classic' };
-let mode = 'classic';                   // 'classic' | 'sand' | 'bomb' | 'puzzle'
+let mode = 'classic';                   // 'classic' | 'sand' | 'bomb' | 'puzzle' | 'snake'
 
 let themeIdx = 0;
-const themeByMode = { classic: 0, sand: 0, bomb: 0, puzzle: 0 };   // у каждого режима своя выбранная тема
-const wallet = { classic: 0, sand: 0, bomb: 0, puzzle: 0 };        // копилка очков для покупки тем
+const themeByMode = { classic: 0, sand: 0, bomb: 0, puzzle: 0, snake: 3 };   // у каждого режима своя выбранная тема
+const wallet = { classic: 0, sand: 0, bomb: 0, puzzle: 0, snake: 0 };        // копилка очков для покупки тем
+
 const owned = new Set();                       // id купленных тем
 let banked = 0;                                // сколько очков текущей партии уже положено в копилку
 const themeFx = { prev: 0, t0: -1e9 };
@@ -1493,10 +1526,12 @@ const blockCache = new Map(), boardCache = new Map(), bgCache = new Map(), glowC
 const BOMB_KEY = 'blockblast.bomb.v1';
 const bombs = new Map();                // клетка поля → сколько ходов осталось до взрыва
 let bombsDefused = 0;
-const MODE_NAME = { classic: 'Классика', sand: 'Песок', bomb: 'Бомбы', puzzle: 'Головоломка' };
-const MODE_GEN = { classic: '«Классики»', sand: '«Песка»', bomb: '«Бомб»', puzzle: '«Головоломки»' };
+const MODE_NAME = { classic: 'Классика', sand: 'Песок', bomb: 'Бомбы', puzzle: 'Головоломка', snake: 'Змейка' };
+const MODE_GEN = { classic: '«Классики»', sand: '«Песка»', bomb: '«Бомб»', puzzle: '«Головоломки»', snake: '«Змейки»' };
 const BOMB_THEME0 = THEMES.findIndex(t => t.id === 'sapper');
-function defaultTheme(m) { return m === 'bomb' ? BOMB_THEME0 : m === 'puzzle' ? THEMES.findIndex(t => t.id === 'cork') : 0; }
+const SNAKE_THEME0 = Math.max(0, THEMES.findIndex(t => t.id === 'jungle')) || 3;   // «Джунгли» (если темы нет — «Лес»)
+themeByMode.snake = SNAKE_THEME0;
+function defaultTheme(m) { return m === 'bomb' ? BOMB_THEME0 : m === 'puzzle' ? THEMES.findIndex(t => t.id === 'cork') : m === 'snake' ? SNAKE_THEME0 : 0; }
 function readBombStore() { try { return JSON.parse(localStorage.getItem(BOMB_KEY) || 'null'); } catch (_) { return null; } }
 // чем больше очков, тем короче фитиль
 function bombTimer() { return score < 3000 ? 9 : score < 9000 ? 8 : score < 20000 ? 7 : 6; }
@@ -2043,7 +2078,7 @@ function comboLevel(c) {
   return { c1: '#6ef0ff', c2: '#2f8cff', glow: '#57d5ff' };
 }
 function updateComboUI(kind) {
-  const show = mode !== 'sand' && mode !== 'puzzle' && combo >= 2 && state === 'play';
+  const show = mode !== 'sand' && mode !== 'puzzle' && mode !== 'snake' && combo >= 2 && state === 'play';
   clearTimeout(updateComboUI.t);
   if (show) {
     const lv = comboLevel(combo), st = document.documentElement.style;
@@ -2207,7 +2242,8 @@ function triggerGameOver(quiet) {
 
 function showOver() {
   if (state !== 'over') return;
-  $('statLinesLbl').textContent = mode === 'sand' ? 'Очисток' : 'Линий';
+  $('statLinesLbl').textContent = mode === 'sand' ? 'Очисток' : mode === 'snake' ? 'Блоков' : 'Линий';
+  $('statComboLbl').textContent = mode === 'snake' ? 'Длина' : 'Макс. комбо';
   const record = score > startBest && score > 0;
   $('overTitle').textContent = record ? 'Новый рекорд!' : 'Игра окончена';
   $('overTitle').classList.toggle('record', record);
@@ -2239,6 +2275,7 @@ function showOver() {
 
 function newGame() {
   if (mode === 'sand') { sandNewGame(); return; }
+  if (mode === 'snake') { snakeNewGame(); return; }
   if (mode === 'puzzle') { puzRestart(); return; }
   epoch++;
   const now = performance.now();
@@ -2440,7 +2477,7 @@ function themeProgress(now) { return clamp01((now - themeFx.t0) / THEME_DUR); }
    Сохранение
    ===================================================================== */
 // Снимок неактивного режима хранится здесь, чтобы при сохранении не затереть его партию и рекорд
-const stash = { classic: null, sand: null, bomb: null };
+const stash = { classic: null, sand: null, bomb: null, snake: null };
 function snapClassic() {
   return {
     best,
@@ -2455,13 +2492,15 @@ function save() {
   try {
     const c = mode === 'classic' ? snapClassic() : stash.classic || { best: 0, game: null };
     localStorage.setItem(LS_KEY, JSON.stringify({
-      best: c.best, settings, theme: themeByMode.classic, themeSand: themeByMode.sand, themeBomb: themeByMode.bomb, themePuzzle: themeByMode.puzzle,
+      best: c.best, settings, theme: themeByMode.classic, themeSand: themeByMode.sand, themeBomb: themeByMode.bomb, themePuzzle: themeByMode.puzzle, themeSnake: themeByMode.snake,
       wallet, owned: [...owned], game: c.game,
     }));
     const sd = mode === 'sand' ? snapSand() : stash.sand;
     if (sd) localStorage.setItem(SAND_KEY, JSON.stringify(sd));
     const bd = mode === 'bomb' ? snapClassic() : stash.bomb;
     if (bd) localStorage.setItem(BOMB_KEY, JSON.stringify(bd));
+    const zd = mode === 'snake' ? snapSnake() : stash.snake;
+    if (zd) localStorage.setItem(SNAKE_KEY, JSON.stringify(zd));
     puzSave();
   } catch (_) {}
 }
@@ -2478,13 +2517,14 @@ function restore() {
     settings.hints = s.settings.hints !== false;
     settings.lite = !!s.settings.lite;
     settings.liteChecked = !!s.settings.liteChecked;
-    settings.mode = ['sand', 'bomb', 'puzzle'].includes(s.settings.mode) ? s.settings.mode : 'classic';
+    settings.mode = ['sand', 'bomb', 'puzzle', 'snake'].includes(s.settings.mode) ? s.settings.mode : 'classic';
   }
   if (s.wallet) {
     wallet.classic = nonNeg(s.wallet.classic);
     wallet.sand = nonNeg(s.wallet.sand);
     wallet.bomb = nonNeg(s.wallet.bomb);
     wallet.puzzle = nonNeg(s.wallet.puzzle);
+    wallet.snake = nonNeg(s.wallet.snake);
   } else {
     // первый запуск версии с копилкой: стартовый капитал — рекорды режимов
     const sd = readSandStore();
@@ -2498,6 +2538,7 @@ function restore() {
   themeByMode.sand = valid(s.themeSand, 'sand') ? s.themeSand : valid(s.theme, 'sand') ? s.theme : 0;
   themeByMode.bomb = valid(s.themeBomb, 'bomb') ? s.themeBomb : BOMB_THEME0;
   themeByMode.puzzle = valid(s.themePuzzle, 'puzzle') ? s.themePuzzle : PUZ_THEME0;
+  themeByMode.snake = valid(s.themeSnake, 'snake') ? s.themeSnake : SNAKE_THEME0;
   themeIdx = themeByMode.classic;
   return applyClassic(s);
 }
@@ -2597,6 +2638,11 @@ function slotAt(x, y) {
   return i >= 0 && i < 3 ? i : -1;
 }
 function updateHint() {
+  if (mode === 'snake') {
+    hintEl.textContent = 'Свайп, стрелки или кнопки — поехали!';
+    hintEl.classList.toggle('show', state === 'play' && !snake.started);
+    return;
+  }
   if (mode === 'sand') {
     hintEl.textContent = 'Соедините один цвет от края до края';
     hintEl.classList.toggle('show', score === 0 && state === 'play' && sandCount() === 0);
@@ -3820,6 +3866,86 @@ BLOCK_STYLES.cap = (g, col, s) => {
   g.fillStyle = cg; g.beginPath(); g.moveTo(p, s * 0.62); g.quadraticCurveTo(p, s * 0.08, s / 2, s * 0.08); g.quadraticCurveTo(s - p, s * 0.08, s - p, s * 0.62); g.quadraticCurveTo(s / 2, s * 0.7, p, s * 0.62); g.closePath(); g.fill();
   if (s >= 12) { g.fillStyle = 'rgba(255,255,250,0.92)'; for (const [x, y, rr] of [[0.28, 0.32, 0.075], [0.62, 0.26, 0.09], [0.78, 0.46, 0.06], [0.46, 0.5, 0.055], [0.15, 0.5, 0.05]]) { g.beginPath(); g.ellipse(x * s, y * s, rr * s, rr * s * 0.8, 0, 0, Math.PI * 2); g.fill(); } }
   g.lineWidth = Math.max(1, s * 0.025); g.strokeStyle = 'rgba(8,24,16,0.7)'; rrPath(g, p, p, w, w, s * 0.1); g.stroke();
+};
+// ---- 19.10.2026: блоки тем «Змейки» (клетка змейки мелкая, ~20 px на телефоне: рисунок крупный и простой) ----
+// «Джунгли»: змеиная чешуя — ромбы внахлёст рядами, блик сверху
+BLOCK_STYLES.scale = (g, col, s) => {
+  const p = Math.max(1, s * 0.03), w = s - 2 * p, r = s * 0.2, grey = COLORS.indexOf(col) === GREY;
+  const lg = g.createLinearGradient(0, 0, s, s); lg.addColorStop(0, mixHex(col.c, '#ffffff', 0.18)); lg.addColorStop(0.55, col.c); lg.addColorStop(1, mixHex(col.b, '#000000', 0.3));
+  g.fillStyle = lg; rrPath(g, p, p, w, w, r); g.fill();
+  g.save(); rrPath(g, p, p, w, w, r); g.clip();
+  const n = s >= 30 ? 4 : 3, d = s / n;
+  g.lineWidth = Math.max(0.7, s * 0.03); g.strokeStyle = rgba(mixHex(col.b, '#000000', 0.5), 0.55);
+  for (let row = -1; row <= n * 1.4 + 1; row++) for (let c = -1; c <= n; c++) {
+    const x = c * d + (row % 2 ? d / 2 : 0), y = row * d * 0.7 - d * 0.3;
+    g.beginPath(); g.moveTo(x + d / 2, y); g.lineTo(x + d, y + d * 0.55); g.lineTo(x + d / 2, y + d * 1.1); g.lineTo(x, y + d * 0.55); g.closePath();
+    const sg = g.createLinearGradient(0, y, 0, y + d * 1.1); sg.addColorStop(0, mixHex(col.c, '#ffffff', grey ? 0.1 : 0.22)); sg.addColorStop(1, mixHex(col.c, '#000000', 0.22));
+    g.fillStyle = sg; g.fill(); g.stroke();
+  }
+  // тёмная полоса-узор по хребту
+  g.fillStyle = rgba(mixHex(col.b, '#000000', 0.55), 0.35); g.fillRect(s * 0.42, 0, s * 0.16, s);
+  const hl = g.createLinearGradient(0, 0, 0, s * 0.5); hl.addColorStop(0, 'rgba(255,255,255,0.35)'); hl.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = hl; g.fillRect(0, 0, s, s * 0.5);
+  g.restore();
+  g.lineWidth = Math.max(1, s * 0.04); g.strokeStyle = rgba(mixHex(col.b, '#000000', 0.6), 0.8); rrPath(g, p, p, w, w, r); g.stroke();
+};
+// «Ретро»: пиксель ЖК-экрана — тёмная рамка, просвет и сердцевина с лёгким оттенком цвета, тень на «стекле»
+BLOCK_STYLES.lcd = (g, col, s) => {
+  const grey = COLORS.indexOf(col) === GREY, ink = grey ? '#6e7e52' : mixHex('#1c2810', col.c, 0.34);
+  const p = Math.max(1, Math.round(s * 0.07)), w = s - 2 * p, sh = Math.max(1, Math.round(p * 0.8));
+  g.fillStyle = 'rgba(40,52,24,0.28)'; g.fillRect(p + sh, p + sh, w - sh, w - sh);
+  g.fillStyle = ink; g.fillRect(p, p, w - sh, w - sh);
+  const q = Math.max(2, Math.round(s * 0.2)), c = Math.max(3, Math.round(s * 0.32));
+  g.fillStyle = mixHex(ink, '#a3b86c', 0.62); g.fillRect(q, q, s - 2 * q - sh, s - 2 * q - sh);
+  g.fillStyle = ink; g.fillRect(c, c, s - 2 * c - sh, s - 2 * c - sh);
+};
+// «Террариум»: обкатанный камень цвета блока в крапинку, кварцевая жилка и кустик мха
+BLOCK_STYLES.pebble = (g, col, s) => {
+  const p = Math.max(1, s * 0.05), w = s - 2 * p, R = s * 0.36, base = mixHex(col.c, '#8a8070', 0.38), rnd = seeded(91 + parseInt(col.c.slice(1, 4), 16));
+  g.fillStyle = 'rgba(0,0,0,0.32)'; rrPath(g, p + s * 0.02, p + s * 0.06, w - s * 0.02, w - s * 0.06, R); g.fill();
+  const rg = g.createRadialGradient(s * 0.36, s * 0.3, s * 0.04, s * 0.5, s * 0.5, s * 0.66);
+  rg.addColorStop(0, mixHex(base, '#ffffff', 0.38)); rg.addColorStop(0.55, base); rg.addColorStop(1, mixHex(col.b, '#1a140c', 0.5));
+  g.fillStyle = rg; rrPath(g, p, p, w, w * 0.93, R); g.fill();
+  g.save(); rrPath(g, p, p, w, w * 0.93, R); g.clip();
+  for (let i = 0; i < 22; i++) { g.fillStyle = rnd() < 0.5 ? 'rgba(255,250,235,0.22)' : 'rgba(30,22,12,0.25)'; const d = Math.max(0.7, s * (0.02 + 0.02 * rnd())); g.fillRect(s * rnd(), s * rnd(), d, d); }
+  g.strokeStyle = 'rgba(255,250,235,0.45)'; g.lineWidth = Math.max(0.8, s * 0.045);
+  g.beginPath(); g.moveTo(0, s * 0.7); g.quadraticCurveTo(s * 0.45, s * 0.52, s, s * 0.62); g.stroke();
+  g.restore();
+  if (s >= 13) {   // мох на макушке
+    g.fillStyle = '#4e8a2e'; for (const [x, y, r] of [[0.24, 0.16, 0.1], [0.36, 0.11, 0.09], [0.47, 0.15, 0.07]]) { g.beginPath(); g.arc(x * s, y * s, r * s, 0, Math.PI * 2); g.fill(); }
+    g.fillStyle = '#86c24a'; for (const [x, y, r] of [[0.22, 0.12, 0.04], [0.35, 0.07, 0.035]]) { g.beginPath(); g.arc(x * s, y * s, r * s, 0, Math.PI * 2); g.fill(); }
+  }
+  g.lineWidth = Math.max(0.8, s * 0.03); g.strokeStyle = 'rgba(24,18,10,0.55)'; rrPath(g, p, p, w, w * 0.93, R); g.stroke();
+};
+// «Неоновая трасса»: тёмная плитка со светящейся неоновой рамкой и ядром цвета блока
+BLOCK_STYLES.neonline = (g, col, s) => {
+  const grey = COLORS.indexOf(col) === GREY, c = grey ? '#8a8aa0' : mixHex(col.c, '#ffffff', 0.12);
+  const p = Math.max(1.5, s * 0.12), w = s - 2 * p, r = s * 0.18;
+  g.fillStyle = mixHex(col.c, '#0a0618', 0.84); rrPath(g, s * 0.04, s * 0.04, s * 0.92, s * 0.92, r); g.fill();
+  const ig = g.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s * 0.5); ig.addColorStop(0, rgba(c, grey ? 0.15 : 0.35)); ig.addColorStop(1, rgba(c, 0));
+  g.fillStyle = ig; g.fillRect(0, 0, s, s);
+  g.save(); g.shadowColor = c; g.shadowBlur = s * 0.28; g.strokeStyle = c; g.lineWidth = Math.max(1.4, s * 0.1);
+  rrPath(g, p, p, w, w, r * 0.8); g.stroke(); g.stroke(); g.restore();
+  g.strokeStyle = grey ? 'rgba(220,220,235,0.5)' : 'rgba(255,255,255,0.85)'; g.lineWidth = Math.max(0.6, s * 0.035); rrPath(g, p, p, w, w, r * 0.8); g.stroke();
+  if (s >= 12) { g.fillStyle = grey ? '#b0b0c0' : mixHex(c, '#ffffff', 0.55); const d = s * 0.11; g.beginPath(); g.moveTo(s / 2, s / 2 - d); g.lineTo(s / 2 + d, s / 2); g.lineTo(s / 2, s / 2 + d); g.lineTo(s / 2 - d, s / 2); g.closePath(); g.fill(); }
+};
+// «Сад камней»: глазурованная плитка с волнами сэйгайха (концентрические полукруги)
+BLOCK_STYLES.seigaiha = (g, col, s) => {
+  const p = Math.max(1, s * 0.03), w = s - 2 * p, r = s * 0.1, grey = COLORS.indexOf(col) === GREY;
+  g.fillStyle = mixHex(col.b, '#1a0e08', 0.3); rrPath(g, p, p, w, w, r); g.fill();
+  g.save(); rrPath(g, p + s * 0.04, p + s * 0.04, w - s * 0.08, w - s * 0.08, r * 0.7); g.clip();
+  const R = s >= 30 ? s / 3.2 : s / 2.4, line = grey ? 'rgba(235,235,235,0.55)' : 'rgba(255,248,228,0.8)';
+  g.lineWidth = Math.max(0.7, R * 0.11); g.strokeStyle = line;
+  for (let j = 0; j * R * 0.5 <= s + R; j++) for (let i = -1; i * R * 2 <= s + R; i++) {
+    const x = i * R * 2 + (j % 2 ? R : 0), y = j * R * 0.5;
+    g.fillStyle = j % 2 ? mixHex(col.c, '#000000', 0.08) : col.c;
+    g.beginPath(); g.arc(x, y, R, 0, Math.PI * 2); g.fill();
+    for (const k of [0.92, 0.62, 0.32]) { g.beginPath(); g.arc(x, y, R * k, Math.PI, Math.PI * 2); g.stroke(); }
+  }
+  const hl = g.createLinearGradient(0, 0, s, s); hl.addColorStop(0, 'rgba(255,255,255,0.4)'); hl.addColorStop(0.4, 'rgba(255,255,255,0)'); hl.addColorStop(1, 'rgba(0,0,0,0.18)');
+  g.fillStyle = hl; g.fillRect(0, 0, s, s);
+  g.restore();
+  g.lineWidth = Math.max(1, s * 0.035); g.strokeStyle = 'rgba(30,16,8,0.7)'; rrPath(g, p, p, w, w, r); g.stroke();
 };
 function renderBlock(col, s, style) {
   const c = makeCanvas(s, s), g = c.getContext('2d');
@@ -8380,7 +8506,593 @@ const XDECOR = {
       ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
     },
   },
+  /* ---- 19.10.2026: темы режима «Змейка». Под полем — кнопки-стрелки (snakePad):
+     крупные детали только в нижних углах (левее/правее G.pl) и в верхней полосе ---- */
+  jungle: { n: 40,
+    scene(g, th, U) {
+      const G = xJungleGeo(U), rnd = seeded(7272), fy = G.fy;
+      // дальние ярусы леса
+      xRidge(g, H * 0.6, H * 0.1, 6, 0.4, '#11391f', 0.5);
+      xRidge(g, H * 0.8, H * 0.08, 9, 1.7, '#0b2c17', 0.45);
+      // столбы света сквозь кроны
+      g.save(); g.globalCompositeOperation = 'lighter';
+      for (const [x, w] of G.beams) { const gr = g.createLinearGradient(0, 0, 0, H * 0.9); gr.addColorStop(0, 'rgba(210,255,160,0.12)'); gr.addColorStop(1, 'rgba(210,255,160,0)');
+        g.fillStyle = gr; g.beginPath(); g.moveTo(W * x, 0); g.lineTo(W * (x + w), 0); g.lineTo(W * (x + w) - H * 0.25, H * 0.9); g.lineTo(W * x - H * 0.25, H * 0.9); g.closePath(); g.fill(); }
+      g.restore();
+      // стволы с корой и мхом
+      for (const [x, w] of G.trunks) {
+        const tg = g.createLinearGradient(x, 0, x + w, 0); tg.addColorStop(0, '#170f08'); tg.addColorStop(0.45, '#4a3620'); tg.addColorStop(1, '#120c06');
+        g.fillStyle = tg; g.fillRect(x, 0, w, H);
+        g.strokeStyle = 'rgba(10,6,2,0.5)'; g.lineWidth = Math.max(1, U * 0.003);
+        for (let k = 0; k < 16; k++) { const y = H * rnd(); g.beginPath(); g.moveTo(x + w * 0.1, y); g.quadraticCurveTo(x + w * 0.5, y + U * 0.012, x + w * 0.9, y); g.stroke(); }
+        g.fillStyle = 'rgba(90,160,60,0.45)';
+        for (let k = 0; k < 10; k++) { g.beginPath(); g.ellipse(x + w * (0.2 + 0.6 * rnd()), H * rnd(), w * 0.22, U * 0.02, 0, 0, Math.PI * 2); g.fill(); }
+      }
+      // лианы с листьями, на концах — цветы
+      G.lianas.forEach(([x, y1], i) => {
+        const sw = (i % 2 ? 1 : -1) * U * 0.03;
+        g.strokeStyle = '#3a4a1c'; g.lineWidth = Math.max(1.5, U * 0.007); g.beginPath(); g.moveTo(x, -2); g.quadraticCurveTo(x + sw * 2, y1 * 0.5, x, y1); g.stroke();
+        for (let k = 1; k <= 8; k++) { const t = k / 9, px = x + sw * 4 * t * (1 - t) * 0.5 * 2, py = y1 * t;
+          xJLeaf(g, px, py, U * (0.032 + 0.012 * rnd()), k % 2 ? 0.7 : Math.PI - 0.7, k % 3 ? '#2f8a34' : '#3fa040', 0.5); }
+        if (i % 2 === 0) xJFlower(g, x, y1, U * 0.022, i % 4 ? '#ff7a2a' : '#ff3a5a');
+      });
+      // свисающие листья крон по верхнему краю
+      for (let x = -U * 0.03; x < W + U * 0.05; x += U * 0.045) for (let k = 0; k < 2; k++)
+        xJLeaf(g, x + rnd() * U * 0.02, -U * 0.012, U * (0.06 + 0.05 * rnd()), Math.PI / 2 + (rnd() - 0.5) * 1.4, ['#0c3418', '#134c26', '#1b632e'][(rnd() * 3) | 0], 0.38);
+      // земля, папоротники и большие листья в нижних углах (середина низа — под кнопками)
+      const gg = g.createLinearGradient(0, fy - U * 0.03, 0, H); gg.addColorStop(0, '#12301a'); gg.addColorStop(1, '#071a0d'); g.fillStyle = gg;
+      g.beginPath(); g.moveTo(0, H); for (let x = 0; x <= W + 8; x += 8) g.lineTo(x, fy + Math.sin(x * 0.05) * U * 0.006); g.lineTo(W, H); g.closePath(); g.fill();
+      for (const [x, a] of [[W * 0.3, -1.9], [W * 0.42, -1.4], [W * 0.58, -1.75], [W * 0.7, -1.25]]) xDinoFrond(g, x, H + U * 0.01, U * 0.09, a, '#1f6a2c', Math.max(1, U * 0.004), U);
+      const L = Math.min(U * 0.3, G.pl * 1.25);
+      for (const sd of [1, -1]) {
+        const x0 = sd > 0 ? -U * 0.01 : W + U * 0.01;
+        for (const [a, k, c] of [[-1.5, 0.7, '#2f9a3a'], [-1.2, 0.95, '#1d6229'], [-0.85, 1, '#2a8a36'], [-0.45, 0.85, '#237a30'], [-0.15, 0.6, '#1a5a26']])
+          xJLeaf(g, x0, H + U * 0.01, L * k, sd > 0 ? a : Math.PI - a, c, 0.4);
+      }
+      xJFlower(g, G.pl * 0.42, H * 0.9, U * 0.026, '#ff3a5a');
+      xJFlower(g, W - G.pl * 0.38, H * 0.875, U * 0.022, '#ffb02a');
+    },
+    anim(arr, ts, dt, U) {
+      const G = xJungleGeo(U);
+      // столбы света «дышат», в них пылинки и мошки (16..39)
+      ctx.globalCompositeOperation = 'lighter';
+      G.beams.forEach(([x, w], i) => { const a = 0.04 + 0.05 * (0.5 + 0.5 * Math.sin(ts * 0.5 + i * 2.1));
+        const gr = ctx.createLinearGradient(0, 0, 0, H * 0.9); gr.addColorStop(0, `rgba(230,255,170,${a.toFixed(3)})`); gr.addColorStop(1, 'rgba(230,255,170,0)');
+        ctx.fillStyle = gr; ctx.beginPath(); ctx.moveTo(W * x, 0); ctx.lineTo(W * (x + w), 0); ctx.lineTo(W * (x + w) - H * 0.25, H * 0.9); ctx.lineTo(W * x - H * 0.25, H * 0.9); ctx.closePath(); ctx.fill(); });
+      for (let i = 16; i < arr.length; i++) { const d = arr[i]; d.y -= dt * 0.012 * d.sp; if (d.y < 0) { d.y = 1; d.x = Math.random(); }
+        ctx.globalAlpha = 0.2 + 0.55 * Math.abs(Math.sin(ts * d.sp + d.ph)); ctx.fillStyle = '#efffc0';
+        ctx.fillRect(d.x * W + Math.sin(ts * 0.7 * d.sp + d.ph) * U * 0.02, d.y * H, 1.7, 1.7); }
+      ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+      // падающие листья (0..9)
+      for (let i = 0; i < 10; i++) { const d = arr[i]; d.y += dt * 0.035 * d.sp; d.r += dt * (d.s - 0.5) * 3; if (d.y > 1.05) { d.y = -0.05; d.x = Math.random(); }
+        const x = d.x * W + Math.sin(ts * 0.9 * d.sp + d.ph) * U * 0.05, l = U * (0.016 + 0.01 * d.s);
+        ctx.save(); ctx.translate(x, d.y * H); ctx.rotate(d.r); ctx.scale(1, 0.35 + 0.65 * Math.abs(Math.sin(ts * 1.7 * d.sp + d.ph)));
+        ctx.fillStyle = d.s > 0.75 ? '#c8b03a' : d.s > 0.35 ? '#5ab040' : '#3a8a34'; ctx.beginPath(); ctx.ellipse(0, 0, l, l * 0.38, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = 'rgba(0,0,0,0.3)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-l, 0); ctx.lineTo(l, 0); ctx.stroke(); ctx.restore(); }
+      // бабочки (10..13): две у верхнего края, по одной в нижних углах
+      for (let i = 10; i < 14; i++) { const d = arr[i], top = i < 12;
+        const x = top ? W * (0.5 + 0.46 * Math.sin(ts * 0.11 * d.sp + d.ph)) : i === 12 ? G.pl * (0.5 + 0.38 * Math.sin(ts * 0.3 + d.ph)) : W - G.pl * (0.5 + 0.38 * Math.sin(ts * 0.27 + d.ph));
+        const y = top ? H * (0.035 + 0.022 * Math.sin(ts * 0.7 * d.sp + d.r)) : H * (0.8 + 0.05 * Math.sin(ts * 0.5 * d.sp + d.r));
+        xJButterfly(x, y, U * 0.02, Math.abs(Math.sin(ts * 11 * d.sp + d.ph)), i % 2 ? '#3ab8ff' : '#ffb02a'); }
+      // попугай пролетает по верхней полосе раз в 20 с
+      { const q = (ts % 20) / 20; if (q < 0.22) { const p = q / 0.22; xJParrot(-U * 0.12 + p * (W + U * 0.24), H * 0.07 + Math.sin(p * 5) * U * 0.025, U * 0.036, Math.sin(ts * 14)); } }
+    },
+  },
+  retro: { n: 1,
+    scene(g, th, U) {
+      const G = xRetroGeo(U), rnd = seeded(3310), px = G.px;
+      // пластик корпуса: блик слева, тень справа, шагрень
+      const sh = g.createLinearGradient(0, 0, W, 0); sh.addColorStop(0, 'rgba(255,255,255,0.10)'); sh.addColorStop(0.2, 'rgba(255,255,255,0.02)'); sh.addColorStop(0.7, 'rgba(0,0,0,0)'); sh.addColorStop(1, 'rgba(0,0,0,0.22)');
+      g.fillStyle = sh; g.fillRect(0, 0, W, H);
+      for (let i = 0, n = W * H / 240; i < n; i++) { g.fillStyle = rnd() < 0.5 ? 'rgba(255,255,255,0.035)' : 'rgba(0,0,0,0.07)'; g.fillRect(W * rnd(), H * rnd(), 1, 1); }
+      // ЖК-полоска по краю корпуса — по ней ползает пиксельная змейка
+      const sw = px * 2.2;
+      g.lineJoin = 'round';
+      g.strokeStyle = '#15181c'; g.lineWidth = sw + 4; rrPath(g, G.x0, G.y0, G.x1 - G.x0, G.y1 - G.y0, sw * 0.6); g.stroke();
+      g.strokeStyle = '#a3b86c'; g.lineWidth = sw; g.stroke();
+      g.fillStyle = 'rgba(40,56,20,0.09)';
+      for (let d = 0; d < G.L; d += px) { const [x, y] = G.at(d); g.fillRect(x - px / 2 + 0.5, y - px / 2 + 0.5, px - 1, px - 1); }
+      g.lineJoin = 'miter';
+      if (settings.lite) xRetroSnake(g, G, px * 30);
+      // прорезь динамика и светодиод
+      const ex = W / 2, ey = G.ey;
+      g.fillStyle = '#16191d'; rrPath(g, ex - U * 0.09, ey - U * 0.009, U * 0.18, U * 0.018, U * 0.009); g.fill();
+      g.fillStyle = 'rgba(255,255,255,0.12)'; g.fillRect(ex - U * 0.085, ey + U * 0.009, U * 0.17, 1);
+      g.fillStyle = '#050607'; for (let i = -5; i <= 5; i++) { g.beginPath(); g.arc(ex + i * U * 0.015, ey, Math.max(1, U * 0.003), 0, Math.PI * 2); g.fill(); }
+      g.fillStyle = '#1e2a14'; g.beginPath(); g.arc(ex + U * 0.125, ey, Math.max(1.5, U * 0.006), 0, Math.PI * 2); g.fill();
+      // значки сети и батареи (в лёгком режиме — полные, иначе их «оживляет» анимация)
+      xRetroIcons(g, G, U, settings.lite ? 4 : 0, settings.lite ? 3 : 0);
+      // рифление в нижних углах и микрофон
+      g.lineWidth = Math.max(1, U * 0.004);
+      for (const sd of [0, 1]) for (let k = 0; k < 5; k++) { const y = H * 0.83 + k * U * 0.022, xa = sd ? W - G.pl + U * 0.03 : G.x0 + U * 0.035, xb = sd ? G.x1 - U * 0.035 : G.pl - U * 0.03;
+        if (xb - xa < U * 0.03) continue;
+        g.strokeStyle = 'rgba(0,0,0,0.35)'; g.beginPath(); g.moveTo(xa, y); g.lineTo(xb, y); g.stroke();
+        g.strokeStyle = 'rgba(255,255,255,0.08)'; g.beginPath(); g.moveTo(xa, y + 1.5); g.lineTo(xb, y + 1.5); g.stroke(); }
+      g.fillStyle = '#0c0e10'; g.beginPath(); g.arc(W / 2, G.y1 - U * 0.035, Math.max(1.5, U * 0.005), 0, Math.PI * 2); g.fill();
+      // в ландшафте по бокам — круглая решётка динамика и кнопочная клавиатура
+      if (W > H * 1.2) {
+        const sx = W * 0.13, sy = H * 0.5, sr = Math.min(U * 0.14, W * 0.1);
+        g.fillStyle = 'rgba(0,0,0,0.2)'; g.beginPath(); g.arc(sx, sy, sr * 1.08, 0, Math.PI * 2); g.fill();
+        g.fillStyle = '#0a0b0d'; for (let y = -sr; y <= sr; y += sr * 0.16) for (let x = -sr; x <= sr; x += sr * 0.16) if (x * x + y * y < sr * sr * 0.95) { g.beginPath(); g.arc(sx + x, sy + y, sr * 0.035, 0, Math.PI * 2); g.fill(); }
+        for (const [x, y, w, h, lab] of xRetroKeys(U)) {
+          g.fillStyle = 'rgba(0,0,0,0.4)'; rrPath(g, x - w / 2, y - h / 2 + 2, w, h, h * 0.4); g.fill();
+          const kg = g.createLinearGradient(0, y - h / 2, 0, y + h / 2); kg.addColorStop(0, '#6a7480'); kg.addColorStop(1, '#3e444c');
+          g.fillStyle = kg; rrPath(g, x - w / 2, y - h / 2, w, h, h * 0.4); g.fill();
+          g.fillStyle = '#dfe8c0'; g.font = `bold ${Math.round(h * 0.5)}px monospace`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(lab, x, y + 1);
+        }
+      }
+    },
+    anim(arr, ts, dt, U) {
+      const G = xRetroGeo(U), px = G.px;
+      xRetroSnake(ctx, G, Math.floor(ts / 0.09) * px);
+      xRetroIcons(ctx, G, U, 2 + Math.round(1 + Math.sin(ts * 0.6) + 0.4 * Math.sin(ts * 2.3)), Math.floor(ts * 1.4) % 4);
+      // светодиод мигает
+      if (ts % 2.4 < 0.18) { const x = W / 2 + U * 0.125, y = G.ey, r = U * 0.025;
+        ctx.globalCompositeOperation = 'lighter';
+        const gr = ctx.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, 'rgba(150,255,110,0.9)'); gr.addColorStop(1, 'rgba(150,255,110,0)'); ctx.fillStyle = gr; ctx.fillRect(x - r, y - r, r * 2, r * 2);
+        ctx.globalCompositeOperation = 'source-over'; }
+      // в ландшафте клавиши «нажимаются» по очереди
+      if (W > H * 1.2) { const K = xRetroKeys(U), k = K[Math.floor(ts * 1.3) % K.length], f = (ts * 1.3) % 1;
+        if (f < 0.35) { const [x, y, w, h] = k; ctx.fillStyle = `rgba(200,230,120,${(0.35 * (1 - f / 0.35)).toFixed(3)})`; rrPath(ctx, x - w / 2, y - h / 2, w, h, h * 0.4); ctx.fill(); } }
+    },
+  },
+  terrarium: { n: 30,
+    scene(g, th, U) {
+      const G = xTerraGeo(U), rnd = seeded(4242), sy = G.sy, fw = G.fw, lp = G.lamp;
+      // задняя стенка из пробковой коры
+      g.globalAlpha = 0.55;
+      for (let x = -U * 0.02; x < W;) {
+        const w = U * (0.05 + 0.06 * rnd()), b = ['#3a2a18', '#46321c', '#2c2013'][(rnd() * 3) | 0], cg = g.createLinearGradient(x, 0, x + w, 0);
+        cg.addColorStop(0, mixHex(b, '#000000', 0.35)); cg.addColorStop(0.5, b); cg.addColorStop(1, mixHex(b, '#000000', 0.45)); g.fillStyle = cg;
+        g.beginPath(); g.moveTo(x, 0);
+        for (let y = 0; y <= H; y += H / 12) g.lineTo(x + Math.sin(y * 0.02 + x) * U * 0.008, y);
+        for (let y = H; y >= 0; y -= H / 12) g.lineTo(x + w + Math.sin(y * 0.025 + x * 1.3) * U * 0.008, y);
+        g.closePath(); g.fill(); x += w * 0.85;
+      }
+      g.globalAlpha = 1;
+      g.fillStyle = 'rgba(10,6,2,0.45)'; for (let i = 0; i < 26; i++) { g.beginPath(); g.ellipse(W * rnd(), H * rnd(), U * (0.006 + 0.01 * rnd()), U * (0.012 + 0.02 * rnd()), 0, 0, Math.PI * 2); g.fill(); }
+      // тёплый свет лампы на стенке
+      const wl = g.createRadialGradient(lp.x, lp.y, 0, lp.x, lp.y, U * 0.9); wl.addColorStop(0, 'rgba(255,200,120,0.26)'); wl.addColorStop(1, 'rgba(255,200,120,0)'); g.fillStyle = wl; g.fillRect(0, 0, W, H);
+      // потос свисает с крышки вдоль стенок
+      for (const [x, len, sd0] of [[fw + U * 0.03, H * (G.port ? 0.42 : 0.5), 1], [W - fw - U * 0.035, H * (G.port ? 0.28 : 0.4), -1]]) {
+        g.strokeStyle = '#3a6a2a'; g.lineWidth = Math.max(1, U * 0.004); g.beginPath(); g.moveTo(x, 0); g.quadraticCurveTo(x + sd0 * U * 0.025, len * 0.5, x, len); g.stroke();
+        for (let k = 1; k <= 9; k++) { const t = k / 9.5, xx = x + sd0 * U * 0.025 * 2 * t * (1 - t), sd = k % 2 ? 1 : -1, r = U * (0.017 + 0.006 * rnd());
+          g.fillStyle = k % 3 ? '#4a9a3a' : '#6ab84a'; xTHeart(g, xx + sd * r * 0.7, len * t, r, sd * 0.7); }
+      }
+      // грунт в разрезе: земля с опадом, дренаж из гальки
+      const top = x => sy + Math.sin(x * 0.03) * U * 0.006 + Math.sin(x * 0.011 + 1) * U * 0.008;
+      g.fillStyle = '#2a1c10'; g.beginPath(); g.moveTo(0, H); for (let x = 0; x <= W + 6; x += 6) g.lineTo(x, top(x)); g.lineTo(W, H); g.closePath(); g.fill();
+      for (let i = 0; i < W / 3; i++) { g.fillStyle = rnd() < 0.5 ? 'rgba(130,95,50,0.55)' : 'rgba(8,5,2,0.5)'; const x = W * rnd(); g.fillRect(x, top(x) + (H - sy) * 0.5 * rnd(), 2, 1.5); }
+      const gy = sy + (H - sy) * 0.55;
+      for (let x = 0; x < W; x += U * 0.013) for (let k = 0; k < 2; k++) { g.fillStyle = ['#8a8478', '#a8a294', '#6a645a'][(rnd() * 3) | 0]; g.beginPath(); g.ellipse(x + rnd() * U * 0.006, gy + (H - gy) * (0.15 + 0.75 * rnd()), U * 0.009, U * 0.006, rnd() * 3, 0, Math.PI * 2); g.fill(); }
+      // коряга у левой стенки, мох на ней
+      { const x0 = fw, y0 = G.port ? H * 0.86 : H * 0.7, x1 = G.port ? G.pl * 1.02 : W * 0.3, y1 = sy + U * 0.005, t0 = U * 0.075, mx = (x0 + x1) / 2, my = (y0 + y1) / 2;
+        const wg = g.createLinearGradient(0, y0 - t0, 0, y1 + t0); wg.addColorStop(0, '#8a6a46'); wg.addColorStop(0.5, '#5a4028'); wg.addColorStop(1, '#2e1e10');
+        g.fillStyle = wg; g.beginPath(); g.moveTo(x0, y0 - t0 * 0.6); g.quadraticCurveTo(mx, my - t0 * 1.2, x1, y1 - t0 * 0.35); g.lineTo(x1, y1 + t0 * 0.2); g.quadraticCurveTo(mx, my + t0 * 0.2, x0, y0 + t0 * 0.6); g.closePath(); g.fill();
+        const bx = x0 + (x1 - x0) * 0.42, by = y0 + (y1 - y0) * 0.42 - t0 * 0.75;
+        g.strokeStyle = '#6a4c30'; g.lineWidth = t0 * 0.35; g.lineCap = 'round'; g.beginPath(); g.moveTo(bx, by + t0 * 0.3); g.quadraticCurveTo(bx + t0 * 0.2, by - t0 * 0.8, bx + t0 * 0.8, by - t0 * 1.3); g.stroke(); g.lineCap = 'butt';
+        g.strokeStyle = 'rgba(30,18,8,0.5)'; g.lineWidth = 1;
+        for (let k = 0; k < 7; k++) { const t = 0.08 + k * 0.13, x = x0 + (x1 - x0) * t, y = y0 + (y1 - y0) * t - t0 * 0.35; g.beginPath(); g.moveTo(x - t0 * 0.3, y); g.lineTo(x + t0 * 0.4, y + t0 * 0.15); g.stroke(); }
+        for (let k = 0; k < 9; k++) { const t = 0.04 + k * 0.1, x = x0 + (x1 - x0) * t, y = y0 + (y1 - y0) * t - t0 * 0.62; g.fillStyle = k % 2 ? '#5a9a34' : '#4a8a2a'; g.beginPath(); g.arc(x, y, t0 * (0.16 + 0.1 * rnd()), Math.PI, 0); g.fill(); } }
+      // справа: замшелый камень, папоротник, поилка; внизу по центру — галька под кнопками
+      { const cx = W - G.pl * 0.58, cy = sy - U * 0.01, r = Math.min(U * 0.05, G.pl * 0.4);
+        xDinoFrond(g, cx + r * 0.3, cy, r * 2.2, -2.0, '#3a8a34', Math.max(1, U * 0.004), U);
+        xDinoFrond(g, cx + r * 0.5, cy, r * 1.8, -1.3, '#2f7a2e', Math.max(1, U * 0.004), U);
+        xTStone(g, cx, cy, r, '#6e6a62'); }
+      for (const [x, r, c] of [[W * 0.43, U * 0.022, '#7a746a'], [W * 0.56, U * 0.016, '#8a7a66'], [W * 0.5, U * 0.012, '#5a5650']]) xTStone(g, x, H * 0.985, r, c);
+      { const d = G.dish; g.fillStyle = 'rgba(0,0,0,0.35)'; g.beginPath(); g.ellipse(d.x, d.y + d.rx * 0.1, d.rx * 1.05, d.rx * 0.36, 0, 0, Math.PI * 2); g.fill();
+        const rg = g.createLinearGradient(0, d.y - d.rx * 0.3, 0, d.y + d.rx * 0.3); rg.addColorStop(0, '#8a8e94'); rg.addColorStop(1, '#3a3e42'); g.fillStyle = rg; g.beginPath(); g.ellipse(d.x, d.y, d.rx, d.rx * 0.32, 0, 0, Math.PI * 2); g.fill();
+        const wg = g.createLinearGradient(0, d.y - d.rx * 0.22, 0, d.y + d.rx * 0.22); wg.addColorStop(0, '#5ab0d8'); wg.addColorStop(1, '#1e5a7a'); g.fillStyle = wg; g.beginPath(); g.ellipse(d.x, d.y - d.rx * 0.03, d.rx * 0.8, d.rx * 0.22, 0, 0, Math.PI * 2); g.fill();
+        g.fillStyle = 'rgba(255,255,255,0.45)'; g.beginPath(); g.ellipse(d.x - d.rx * 0.3, d.y - d.rx * 0.1, d.rx * 0.2, d.rx * 0.04, 0, 0, Math.PI * 2); g.fill(); }
+      // лампа обогрева на шнуре
+      g.strokeStyle = '#0c0c0c'; g.lineWidth = Math.max(1, U * 0.004); g.beginPath(); g.moveTo(lp.x, 0); g.lineTo(lp.x, lp.y - lp.r * 0.5); g.stroke();
+      const dg = g.createLinearGradient(lp.x - lp.r, 0, lp.x + lp.r, 0); dg.addColorStop(0, '#2a2e34'); dg.addColorStop(0.35, '#c0c8d0'); dg.addColorStop(1, '#22262a');
+      g.fillStyle = dg; g.beginPath(); g.moveTo(lp.x - lp.r, lp.y + lp.r * 0.15); g.quadraticCurveTo(lp.x - lp.r * 0.8, lp.y - lp.r * 0.6, lp.x, lp.y - lp.r * 0.6); g.quadraticCurveTo(lp.x + lp.r * 0.8, lp.y - lp.r * 0.6, lp.x + lp.r, lp.y + lp.r * 0.15); g.closePath(); g.fill();
+      g.fillStyle = '#ffe2a0'; g.beginPath(); g.ellipse(lp.x, lp.y + lp.r * 0.14, lp.r * 0.5, lp.r * 0.28, 0, 0, Math.PI); g.fill();
+      // крышка-сетка, алюминиевая рама, блики на стекле
+      g.fillStyle = '#24282c'; g.fillRect(0, 0, W, fw * 1.2);
+      g.strokeStyle = 'rgba(160,170,180,0.3)'; g.lineWidth = 1; for (let x = 0; x < W; x += fw * 0.8) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x + fw * 0.6, fw * 1.2); g.stroke(); }
+      for (const x of [0, W - fw]) { const fg = g.createLinearGradient(x, 0, x + fw, 0); fg.addColorStop(0, '#50565c'); fg.addColorStop(0.5, '#a0a8ae'); fg.addColorStop(1, '#34383c'); g.fillStyle = fg; g.fillRect(x, 0, fw, H); }
+      g.save(); g.globalCompositeOperation = 'lighter';
+      for (const [x, w, a] of [[fw + U * 0.012, U * 0.012, 0.14], [fw + U * 0.032, U * 0.005, 0.1], [W - fw - U * 0.03, U * 0.01, 0.1]]) {
+        const hg = g.createLinearGradient(0, 0, 0, H); hg.addColorStop(0, `rgba(255,255,255,${a})`); hg.addColorStop(0.6, `rgba(255,255,255,${a * 0.3})`); hg.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = hg; g.fillRect(x, 0, w, H); }
+      g.restore();
+    },
+    anim(arr, ts, dt, U) {
+      const G = xTerraGeo(U), lp = G.lamp, fw = G.fw, d0 = G.dish;
+      // свет лампы: ореол и конус, лёгкое мерцание
+      const k = 0.85 + 0.12 * Math.sin(ts * 1.3) + 0.03 * Math.sin(ts * 17);
+      ctx.globalCompositeOperation = 'lighter';
+      const R = lp.r * 2.4, cg = ctx.createRadialGradient(lp.x, lp.y + lp.r * 0.2, 0, lp.x, lp.y + lp.r * 0.2, R); cg.addColorStop(0, `rgba(255,190,90,${(0.5 * k).toFixed(3)})`); cg.addColorStop(1, 'rgba(255,170,60,0)');
+      ctx.fillStyle = cg; ctx.fillRect(lp.x - R, lp.y + lp.r * 0.2 - R, R * 2, R * 2);
+      const cone = ctx.createLinearGradient(0, lp.y, 0, H * 0.5); cone.addColorStop(0, `rgba(255,200,120,${(0.12 * k).toFixed(3)})`); cone.addColorStop(1, 'rgba(255,200,120,0)');
+      ctx.fillStyle = cone; ctx.beginPath(); ctx.moveTo(lp.x - lp.r * 0.7, lp.y + lp.r * 0.2); ctx.lineTo(lp.x + lp.r * 0.7, lp.y + lp.r * 0.2); ctx.lineTo(lp.x + U * 0.4, H * 0.5); ctx.lineTo(lp.x - U * 0.4, H * 0.5); ctx.closePath(); ctx.fill();
+      for (let i = 20; i < 30; i++) { const d = arr[i]; d.y += dt * 0.01 * (d.sp - 0.9); if (d.y < 0) d.y = 1; if (d.y > 1) d.y = 0;
+        const y = lp.y + d.y * (H * 0.45 - lp.y), x = lp.x + (d.x - 0.5) * (lp.r * 1.4 + (y - lp.y) / (H * 0.5) * U * 0.8) + Math.sin(ts * 0.5 + d.ph) * U * 0.01;
+        ctx.globalAlpha = 0.25 + 0.5 * Math.abs(Math.sin(ts * 0.8 * d.sp + d.ph)); ctx.fillStyle = '#fff0c8'; ctx.fillRect(x, y, 1.6, 1.6); }
+      ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+      // капли конденсата сползают по стеклу (0..7)
+      for (let i = 0; i < 8; i++) { const d = arr[i], x = i % 2 ? W - fw - U * (0.015 + 0.05 * d.s) : fw + U * (0.015 + 0.05 * d.s), mv = Math.max(0, Math.sin(ts * 0.8 * d.sp + d.ph));
+        d.y += dt * 0.035 * d.sp * mv * mv; if (d.y > 0.97) { d.y = 0.05 + Math.random() * 0.35; }
+        const y = d.y * H, r = U * (0.004 + 0.003 * d.s), tl = Math.min(y, U * 0.07);
+        ctx.strokeStyle = 'rgba(220,240,255,0.16)'; ctx.lineWidth = r * 0.9; ctx.beginPath(); ctx.moveTo(x, y - tl); ctx.lineTo(x, y); ctx.stroke();
+        ctx.fillStyle = 'rgba(220,240,255,0.45)'; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = 'rgba(255,255,255,0.85)'; ctx.fillRect(x - r * 0.45, y - r * 0.5, Math.max(1, r * 0.4), Math.max(1, r * 0.4)); }
+      // туман над поилкой (8..13)
+      for (let i = 8; i < 14; i++) { const d = arr[i]; d.y -= dt * 0.06 * d.sp; if (d.y < 0) { d.y = 1; d.x = Math.random(); }
+        const p = 1 - d.y, x = d0.x + (d.x - 0.5) * d0.rx * 1.6 + Math.sin(ts * 0.6 + d.ph) * U * 0.02, y = d0.y - p * U * 0.16, r = U * (0.02 + 0.03 * p);
+        const mg = ctx.createRadialGradient(x, y, 0, x, y, r); mg.addColorStop(0, `rgba(235,245,255,${(0.16 * Math.sin(p * Math.PI)).toFixed(3)})`); mg.addColorStop(1, 'rgba(235,245,255,0)');
+        ctx.fillStyle = mg; ctx.fillRect(x - r, y - r, r * 2, r * 2); }
+      // круги на воде поилки раз в 5 с
+      { const q = (ts % 5) / 5; if (q < 0.5) { const p = q / 0.5; ctx.strokeStyle = `rgba(225,245,255,${(0.6 * (1 - p)).toFixed(3)})`; ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.ellipse(d0.x + d0.rx * 0.1, d0.y - d0.rx * 0.03, d0.rx * 0.7 * p + 1, d0.rx * 0.19 * p + 0.5, 0, 0, Math.PI * 2); ctx.stroke(); } }
+      // кузнечик пропрыгивает по грунту раз в 16 с
+      { const q = (ts % 16) / 16; if (q < 0.3) { const p = q / 0.3, hop = (p * 6) % 1; xTCricket(W * 0.97 - p * W * 0.94, G.sy - U * 0.01 - Math.sin(hop * Math.PI) * U * 0.06, U * 0.017, hop); } }
+    },
+  },
+  neonroad: { n: 40,
+    scene(g, th, U) {
+      const G = xNeonGeo(U), rnd = seeded(8080), hz = G.hz, mo = G.moon, rx = t => G.rw * (0.03 + 0.97 * t);
+      xStars(g, rnd, 90, hz * 0.9);
+      // неоновая луна (в ландшафте, сбоку от поля)
+      if (mo) { g.fillStyle = 'rgba(122,246,255,0.12)'; g.beginPath(); g.arc(mo.x, mo.y, mo.r, 0, Math.PI * 2); g.fill();
+        g.save(); g.shadowColor = '#4af0ff'; g.shadowBlur = U * 0.03; g.strokeStyle = '#8af8ff'; g.lineWidth = Math.max(1.5, U * 0.006);
+        g.beginPath(); g.arc(mo.x, mo.y, mo.r, 0, Math.PI * 2); g.stroke();
+        g.beginPath(); g.arc(mo.x - mo.r * 0.35, mo.y - mo.r * 0.1, mo.r * 0.72, -1.2, 1.4); g.stroke(); g.restore(); }
+      // лучи прожекторов из-за горизонта
+      g.save(); g.globalCompositeOperation = 'lighter';
+      for (const [x, a, c] of [[0.18, -0.38, '255,74,240'], [0.84, 0.32, '74,240,255'], [0.5, -0.06, '255,200,90']]) {
+        const x0 = W * x, len = hz * 1.1, tx = x0 + Math.sin(a) * len, ty = hz - Math.cos(a) * len, w = U * 0.06;
+        const bg = g.createLinearGradient(x0, hz, tx, ty); bg.addColorStop(0, `rgba(${c},0.14)`); bg.addColorStop(1, `rgba(${c},0)`);
+        g.fillStyle = bg; g.beginPath(); g.moveTo(x0 - 2, hz); g.lineTo(x0 + 2, hz); g.lineTo(tx + w, ty); g.lineTo(tx - w, ty); g.closePath(); g.fill(); }
+      g.restore();
+      // свечение горизонта и город
+      const hg = g.createLinearGradient(0, hz - U * 0.14, 0, hz); hg.addColorStop(0, 'rgba(255,60,200,0)'); hg.addColorStop(1, 'rgba(255,60,200,0.4)'); g.fillStyle = hg; g.fillRect(0, hz - U * 0.14, W, U * 0.14);
+      for (let x = -U * 0.02; x < W;) {
+        const w = U * (0.04 + 0.05 * rnd()), h = U * ((G.port ? 0.05 : 0.08) + (G.port ? 0.1 : 0.2) * rnd());
+        g.fillStyle = '#0a0420'; g.fillRect(x, hz - h, w, h);
+        g.fillStyle = rnd() < 0.5 ? 'rgba(255,74,240,0.9)' : 'rgba(74,240,255,0.9)'; g.fillRect(x, hz - h, w, Math.max(1, U * 0.003));
+        for (let wy = hz - h + U * 0.012; wy < hz - U * 0.01; wy += U * 0.014) for (let wx = x + U * 0.006; wx < x + w - U * 0.008; wx += U * 0.011)
+          if (rnd() < 0.33) { g.fillStyle = rnd() < 0.5 ? 'rgba(255,170,240,0.75)' : 'rgba(150,240,255,0.75)'; g.fillRect(wx, wy, U * 0.005, U * 0.006); }
+        if (rnd() < 0.3) { g.strokeStyle = '#2a1a4a'; g.lineWidth = 1; g.beginPath(); g.moveTo(x + w / 2, hz - h); g.lineTo(x + w / 2, hz - h - U * 0.03); g.stroke(); g.fillStyle = '#ff4a5a'; g.fillRect(x + w / 2 - 1, hz - h - U * 0.03 - 1, 2, 2); }
+        x += w + U * 0.004;
+      }
+      // пол: тёмный, неоновая сетка в перспективе
+      const fg = g.createLinearGradient(0, hz, 0, H); fg.addColorStop(0, '#1c0632'); fg.addColorStop(1, '#05010e'); g.fillStyle = fg; g.fillRect(0, hz, W, H - hz);
+      g.strokeStyle = 'rgba(255,74,240,0.42)'; g.lineWidth = 1;
+      for (let j = -14; j <= 14; j++) { const xb = G.vx + j * W * 0.11; g.beginPath(); g.moveTo(G.vx + (xb - G.vx) * 0.03, hz); g.lineTo(xb, H); g.stroke(); }
+      for (let k = 1; k <= 8; k++) { const y = hz + (H - hz) * (k / 8) ** 2; g.beginPath(); g.moveTo(0, y); g.lineTo(W, y); g.stroke(); }
+      // трасса со светящимися краями
+      g.fillStyle = 'rgba(8,2,20,0.88)'; g.beginPath(); g.moveTo(G.vx - rx(0), hz); g.lineTo(G.vx + rx(0), hz); g.lineTo(G.vx + rx(1), H); g.lineTo(G.vx - rx(1), H); g.closePath(); g.fill();
+      g.save(); g.shadowColor = '#4af0ff'; g.shadowBlur = U * 0.02; g.strokeStyle = '#6af4ff'; g.lineWidth = Math.max(1.5, U * 0.005);
+      for (const sd of [-1, 1]) { g.beginPath(); g.moveTo(G.vx + sd * rx(0), hz); g.lineTo(G.vx + sd * rx(1), H); g.stroke(); }
+      g.restore();
+      if (settings.lite) xNeonDashes(g, G, 0);
+      xNeonGantry(g, G, U);
+      // фонари вдоль трассы
+      for (const [x, y, h, sd, t] of xNeonLamps(G, U)) {
+        g.strokeStyle = '#2e1c52'; g.lineWidth = Math.max(1, U * 0.006 * (0.3 + t)); g.beginPath(); g.moveTo(x, y); g.lineTo(x, y - h); g.lineTo(x - sd * h * 0.25, y - h); g.stroke();
+        g.fillStyle = sd < 0 ? '#ff8af6' : '#8af8ff'; g.beginPath(); g.arc(x - sd * h * 0.25, y - h, Math.max(1.5, U * 0.007 * (0.4 + t)), 0, Math.PI * 2); g.fill();
+      }
+    },
+    anim(arr, ts, dt, U) {
+      const G = xNeonGeo(U), hz = G.hz, rx = t => G.rw * (0.03 + 0.97 * t);
+      // звёзды мерцают (0..29)
+      for (let i = 0; i < 30; i++) { const d = arr[i]; ctx.globalAlpha = 0.2 + 0.7 * Math.max(0, Math.sin(ts * 1.4 * d.sp + d.ph)); ctx.fillStyle = i % 3 ? '#ffffff' : '#ffb0f8'; ctx.fillRect(d.x * W, d.y * hz * 0.85, 1.6, 1.6); }
+      ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = 'lighter';
+      // бегущие поперечные линии сетки
+      const ph = (ts * 0.45) % 1;
+      for (let k = 0; k < 8; k++) { const u = (k + ph) / 8, y = hz + (H - hz) * u * u; ctx.strokeStyle = `rgba(255,90,240,${(0.12 + 0.45 * u).toFixed(3)})`; ctx.lineWidth = 1 + u * 1.5; ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+      xNeonDashes(ctx, G, ts);
+      // машины — полосы света: встречные белые слева, попутные красные справа
+      ctx.lineCap = 'round';
+      for (let i = 0; i < 4; i++) { const inc = i % 2 === 0, per = 2.6 + i * 0.7, q = ((ts + i * 1.3) % per) / per, u = inc ? q : 1 - q, lane = (inc ? -1 : 1) * (i < 2 ? 0.62 : 0.3);
+        const ua = u, ub = Math.max(0, Math.min(1, inc ? u - 0.16 : u + 0.16)), ta = ua * ua, tb = ub * ub;
+        const xa = G.vx + lane * rx(ta), ya = hz + (H - hz) * ta, xb = G.vx + lane * rx(tb), yb = hz + (H - hz) * tb, c = inc ? '210,245,255' : '255,60,100';
+        if (Math.abs(ya - yb) + Math.abs(xa - xb) < 0.5) continue;
+        const gr = ctx.createLinearGradient(xb, yb, xa, ya); gr.addColorStop(0, `rgba(${c},0)`); gr.addColorStop(1, `rgba(${c},0.95)`);
+        ctx.strokeStyle = gr; ctx.lineWidth = 1 + ta * U * 0.014; ctx.beginPath(); ctx.moveTo(xb, yb); ctx.lineTo(xa, ya); ctx.stroke(); }
+      ctx.lineCap = 'butt';
+      // фонари пульсируют, луна светится
+      xNeonLamps(G, U).forEach(([x, y, h, sd, t], i) => { const r = U * (0.02 + 0.03 * t) * (0.85 + 0.15 * Math.sin(ts * 3 + i)), cx = x - sd * h * 0.25, cy = y - h;
+        const lg = ctx.createRadialGradient(cx, cy, 0, cx, cy, r); lg.addColorStop(0, sd < 0 ? 'rgba(255,120,240,0.55)' : 'rgba(120,240,255,0.55)'); lg.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = lg; ctx.fillRect(cx - r, cy - r, r * 2, r * 2); });
+      // бегущие огни на арке
+      { const A = G.gant, step = (A.x1 - A.x0) / A.n, r = Math.max(2, A.h * 0.45);
+        for (let i = 0; i <= A.n; i++) { const on = (i + Math.floor(ts * 8)) % 4 === 0, x = A.x0 + i * step, y = A.y + A.h / 2;
+          if (!on) continue; const lg = ctx.createRadialGradient(x, y, 0, x, y, r * 2); lg.addColorStop(0, 'rgba(255,240,170,0.9)'); lg.addColorStop(1, 'rgba(255,200,90,0)'); ctx.fillStyle = lg; ctx.fillRect(x - r * 2, y - r * 2, r * 4, r * 4); } }
+      if (G.moon) { const mo = G.moon, r = mo.r * (2.2 + 0.3 * Math.sin(ts * 0.8)), mg = ctx.createRadialGradient(mo.x, mo.y, mo.r * 0.8, mo.x, mo.y, r); mg.addColorStop(0, 'rgba(110,240,255,0.18)'); mg.addColorStop(1, 'rgba(110,240,255,0)'); ctx.fillStyle = mg; ctx.fillRect(mo.x - r, mo.y - r, r * 2, r * 2); }
+      // неоновая комета раз в 13 с
+      { const q = (ts % 13) / 13; if (q < 0.06) { const p = q / 0.06, x = W * 0.15 + p * W * 0.6, y = H * 0.02 + p * H * 0.08;
+          const cg = ctx.createLinearGradient(x - U * 0.14, y - U * 0.03, x, y); cg.addColorStop(0, 'rgba(255,90,240,0)'); cg.addColorStop(1, `rgba(255,190,250,${(1 - p).toFixed(3)})`);
+          ctx.strokeStyle = cg; ctx.lineWidth = Math.max(1.5, U * 0.004); ctx.beginPath(); ctx.moveTo(x - U * 0.14, y - U * 0.03); ctx.lineTo(x, y); ctx.stroke(); } }
+      ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    },
+  },
+  zengarden: { n: 18,
+    scene(g, th, U) {
+      const G = xZenGeo(U), rnd = seeded(1868), sy = G.sy;
+      // перистые облака
+      g.fillStyle = 'rgba(255,240,225,0.35)';
+      for (const [x, y, w] of [[0.22, 0.07, 0.3], [0.72, 0.13, 0.36], [0.45, 0.22, 0.26], [0.15, 0.33, 0.3], [0.82, 0.42, 0.3]]) { rrPath(g, W * x - W * w / 2, H * y, W * w, U * 0.012, U * 0.006); g.fill(); }
+      // дальние горы
+      xRidge(g, sy - U * 0.09, U * 0.2, 3.2, 0.8, 'rgba(150,110,140,0.45)', 0.3);
+      xRidge(g, sy - U * 0.05, U * 0.11, 5, 2.1, 'rgba(120,88,110,0.5)', 0.3);
+      // бамбуковая ограда
+      { const fh = U * 0.1, f0 = sy - fh, bw = U * 0.019;
+        for (let x = 0; x < W; x += bw * 1.12) { const dy = rnd() * U * 0.01, bg = g.createLinearGradient(x, 0, x + bw, 0); bg.addColorStop(0, '#8a7a44'); bg.addColorStop(0.5, '#d8c88a'); bg.addColorStop(1, '#6e5e30');
+          g.fillStyle = bg; g.fillRect(x, f0 + dy, bw, fh - dy); g.fillStyle = 'rgba(80,60,20,0.55)'; g.fillRect(x, f0 + fh * (0.3 + 0.2 * rnd()), bw, Math.max(1, U * 0.004)); }
+        for (const t of [0.28, 0.66]) { g.fillStyle = '#5a4424'; g.fillRect(0, f0 + fh * t, W, Math.max(2, U * 0.008)); }
+        g.strokeStyle = '#1a120a'; g.lineWidth = 1; for (let x = bw * 2; x < W; x += bw * 4.5) for (const t of [0.28, 0.66]) { const y = f0 + fh * t; g.beginPath(); g.moveTo(x - 2, y - 1); g.lineTo(x + 2, y + U * 0.008 + 1); g.moveTo(x + 2, y - 1); g.lineTo(x - 2, y + U * 0.008 + 1); g.stroke(); } }
+      // грабленый песок
+      const sg = g.createLinearGradient(0, sy, 0, H); sg.addColorStop(0, '#e6d8b8'); sg.addColorStop(1, '#d4c29a'); g.fillStyle = sg; g.fillRect(0, sy, W, H - sy);
+      g.lineWidth = Math.max(1, U * 0.0035);
+      for (let y = sy + U * 0.012; y < H; y += U * 0.015) for (const [c, o] of [['rgba(140,120,80,0.45)', 0], ['rgba(255,250,235,0.55)', 1.5]]) {
+        g.strokeStyle = c; g.beginPath(); for (let x = 0; x <= W + 6; x += 6) { const yy = y + o + Math.sin(x * 0.02 + y * 0.05) * U * 0.004; x ? g.lineTo(x, yy) : g.moveTo(x, yy); } g.stroke(); }
+      // камни с кругами на песке
+      for (const [x, y, r, k] of G.rocks) {
+        for (let i = 4; i >= 1; i--) { g.fillStyle = '#e2d4b2'; g.beginPath(); g.ellipse(x, y, r * (1 + i * 0.32), r * k * (1 + i * 0.32) + U * 0.004, 0, 0, Math.PI * 2); g.fill(); g.strokeStyle = 'rgba(140,120,80,0.5)'; g.stroke(); }
+        xZenRock(g, x, y, r);
+      }
+      // каменная чаша, сиси-одоси и фонарь
+      xZenBasin(g, G, U);
+      if (settings.lite) xZenShishi(g, G, 0.45);
+      xZenLantern(g, G.lan.x, G.lan.y, G.lan.h, false);
+      // ветка клёна сверху слева и веточка справа
+      g.strokeStyle = '#3a2418'; g.lineCap = 'round';
+      const bx = G.port ? W * 0.56 : W * 0.4, by = U * 0.035;
+      g.lineWidth = Math.max(3, U * 0.016); g.beginPath(); g.moveTo(-U * 0.02, H * 0.065); g.quadraticCurveTo(bx * 0.45, -U * 0.01, bx, by); g.stroke();
+      const tips = [];
+      for (let k = 0; k < 6; k++) { const t = 0.2 + k * 0.15, x = -U * 0.02 + (bx + U * 0.02) * t, y = H * 0.065 * (1 - t) ** 2 + 2 * t * (1 - t) * -U * 0.01 + t * t * by, ex = x + U * (0.03 + 0.03 * rnd()), ey = y + (k % 2 ? 1 : -0.4) * U * 0.04;
+        g.lineWidth = Math.max(1.5, U * 0.006); g.beginPath(); g.moveTo(x, y); g.quadraticCurveTo(x + U * 0.01, (y + ey) / 2, ex, ey); g.stroke(); tips.push([ex, Math.max(U * 0.012, ey)]); }
+      tips.push([bx, by]);
+      { const x0 = W + U * 0.02, ex = W - U * 0.13, ey = U * 0.02; g.lineWidth = Math.max(2, U * 0.01); g.beginPath(); g.moveTo(x0, U * 0.005); g.quadraticCurveTo(W - U * 0.06, U * 0.03, ex, ey); g.stroke(); tips.push([ex, ey], [W - U * 0.07, U * 0.028]); }
+      g.lineCap = 'butt';
+      const MC = ['#c8281e', '#e04a1e', '#a8141e', '#f07a2a'];
+      for (const [x, y] of tips) for (let k = 0; k < 6; k++) { g.save(); g.translate(x + (rnd() - 0.5) * U * 0.05, y + (rnd() - 0.4) * U * 0.035); g.rotate(rnd() * 6.28); g.fillStyle = MC[(rnd() * 4) | 0]; xMaple(g, U * (0.016 + 0.008 * rnd())); g.restore(); }
+    },
+    anim(arr, ts, dt, U) {
+      const G = xZenGeo(U), S = G.shi;
+      // сиси-одоси: наполняется, опрокидывается в чашу и со стуком возвращается (цикл 8 с)
+      const q = (ts % 8) / 8; let a;
+      if (q < 0.82) a = 0.45 - 0.15 * (q / 0.82);
+      else if (q < 0.86) a = 0.3 - 0.72 * ((q - 0.82) / 0.04);
+      else if (q < 0.9) a = -0.42;
+      else if (q < 0.94) a = -0.42 + 0.94 * ((q - 0.9) / 0.04);
+      else a = 0.52 - 0.07 * ((q - 0.94) / 0.06);
+      const sp = xZenSpout(G);
+      ctx.strokeStyle = 'rgba(170,215,240,0.75)'; ctx.lineWidth = Math.max(1, U * 0.003);
+      { const oe = xZenOpen(G, a); ctx.beginPath(); ctx.moveTo(sp[0], sp[1]); ctx.quadraticCurveTo(sp[0] + U * 0.004, (sp[1] + oe[1]) / 2, oe[0] + U * 0.006, Math.max(sp[1] + 2, oe[1] - U * 0.004)); ctx.stroke(); }
+      xZenShishi(ctx, G, a);
+      if (q > 0.84 && q < 0.93) { const oe = xZenOpen(G, -0.42), p = (q - 0.84) / 0.09; ctx.fillStyle = 'rgba(190,225,245,0.85)';
+        for (let k = 0; k < 6; k++) { const pk = (p + k * 0.13) % 1; ctx.beginPath(); ctx.arc(oe[0] - U * 0.01 * k * 0.3, oe[1] + pk * U * 0.035, Math.max(0.8, U * 0.003), 0, Math.PI * 2); ctx.fill(); } }
+      { const b = G.basin, p = ((ts - 6.9 + 80) % 8) / 2.2; if (p < 1) { ctx.strokeStyle = `rgba(230,245,255,${(0.7 * (1 - p)).toFixed(3)})`; ctx.lineWidth = 1; ctx.beginPath(); ctx.ellipse(b.x, b.y - b.r * 0.32, b.r * 0.75 * p + 0.5, b.r * 0.2 * p + 0.3, 0, 0, Math.PI * 2); ctx.stroke(); } }
+      // фонарь: тёплый свет в окошке
+      { const L = G.lan, x = L.x, y = L.y - L.h * 0.69, f = 0.8 + 0.15 * Math.sin(ts * 7) + 0.05 * Math.sin(ts * 23), r = L.h * 0.5 * f;
+        ctx.globalCompositeOperation = 'lighter';
+        const lg = ctx.createRadialGradient(x, y, 0, x, y, r); lg.addColorStop(0, `rgba(255,190,90,${(0.55 * f).toFixed(3)})`); lg.addColorStop(1, 'rgba(255,160,60,0)'); ctx.fillStyle = lg; ctx.fillRect(x - r, y - r, r * 2, r * 2);
+        ctx.globalCompositeOperation = 'source-over'; }
+      // кленовые листья кружат и падают (0..15)
+      const MC = ['#c8281e', '#e04a1e', '#a8141e', '#f07a2a'];
+      for (let i = 0; i < 16; i++) { const d = arr[i]; d.y += dt * 0.03 * d.sp; d.r += dt * (d.s - 0.5) * 2.5; if (d.y > 1.05) { d.y = -0.05; d.x = Math.random(); }
+        ctx.save(); ctx.translate(d.x * W + Math.sin(ts * 0.8 * d.sp + d.ph) * U * 0.06, d.y * H); ctx.rotate(d.r); ctx.scale(1, 0.4 + 0.6 * Math.abs(Math.sin(ts * 1.5 * d.sp + d.ph)));
+        ctx.globalAlpha = 0.9; ctx.fillStyle = MC[i % 4]; xMaple(ctx, U * (0.012 + 0.008 * d.s)); ctx.restore(); }
+      ctx.globalAlpha = 1;
+      // стрекоза раз в 15 с пролетает над оградой
+      { const q2 = (ts % 15) / 15; if (q2 < 0.25) { const p = q2 / 0.25, x = W + U * 0.05 - p * (W + U * 0.1), y = (G.port ? H * 0.035 : G.sy - U * 0.16) + Math.sin(p * 9) * U * 0.02 + (Math.sin(p * 31) > 0.8 ? U * 0.01 : 0), s = U * 0.032;
+          ctx.fillStyle = 'rgba(220,240,255,0.55)'; const fl = 0.6 + 0.4 * Math.abs(Math.sin(ts * 30));
+          for (const sd of [-1, 1]) for (const o of [-0.15, 0.2]) { ctx.beginPath(); ctx.ellipse(x + o * s, y + sd * s * 0.35 * fl, s * 0.12, s * 0.4 * fl, sd * 0.25, 0, Math.PI * 2); ctx.fill(); }
+          ctx.fillStyle = '#2a6a7a'; ctx.fillRect(x - s * 0.1, y - s * 0.06, s * 0.9, s * 0.12); ctx.beginPath(); ctx.arc(x - s * 0.12, y, s * 0.12, 0, Math.PI * 2); ctx.fill(); } }
+    },
+  },
 };
+
+/* ---- Помощники тем «Змейки» (19.10.2026) ---- */
+// левый край кнопок-стрелок: свободные нижние углы — x < pl и x > W - pl
+function xSnakePadL() { return Math.max(W * 0.12, W / 2 - snakePad().s * 1.95); }
+function xJungleGeo(U) {
+  const port = W < H;
+  return { port, pl: xSnakePadL(), fy: H * 0.955, beams: [[0.28, 0.07], [0.52, 0.04], [0.72, 0.09]],
+    trunks: port ? [[-U * 0.03, U * 0.085], [W - U * 0.06, U * 0.09]] : [[-U * 0.02, U * 0.1], [W * 0.17, U * 0.06], [W * 0.8, U * 0.06], [W - U * 0.08, U * 0.1]],
+    lianas: (port ? [[0.035, 0.42], [0.1, 0.2], [0.9, 0.24], [0.965, 0.46]] : [[0.04, 0.5], [0.12, 0.3], [0.26, 0.42], [0.74, 0.36], [0.88, 0.28], [0.96, 0.55]]).map(([x, y]) => [W * x, H * y]) };
+}
+// тропический лист от (x, y) под углом ang: черешок в начале, средняя жилка и боковые
+function xJLeaf(g, x, y, len, ang, col, wd = 0.34) {
+  g.save(); g.translate(x, y); g.rotate(ang);
+  const w = len * wd, lg = g.createLinearGradient(0, -w * 0.6, 0, w * 0.6); lg.addColorStop(0, mixHex(col, '#ffffff', 0.14)); lg.addColorStop(1, mixHex(col, '#000000', 0.34));
+  g.fillStyle = lg; g.beginPath(); g.moveTo(0, 0); g.bezierCurveTo(len * 0.25, -w, len * 0.75, -w * 0.8, len, 0); g.bezierCurveTo(len * 0.75, w * 0.8, len * 0.25, w, 0, 0); g.fill();
+  g.globalAlpha = 0.5; g.strokeStyle = mixHex(col, '#ffffff', 0.3); g.lineWidth = Math.max(0.8, len * 0.018);
+  g.beginPath(); g.moveTo(0, 0); g.lineTo(len * 0.95, 0); g.stroke();
+  g.lineWidth = Math.max(0.5, len * 0.008); g.beginPath();
+  for (let i = 1; i < 8; i++) { const t = i / 8, hw = w * 0.62 * Math.sin(t * Math.PI); g.moveTo(t * len, 0); g.lineTo(t * len + len * 0.07, -hw); g.moveTo(t * len, 0); g.lineTo(t * len + len * 0.07, hw); }
+  g.stroke(); g.globalAlpha = 1; g.restore();
+}
+// цветок гибискуса: пять лепестков, тёмный зев и тычинка
+function xJFlower(g, x, y, r, col) {
+  g.fillStyle = col;
+  for (let k = 0; k < 5; k++) { const a = k * Math.PI * 0.4 - Math.PI / 2; g.beginPath(); g.ellipse(x + Math.cos(a) * r * 0.55, y + Math.sin(a) * r * 0.55, r * 0.55, r * 0.38, a, 0, Math.PI * 2); g.fill(); }
+  g.fillStyle = mixHex(col, '#000000', 0.35); g.beginPath(); g.arc(x, y, r * 0.25, 0, Math.PI * 2); g.fill();
+  g.strokeStyle = '#ffe25a'; g.lineWidth = Math.max(1, r * 0.1); g.beginPath(); g.moveTo(x, y); g.lineTo(x + r * 0.7, y - r * 0.5); g.stroke();
+  g.fillStyle = '#ffe25a'; g.beginPath(); g.arc(x + r * 0.7, y - r * 0.5, Math.max(0.8, r * 0.12), 0, Math.PI * 2); g.fill();
+}
+function xJButterfly(x, y, s, f, col) {
+  for (const [c, k] of [['#141a3a', 1], [col, 0.78]]) { ctx.fillStyle = c;
+    for (const sd of [-1, 1]) { ctx.beginPath(); ctx.ellipse(x + sd * s * 0.5 * f, y - s * 0.15, s * 0.55 * f * k + 0.4, s * 0.5 * k, sd * 0.3, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(x + sd * s * 0.35 * f, y + s * 0.3, s * 0.32 * f * k + 0.3, s * 0.3 * k, -sd * 0.4, 0, Math.PI * 2); ctx.fill(); } }
+  ctx.fillStyle = '#141414'; ctx.fillRect(x - s * 0.06, y - s * 0.45, s * 0.12, s * 0.85);
+}
+function xJParrot(x, y, s, fl) {
+  ctx.save(); ctx.translate(x, y);
+  ctx.fillStyle = '#2a6ad8'; ctx.beginPath(); ctx.moveTo(-s * 0.4, -s * 0.05); ctx.lineTo(-s * 1.8, s * 0.22); ctx.lineTo(-s * 1.7, s * 0.4); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#e8302a'; ctx.beginPath(); ctx.moveTo(-s * 0.4, 0); ctx.lineTo(-s * 1.5, s * 0.12); ctx.lineTo(-s * 1.45, s * 0.24); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(0, 0, s * 0.62, s * 0.28, -0.1, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(s * 0.55, -s * 0.13, s * 0.23, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#f4ead4'; ctx.beginPath(); ctx.arc(s * 0.6, -s * 0.15, s * 0.1, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#111'; ctx.beginPath(); ctx.arc(s * 0.62, -s * 0.16, s * 0.045, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#2a2a2a'; ctx.beginPath(); ctx.moveTo(s * 0.72, -s * 0.22); ctx.quadraticCurveTo(s * 1.0, -s * 0.12, s * 0.8, s * 0.05); ctx.lineTo(s * 0.74, -s * 0.04); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#ffd23a'; ctx.beginPath(); ctx.moveTo(-s * 0.25, -s * 0.06); ctx.quadraticCurveTo(s * 0.05, -s * 1.0 * fl, s * 0.35, -s * 0.06); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#2a6ad8'; ctx.beginPath(); ctx.moveTo(-s * 0.3, -s * 0.06); ctx.quadraticCurveTo(-s * 0.15, -s * 1.25 * fl, s * 0.12, -s * 0.06); ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+// «Ретро»: путь по ЖК-полоске вдоль края корпуса
+function xRetroGeo(U) {
+  const px = Math.max(3, Math.round(U * 0.011)), m = Math.round(Math.max(px * 1.6, Math.min(U * 0.03, (boardX - framePad) * 0.42)));
+  const x0 = m, y0 = m, x1 = W - m, y1 = H - m, w = x1 - x0, h = y1 - y0, L = 2 * (w + h);
+  const at = d => { d = ((d % L) + L) % L; if (d < w) return [x0 + d, y0]; d -= w; if (d < h) return [x1, y0 + d]; d -= h; if (d < w) return [x1 - d, y1]; d -= w; return [x0, y1 - d]; };
+  return { px, m, x0, y0, x1, y1, L, at, ey: y0 + U * 0.045, pl: xSnakePadL() };
+}
+// пиксельная змейка на ЖК-полоске и «яблоки», которые она съедает (появляются снова через треть круга)
+function xRetroSnake(g, G, head) {
+  const px = G.px;
+  g.fillStyle = '#1c2810';
+  for (const f of [0.11, 0.36, 0.61, 0.86]) { const a = f * G.L, dd = ((head - a) % G.L + G.L) % G.L; if (dd < G.L * 0.33) continue;
+    const [x, y] = G.at(a); g.fillRect(x - px / 2, y - px / 2, px, px); g.fillStyle = '#a3b86c'; g.fillRect(x - px / 2 + 1, y - px / 2 + 1, Math.max(1, px - 2), Math.max(1, px - 2)); g.fillStyle = '#1c2810'; g.fillRect(x - 0.5, y - 0.5, 1, 1); }
+  for (let k = 0; k < 11; k++) { const [x, y] = G.at(head - k * px); g.fillRect(x - px / 2 + 0.5, y - px / 2 + 0.5, px - 1, px - 1); }
+}
+// значки сети (bars из 4) и батареи (seg из 3)
+function xRetroIcons(g, G, U, bars, seg) {
+  // в портрете — по бокам от динамика (не под рекордом и шестерёнкой), в ландшафте — в углах корпуса
+  const port = W < H, lit = '#c8dc7a', dim = 'rgba(200,220,140,0.3)', bx = port ? W / 2 - U * 0.19 : G.x0 + U * 0.05, base = G.ey + U * 0.012;
+  for (let k = 0; k < 4; k++) { const h = U * (0.008 + k * 0.006), x = bx + k * U * 0.013, w = U * 0.008;
+    if (k < bars) { g.fillStyle = lit; g.fillRect(x, base - h, w, h); } else { g.strokeStyle = dim; g.lineWidth = 1; g.strokeRect(x + 0.5, base - h + 0.5, w - 1, h - 1); } }
+  const w = U * 0.06, h = U * 0.026, x = port ? W / 2 + U * 0.155 : G.x1 - U * 0.05 - w, y = base - h;
+  g.strokeStyle = lit; g.lineWidth = Math.max(1, U * 0.003); g.strokeRect(x, y, w, h); g.fillStyle = lit; g.fillRect(x + w, y + h * 0.3, U * 0.006, h * 0.4);
+  for (let k = 0; k < seg; k++) g.fillRect(x + U * 0.005 + k * (w - U * 0.01) / 3, y + U * 0.005, (w - U * 0.01) / 3 - U * 0.003, h - U * 0.01);
+}
+// клавиши «телефона» справа в ландшафте: [x, y, w, h, подпись]
+function xRetroKeys(U) {
+  const kw = Math.min(U * 0.09, W * 0.05), kh = kw * 0.72, cx = W * 0.87, cy = H * 0.52, lab = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '*', '0', '#'];
+  return lab.map((s, i) => [cx + (i % 3 - 1) * kw * 1.25, cy + (Math.floor(i / 3) - 1.5) * kh * 1.4, kw, kh, s]);
+}
+// «Террариум»
+function xTerraGeo(U) {
+  const port = W < H, pl = xSnakePadL();
+  return { port, pl, sy: H * 0.94, fw: Math.max(3, U * 0.016), lamp: { x: W / 2, y: H * 0.032, r: U * 0.065 },
+    dish: { x: W - pl * 0.5, y: H * 0.972, rx: Math.min(U * 0.07, pl * 0.42) } };
+}
+function xTHeart(g, x, y, r, rot) {
+  g.save(); g.translate(x, y); g.rotate(rot);
+  g.beginPath(); g.moveTo(0, -r * 0.55); g.bezierCurveTo(r * 0.9, -r * 1.05, r * 0.95, r * 0.25, 0, r); g.bezierCurveTo(-r * 0.95, r * 0.25, -r * 0.9, -r * 1.05, 0, -r * 0.55); g.fill();
+  g.strokeStyle = 'rgba(20,50,10,0.45)'; g.lineWidth = 1; g.beginPath(); g.moveTo(0, -r * 0.5); g.lineTo(0, r * 0.85); g.stroke();
+  g.restore();
+}
+function xTStone(g, x, y, r, col) {
+  g.fillStyle = 'rgba(0,0,0,0.35)'; g.beginPath(); g.ellipse(x, y + r * 0.12, r * 1.05, r * 0.3, 0, 0, Math.PI * 2); g.fill();
+  const sg = g.createRadialGradient(x - r * 0.35, y - r * 0.55, r * 0.1, x, y - r * 0.2, r * 1.1); sg.addColorStop(0, mixHex(col, '#ffffff', 0.35)); sg.addColorStop(1, mixHex(col, '#000000', 0.45));
+  g.fillStyle = sg; g.beginPath(); g.moveTo(x - r, y + r * 0.1); g.quadraticCurveTo(x - r * 0.95, y - r * 0.85, x - r * 0.05, y - r * 0.9); g.quadraticCurveTo(x + r * 0.95, y - r * 0.8, x + r, y + r * 0.1); g.closePath(); g.fill();
+  g.fillStyle = '#5a9a34'; g.beginPath(); g.ellipse(x - r * 0.15, y - r * 0.72, r * 0.5, r * 0.17, -0.1, 0, Math.PI * 2); g.fill();
+  g.fillStyle = '#86c24a'; g.beginPath(); g.ellipse(x - r * 0.25, y - r * 0.78, r * 0.22, r * 0.07, -0.1, 0, Math.PI * 2); g.fill();
+}
+function xTCricket(x, y, s, hop) {
+  ctx.fillStyle = '#86c23a'; ctx.strokeStyle = '#5a9a26'; ctx.lineWidth = Math.max(1, s * 0.15); ctx.lineCap = 'round';   // зелёный кузнечик: на тёмном грунте виден
+  ctx.beginPath(); ctx.ellipse(x, y, s, s * 0.42, 0.1, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(x - s * 0.95, y - s * 0.1, s * 0.36, 0, Math.PI * 2); ctx.fill();
+  const lg = hop < 0.5 ? 1.2 : 0.4;   // в прыжке задние лапы вытянуты
+  ctx.beginPath(); ctx.moveTo(x + s * 0.3, y); ctx.lineTo(x + s * 0.9, y - s * 0.7 * lg); ctx.lineTo(x + s * 1.5, y + s * 0.4); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x - s * 0.4, y + s * 0.2); ctx.lineTo(x - s * 0.6, y + s * 0.6); ctx.moveTo(x, y + s * 0.2); ctx.lineTo(x + s * 0.1, y + s * 0.6); ctx.stroke();
+  ctx.lineWidth = Math.max(0.7, s * 0.06); ctx.beginPath(); ctx.moveTo(x - s * 1.2, y - s * 0.3); ctx.quadraticCurveTo(x - s * 1.2, y - s * 1.4, x + s * 0.6, y - s * 1.3); ctx.stroke();
+  ctx.lineCap = 'butt';
+}
+// «Неоновая трасса»: горизонт в портрете — сразу под полем, низ экрана — пол с сеткой
+function xNeonGeo(U) {
+  const port = W < H;
+  const gy = Math.max(U * 0.03, 8), gh = Math.max(U * 0.028, 8);
+  return { port, hz: port ? Math.round(Math.min(H * 0.8, trayY + framePad)) : Math.round(H * 0.6), vx: W / 2, rw: W * (port ? 0.42 : 0.3),
+    moon: port ? null : { x: W * 0.86, y: H * 0.2, r: U * 0.04 },
+    gant: { y: gy, h: gh, x0: U * 0.02, x1: W - U * 0.02, n: Math.max(8, Math.round((W - U * 0.04) / (U * 0.045))) } };
+}
+// стартовая арка над трассой: ферма с лампами и шашечками по центру, опоры по краям экрана
+function xNeonGantry(g, G, U) {
+  const A = G.gant, y = A.y, h = A.h, step = (A.x1 - A.x0) / A.n;
+  g.fillStyle = 'rgba(10,4,26,0.85)'; g.fillRect(A.x0, y, A.x1 - A.x0, h);
+  g.fillRect(A.x0 - U * 0.006, y, U * 0.012, G.hz - y); g.fillRect(A.x1 - U * 0.006, y, U * 0.012, G.hz - y);
+  g.save(); g.shadowColor = '#ff4af0'; g.shadowBlur = U * 0.015; g.strokeStyle = '#ff7af4'; g.lineWidth = Math.max(1, U * 0.004);
+  g.beginPath(); g.moveTo(A.x0, y); g.lineTo(A.x1, y); g.moveTo(A.x0, y + h); g.lineTo(A.x1, y + h);
+  g.moveTo(A.x0, y); g.lineTo(A.x0, G.hz); g.moveTo(A.x1, y); g.lineTo(A.x1, G.hz); g.stroke(); g.restore();
+  g.strokeStyle = 'rgba(255,122,244,0.35)'; g.lineWidth = 1; g.beginPath();
+  for (let i = 0; i < A.n; i++) { const x = A.x0 + i * step; g.moveTo(x, y); g.lineTo(x + step, y + h); g.moveTo(x + step, y); g.lineTo(x, y + h); }
+  g.stroke();
+  const cw = h * 0.5, cx0 = G.vx - cw * 3;   // шашечки «финиша»
+  for (let i = 0; i < 6; i++) for (let j = 0; j < 2; j++) { g.fillStyle = (i + j) % 2 ? '#f4f0ff' : '#140a2a'; g.fillRect(cx0 + i * cw, y + j * cw, cw, cw); }
+  g.strokeStyle = '#7af6ff'; g.lineWidth = 1; g.strokeRect(cx0, y, cw * 6, h);
+}
+function xNeonLamps(G, U) {
+  const rx = t => G.rw * (0.03 + 0.97 * t), out = [];
+  for (const t of G.port ? [0.8] : [0.12, 0.38, 0.8]) for (const sd of [-1, 1]) out.push([G.vx + sd * (rx(t) + U * 0.035 * (0.3 + t)), G.hz + (H - G.hz) * t, U * (0.04 + 0.16 * t), sd, t]);
+  return out;
+}
+// разметка по центру трассы (ts — сдвиг: разметка бежит навстречу)
+function xNeonDashes(g, G, ts) {
+  const rx = t => G.rw * (0.03 + 0.97 * t), hz = G.hz;
+  g.fillStyle = 'rgba(255,236,170,0.85)';
+  for (let k = 0; k < 7; k++) { const u0 = ((k + ts * 0.9) % 7) / 7, u1 = Math.min(1, u0 + 0.06), t0 = u0 * u0, t1 = u1 * u1, y0 = hz + (H - hz) * t0, y1 = hz + (H - hz) * t1, w0 = rx(t0) * 0.025, w1 = rx(t1) * 0.025;
+    g.beginPath(); g.moveTo(G.vx - w0, y0); g.lineTo(G.vx + w0, y0); g.lineTo(G.vx + w1, y1); g.lineTo(G.vx - w1, y1); g.closePath(); g.fill(); }
+}
+// «Сад камней»: в портрете песок начинается сразу под полем, в ландшафте — ниже середины
+function xZenGeo(U) {
+  const port = W < H, pl = xSnakePadL(), sy = port ? Math.round(trayY + trayH * 0.1) : Math.round(H * 0.62), ly = H * 0.955;
+  const L = Math.min(U * 0.13, pl * 0.95);
+  return { port, pl, sy,
+    lan: { x: W - pl * 0.5, y: ly, h: Math.min(U * 0.26, (ly - sy) * 0.95) },
+    shi: { x: pl * 0.58, y: H * 0.925, L }, basin: { x: Math.max(U * 0.04, pl * 0.58 - L * 0.55), y: H * 0.968, r: Math.min(U * 0.04, pl * 0.3) },
+    rocks: port ? [[W * 0.5, H * 0.99, U * 0.05, 0.4], [W * 0.63, H * 0.993, U * 0.028, 0.4]] : [[W * 0.1, H * 0.78, U * 0.08, 0.5], [W * 0.21, H * 0.83, U * 0.04, 0.5], [W * 0.93, H * 0.74, U * 0.055, 0.5]] };
+}
+function xZenRock(g, x, y, r) {
+  g.fillStyle = 'rgba(60,40,20,0.3)'; g.beginPath(); g.ellipse(x + r * 0.1, y + r * 0.08, r * 1.08, r * 0.3, 0, 0, Math.PI * 2); g.fill();
+  const rg = g.createRadialGradient(x - r * 0.3, y - r * 0.6, r * 0.1, x, y - r * 0.2, r * 1.1); rg.addColorStop(0, '#a49e92'); rg.addColorStop(1, '#3a3632');
+  g.fillStyle = rg; g.beginPath(); g.moveTo(x - r, y + r * 0.05); g.quadraticCurveTo(x - r * 0.85, y - r * 0.9, x - r * 0.05, y - r * 0.95); g.quadraticCurveTo(x + r * 0.75, y - r * 0.85, x + r, y + r * 0.05); g.closePath(); g.fill();
+  g.fillStyle = '#6a8a3a'; g.beginPath(); g.ellipse(x - r * 0.2, y - r * 0.8, r * 0.45, r * 0.14, -0.08, 0, Math.PI * 2); g.fill();
+}
+// точка, откуда течёт вода (конец бамбуковой трубки у левого края)
+function xZenSpout(G) { const o = xZenOpen(G, 0.45); return [o[0] + G.shi.L * 0.08, o[1] - G.shi.L * 0.35]; }
+// открытый конец качающейся трубки при наклоне a (a > 0 — конец поднят)
+function xZenOpen(G, a) { const S = G.shi; return [S.x - Math.cos(a) * S.L * 0.62, S.y - Math.sin(a) * S.L * 0.62]; }
+function xZenBasin(g, G, U) {
+  const S = G.shi, b = G.basin, sp = xZenSpout(G), pw = Math.max(2, S.L * 0.09);
+  // стойки качалки и камень, о который она стучит
+  g.strokeStyle = '#6e5a2e'; g.lineWidth = Math.max(2, S.L * 0.07);
+  for (const o of [-0.04, 0.04]) { g.beginPath(); g.moveTo(S.x + o * S.L, S.y - S.L * 0.06); g.lineTo(S.x + o * S.L, H * 0.975); g.stroke(); }
+  xZenRock(g, S.x + Math.cos(0.5) * S.L * 0.38 + S.L * 0.05, S.y + Math.sin(0.5) * S.L * 0.38 + S.L * 0.12, S.L * 0.12);
+  // каменная чаша с водой
+  const sg = g.createLinearGradient(0, b.y - b.r * 0.6, 0, b.y + b.r * 0.3); sg.addColorStop(0, '#9a948a'); sg.addColorStop(1, '#4a463e');
+  g.fillStyle = sg; g.beginPath(); g.ellipse(b.x, b.y - b.r * 0.15, b.r, b.r * 0.55, 0, 0, Math.PI * 2); g.fill();
+  g.fillStyle = '#2a4a5a'; g.beginPath(); g.ellipse(b.x, b.y - b.r * 0.32, b.r * 0.75, b.r * 0.24, 0, 0, Math.PI * 2); g.fill();
+  g.fillStyle = 'rgba(255,255,255,0.35)'; g.beginPath(); g.ellipse(b.x - b.r * 0.3, b.y - b.r * 0.38, b.r * 0.2, b.r * 0.05, 0, 0, Math.PI * 2); g.fill();
+  // бамбуковая стойка с желобом-трубкой, из которой течёт вода
+  const px = Math.max(pw, sp[0] - S.L * 0.45), py = sp[1] - pw * 0.3;
+  g.strokeStyle = '#7a6a2e'; g.lineWidth = pw * 1.3; g.beginPath(); g.moveTo(px, H * 0.975); g.lineTo(px, py - pw); g.stroke();
+  g.fillStyle = 'rgba(60,40,10,0.5)'; g.fillRect(px - pw * 0.65, py + (H * 0.975 - py) * 0.45, pw * 1.3, Math.max(1, pw * 0.25));
+  g.strokeStyle = '#8a7a3a'; g.lineWidth = pw; g.lineCap = 'round'; g.beginPath(); g.moveTo(px, py); g.lineTo(sp[0], py); g.stroke();
+  g.strokeStyle = 'rgba(255,240,180,0.45)'; g.lineWidth = Math.max(1, pw * 0.3); g.beginPath(); g.moveTo(px, py - pw * 0.25); g.lineTo(sp[0] - pw * 0.3, py - pw * 0.25); g.stroke();
+  g.lineCap = 'butt';
+}
+// качающаяся бамбуковая трубка (рисуется в g; a — наклон)
+function xZenShishi(g, G, a) {
+  const S = G.shi, w = Math.max(3, S.L * 0.16);
+  g.save(); g.translate(S.x, S.y); g.rotate(a);
+  const bg = g.createLinearGradient(0, -w / 2, 0, w / 2); bg.addColorStop(0, '#d8c070'); bg.addColorStop(0.5, '#a8903a'); bg.addColorStop(1, '#6e5a20');
+  g.fillStyle = bg; rrPath(g, -S.L * 0.62, -w / 2, S.L, w, w * 0.3); g.fill();
+  g.fillStyle = 'rgba(70,50,10,0.6)'; g.fillRect(-S.L * 0.1, -w / 2, Math.max(1, w * 0.15), w); g.fillRect(S.L * 0.3, -w / 2, Math.max(1, w * 0.15), w);
+  g.fillStyle = '#3a2a0a'; g.beginPath(); g.ellipse(-S.L * 0.62, 0, w * 0.18, w * 0.45, 0, 0, Math.PI * 2); g.fill();
+  g.fillStyle = '#4a3a1a'; g.beginPath(); g.arc(0, 0, Math.max(1, w * 0.18), 0, Math.PI * 2); g.fill();
+  g.restore();
+}
+// каменный фонарь: основание, столб, площадка, окошко, изогнутая крыша и навершие
+function xZenLantern(g, x, y, h) {
+  const w = h * 0.44, sg = () => { const gr = g.createLinearGradient(x - w * 0.6, 0, x + w * 0.6, 0); gr.addColorStop(0, '#5a564e'); gr.addColorStop(0.4, '#a8a296'); gr.addColorStop(1, '#4a463e'); return gr; };
+  g.fillStyle = 'rgba(60,40,20,0.3)'; g.beginPath(); g.ellipse(x, y, w * 0.7, w * 0.14, 0, 0, Math.PI * 2); g.fill();
+  g.fillStyle = sg(); rrPath(g, x - w * 0.42, y - h * 0.1, w * 0.84, h * 0.1, h * 0.02); g.fill();
+  g.fillRect(x - w * 0.14, y - h * 0.5, w * 0.28, h * 0.42);
+  rrPath(g, x - w * 0.46, y - h * 0.58, w * 0.92, h * 0.08, h * 0.02); g.fill();
+  g.fillRect(x - w * 0.3, y - h * 0.8, w * 0.6, h * 0.23);
+  g.fillStyle = '#ffc870'; g.fillRect(x - w * 0.14, y - h * 0.76, w * 0.28, h * 0.14);
+  g.strokeStyle = '#3a362e'; g.lineWidth = Math.max(1, w * 0.04); g.beginPath(); g.moveTo(x, y - h * 0.76); g.lineTo(x, y - h * 0.62); g.stroke();
+  g.fillStyle = sg(); g.beginPath(); g.moveTo(x - w * 0.55, y - h * 0.79); g.quadraticCurveTo(x - w * 0.64, y - h * 0.79, x - w * 0.7, y - h * 0.845);
+  g.quadraticCurveTo(x - w * 0.45, y - h * 0.845, x - w * 0.28, y - h * 0.9); g.lineTo(x, y - h * 0.96); g.lineTo(x + w * 0.28, y - h * 0.9);
+  g.quadraticCurveTo(x + w * 0.45, y - h * 0.845, x + w * 0.7, y - h * 0.845); g.quadraticCurveTo(x + w * 0.64, y - h * 0.79, x + w * 0.55, y - h * 0.79); g.closePath(); g.fill();
+  g.beginPath(); g.arc(x, y - h * 0.97, w * 0.09, 0, Math.PI * 2); g.fill();
+  g.fillStyle = 'rgba(90,130,50,0.6)'; g.beginPath(); g.ellipse(x - w * 0.2, y - h * 0.86, w * 0.18, w * 0.05, -0.3, 0, Math.PI * 2); g.fill();
+}
 
 // Слой деталей (19.10.2026): дополнения к сценам и анимации недавних тем; подключается обёрткой ниже, базовый код тем не менялся
 const XDETAIL = {
@@ -9010,6 +9722,42 @@ const TFX = {
       for (let k = 0, n = 4 + Math.min(4, lines * 2); k < n; k++) se.fm(midi(pentaNote(72, step + k, 98)), t + k * 0.06, 0.03, { ratio: 1, index: 0.8, dur: 0.9, bright: 0.1, send: 0.7, pan: k / n - 0.5 });
       se.noise(t + 0.1, 0.25, se.out(0.025, 0.2, se.sfx, 0), { type: 'highpass', f: 7000, q: 1 });
     }, psnd(se, t) { se.fm(midi(91), t, 0.015, { ratio: 1, index: 0.5, dur: 0.25, bright: 0.1, send: 0.5 }); } }),
+  // ---- 19.10.2026: темы «Змейки» (в змейке: psnd — на каждый съеденный блок, snd — на золотой) ----
+  jungledrum: xTfx({ mid: '200,255,150', text: { stroke: '#0b2410', glow: '#c8ff7a', fill: ['#ffffff', '#e0ffc8', '#7ad04a'] },
+    combo: [{ c1: '#e0ffc8', c2: '#2a6a2e', glow: '#c8ff7a' }, { c1: '#fff0a0', c2: '#d83a2a', glow: '#ffb02a' }],
+    cols: ['#5ab040', '#2f9a3a', '#c8e04a', '#ff5a3a', '#ffb02a'], kinds: ['petal', 'confetti'], g: 0.4,
+    snd(se, t, lines, step) {   // там-тамы и деревянная маримба
+      for (let k = 0; k < 3; k++) se.osc('sine', [110, 147, 98][k], t + k * 0.08, 0.25, se.out(0.12, 0.15), { to: [70, 90, 60][k], toT: 0.2, attack: 0.003 });
+      for (let k = 0, n = 3 + Math.min(3, lines); k < n; k++) se.fm(midi(pentaNote(67, step + k, 96)), t + 0.1 + k * 0.07, 0.04, { ratio: 4, index: 1.2, dur: 0.35, bright: 0.1, send: 0.3, pan: k / n - 0.5 });
+    }, psnd(se, t) { se.osc('sine', 190, t, 0.12, se.out(0.07, 0.1), { to: 110, toT: 0.1, attack: 0.002 }); } }),
+  beep: xTfx({ mid: '200,220,120', text: { stroke: '#1c2810', glow: '#c8dc7a', fill: ['#eef4d0', '#c8dc7a', '#8aa04a'] },
+    combo: [{ c1: '#c8dc7a', c2: '#1c2810', glow: '#c8dc7a' }, { c1: '#ffffff', c2: '#3a4a20', glow: '#e2ecb0' }],
+    cols: ['#1c2810', '#3a4a20', '#c8dc7a', '#eef4d0'], kinds: ['pixel'], g: 0.6,
+    snd(se, t, lines, step) {   // писк старого телефона: квадратная волна, ноты вверх
+      const b = 76 + (step % 5) * 2; [0, 4, 7, 12].slice(0, 2 + Math.min(2, lines)).forEach((n, i) => se.osc('square', midi(b + n), t + i * 0.06, 0.06, se.out(0.03, 0.02), { attack: 0.001 }));
+    }, psnd(se, t) { se.osc('square', 1760, t, 0.03, se.out(0.025), { attack: 0.001 }); } }),
+  terra: xTfx({ mid: '255,220,150', text: { stroke: '#1c220c', glow: '#ffcf7a', fill: ['#ffffff', '#f2f0c8', '#a8c860'] },
+    combo: [{ c1: '#f2f0c8', c2: '#4e5a26', glow: '#ffcf7a' }, { c1: '#ffffff', c2: '#3a8ab0', glow: '#a0e0ff' }],
+    cols: ['#8a6a46', '#5a9a34', '#a8a294', '#86c24a', '#6ac0e0'], kinds: ['confetti', 'bubble'], g: 0.55,
+    snd(se, t, lines, step) {   // перестук камешков и «плюх» капли
+      for (let k = 0, n = 4 + Math.min(3, lines); k < n; k++) se.noise(t + k * 0.05 + Math.random() * 0.02, 0.03, se.out(0.05, 0.1, se.sfx, Math.random() - 0.5), { type: 'bandpass', f: 1800 + Math.random() * 1500, q: 6 });
+      se.osc('sine', 600 + (step % 8) * 40, t + 0.12, 0.08, se.out(0.04, 0.3), { to: 1400 + (step % 8) * 60, toT: 0.06, attack: 0.003 });
+    }, psnd(se, t) { se.noise(t, 0.03, se.out(0.04, 0.05), { type: 'bandpass', f: 2200, q: 5 }); } }),
+  neonrace: xTfx({ mid: '255,120,240', text: { stroke: '#1c0634', glow: '#ff4af0', fill: ['#ffffff', '#ffd0ff', '#7af6ff'] },
+    combo: [{ c1: '#ffd0ff', c2: '#6a18a8', glow: '#ff4af0' }, { c1: '#ffffff', c2: '#0a6a8a', glow: '#7af6ff' }],
+    cols: ['#ff4af0', '#7af6ff', '#ffe25a', '#ffffff', '#b03af0'], kinds: ['spark'], g: 0.1,
+    snd(se, t, lines, step) {   // синт-арпеджио пилой и «вжух» проезжающей машины
+      chordOn(64 + 12 * Math.min(1, Math.floor(step / 7)), COMBO_CHORDS[step % 7], lines >= 2 ? 1 : 0).forEach((n, i) => se.osc('sawtooth', midi(n), t + i * 0.045, 0.14, se.out(0.025, 0.4), { attack: 0.004 }));
+      se.noise(t, 0.4, se.out(0.04, 0.2), { type: 'bandpass', f: 400, to: 3000, q: 1.5, attack: 0.15 });
+    }, psnd(se, t) { se.osc('sawtooth', 880, t, 0.05, se.out(0.02, 0.2), { to: 1320, toT: 0.04, attack: 0.002 }); } }),
+  zenbell: xTfx({ mid: '255,235,210', text: { stroke: '#3a160a', glow: '#fff0d0', fill: ['#ffffff', '#ffe8d8', '#e07a4a'] },
+    combo: [{ c1: '#ffe8d8', c2: '#8a3a22', glow: '#fff0d0' }, { c1: '#ffffff', c2: '#4a6a3a', glow: '#e0f0c0' }],
+    cols: ['#c8281e', '#e04a1e', '#f07a2a', '#ffd0a0', '#a8141e'], kinds: ['petal'], g: 0.12,
+    snd(se, t, lines, step) {   // стук бамбука и поющая чаша
+      se.fm(midi(84), t, 0.06, { ratio: 1.5, index: 3, dur: 0.12, bright: 0.3, send: 0.3 });
+      se.fm(midi(pentaNote(62, step, 84)), t + 0.06, 0.04, { ratio: 2.76, index: 0.4, dur: 2.2, bright: 0.04, send: 0.8 });
+      if (lines >= 2) se.fm(midi(pentaNote(69, step + 2, 90)), t + 0.25, 0.03, { ratio: 2.76, index: 0.4, dur: 1.8, bright: 0.04, send: 0.8 });
+    }, psnd(se, t) { se.fm(midi(91), t, 0.03, { ratio: 1.5, index: 2, dur: 0.06, bright: 0.2, send: 0.2 }); } }),
 };
 
 // Фабрика эффектов новых тем: частицы цветов cols видов kinds, вспышка линии и кольца — общие; звук задаёт тема
@@ -10127,6 +10875,7 @@ function updateSnap() {
 
 window.addEventListener('pointerdown', () => { ensureAudio(); resetIdle(); }, true);
 cv.addEventListener('pointerdown', e => {
+  if (mode === 'snake') { snakePointerDown(e); return; }
   if (mode === 'sand') { sandPointerDown(e); return; }
   if (paused || state !== 'play' || drag) return;
   const i = slotAt(e.clientX, e.clientY);
@@ -10145,6 +10894,7 @@ cv.addEventListener('pointerdown', e => {
   cv.style.cursor = 'grabbing';
 });
 cv.addEventListener('pointermove', e => {
+  if (mode === 'snake') { snakePointerMove(e); return; }
   if (drag && e.pointerId === drag.id) {
     drag.px = e.clientX; drag.py = e.clientY;
     if (!drag.moved && Math.hypot(drag.px - drag.sx, drag.py - drag.sy) > cell * 0.3) drag.moved = true;
@@ -10155,6 +10905,7 @@ cv.addEventListener('pointermove', e => {
   }
 });
 function endDrag(e, cancel) {
+  if (mode === 'snake') { snakeSwipe = null; return; }
   if (mode === 'sand') { sandEndDrag(e, cancel); return; }
   if (!drag || e.pointerId !== drag.id) return;
   const d = drag; drag = null;
@@ -10399,7 +11150,7 @@ function frame(now) {
   }
 
   // Подсказка, если игрок задумался (только в классике)
-  if (mode !== 'sand' && mode !== 'puzzle' && settings.hints && state === 'play' && !paused && !drag && !hint && settingsOv.hidden) {
+  if (mode !== 'sand' && mode !== 'puzzle' && mode !== 'snake' && settings.hints && state === 'play' && !paused && !drag && !hint && settingsOv.hidden) {
     const delay = best === 0 && score < 60 ? HINT_DELAY_FIRST : HINT_DELAY;
     if (now - idleT > delay && hand.every(h => !h || now > h.t0 + 400)) {
       hint = computeHint();
@@ -10414,6 +11165,7 @@ function frame(now) {
   if (bgDirty || tp < 1 || bgTrans) { drawBackground(now); bgTrans = tp < 1; bgDirty = false; }
 
   if (mode === 'sand') sandUpdate(now);
+  if (mode === 'snake') snakeUpdate(now);
 
   // Лёгкий режим: если на экране ничего не движется — кадр не перерисовываем
   if (!isActive(now) && now - lastDraw < 250) return;
@@ -10431,6 +11183,7 @@ function frame(now) {
   }
 
   if (mode === 'sand') { sandDraw(now, dt); return; }
+  if (mode === 'snake') { snakeDraw(now, dt); return; }
 
   const [sx, sy] = shakeOffset(now);
   ctx.save();
@@ -10483,6 +11236,7 @@ function drawBackground(now) {
 // Есть ли на экране что-то движущееся (в лёгком режиме неподвижные кадры пропускаем)
 function isActive(now) {
   if (!settings.lite) return true;     // анимированный фон рисуется постоянно
+  if (mode === 'snake' && (state === 'play' || now < overT0 + 2500)) return true;
   if (drag || hint || shake.amp || particles.length || sparkles.length || texts.length) return true;
   if (clearAnims.length || flashes.length || rings.length || placeAnims.size) return true;
   if (comboGlow > 0.02 || themeProgress(now) < 1) return true;
@@ -11983,11 +12737,353 @@ function sandDraw(now, dt) {
   drawTexts(now);
 }
 
+/* =====================================================================
+   Режим «Змейка»: поле 16×16 внутри обычной рамки. Змейка из блоков темы
+   собирает цветные блоки (каждый удлиняет хвост своим цветом), врезалась
+   в стену или в себя — конец игры. Управление: свайп, стрелки/WASD,
+   кнопки под полем. Скорость растёт с каждым блоком, иногда появляется
+   золотой блок (+50, исчезает через 7 с). Рекорд и партия — SNAKE_KEY,
+   очки идут в свою копилку wallet.snake.
+   ===================================================================== */
+const SNAKE_KEY = 'blockblast.snake.v1';
+const SN = 16, SNAKE_STEP0 = 170, SNAKE_STEP_MIN = 72, SNAKE_GOLD_MS = 7000;
+const snake = { body: [], prev: [], cols: [], dir: [1, 0], q: [], food: null, gold: null, grow: 0, el: 0, tPrev: 0,
+  step: SNAKE_STEP0, started: false, eaten: 0, eatT: -1e9 };
+let snakeSwipe = null, snakePress = -1, snakePressT = 0;
+function readSnakeStore() { try { return JSON.parse(localStorage.getItem(SNAKE_KEY) || 'null'); } catch (_) { return null; } }
+function snakeCell() { return board / SN; }
+function snakeFree(x, y) {
+  if (snake.body.some(p => p.x === x && p.y === y)) return false;
+  if (snake.food && snake.food.x === x && snake.food.y === y) return false;
+  if (snake.gold && snake.gold.x === x && snake.gold.y === y) return false;
+  return true;
+}
+function snakeSpot() {
+  const free = [];
+  for (let y = 0; y < SN; y++) for (let x = 0; x < SN; x++) if (snakeFree(x, y)) free.push({ x, y });
+  return free.length ? free[(Math.random() * free.length) | 0] : null;
+}
+function snakeSpawnFood() {
+  const p = snakeSpot();
+  snake.food = p && { x: p.x, y: p.y, c: (Math.random() * 7) | 0, t0: performance.now() };
+}
+function snakeReset() {
+  combo = 0; movesSinceClear = 0; hint = null; drag = null;
+  snakeSwipe = null; snakePress = -1;
+  snake.q = []; snake.el = 0; snake.tPrev = performance.now(); snake.started = false; snake.eatT = -1e9;
+}
+function snakeNewGame() {
+  epoch++;
+  snakeReset();
+  score = 0; banked = 0; displayScore = 0; scoreEl.textContent = '0';
+  newBestShown = false; startBest = best; gameLogged = false;
+  linesTotal = 0; maxCombo = 3;
+  state = 'play'; overT0 = 0;
+  reviveOv.hidden = true; overOv.hidden = true;
+  snake.body = [{ x: 6, y: 8 }, { x: 5, y: 8 }, { x: 4, y: 8 }];
+  snake.prev = snake.body.map(p => ({ ...p }));
+  snake.cols = [3, 3, 3];
+  snake.dir = [1, 0]; snake.grow = 0; snake.step = SNAKE_STEP0; snake.eaten = 0;
+  snake.food = null; snake.gold = null;
+  snakeSpawnFood();
+  if (engine) engine.duck(false);
+  updateHint(); save();
+}
+function snapSnake() {
+  return {
+    best,
+    game: state !== 'over' ? {
+      body: snake.body.map(p => [p.x, p.y]), cols: snake.cols.slice(), dir: snake.dir.slice(), grow: snake.grow,
+      food: snake.food && [snake.food.x, snake.food.y, snake.food.c], eaten: snake.eaten,
+      score, nbs: newBestShown, sb: startBest, lines: linesTotal, mc: maxCombo,
+    } : null,
+  };
+}
+// Загружает партию из снимка; испорченная партия — новая игра. Змейка ждёт первого движения игрока.
+function loadSnake(s) {
+  best = nonNeg(s && s.best);
+  const g = s && s.game;
+  const okCell = p => Array.isArray(p) && Number.isInteger(p[0]) && Number.isInteger(p[1]) && p[0] >= 0 && p[1] >= 0 && p[0] < SN && p[1] < SN;
+  const ok = g && Array.isArray(g.body) && g.body.length >= 2 && g.body.length <= SN * SN && g.body.every(okCell)
+    && g.body.every((p, i) => i === 0 || Math.abs(p[0] - g.body[i - 1][0]) + Math.abs(p[1] - g.body[i - 1][1]) === 1)
+    && new Set(g.body.map(p => p[0] + p[1] * SN)).size === g.body.length
+    && Array.isArray(g.dir) && Math.abs(g.dir[0]) + Math.abs(g.dir[1]) === 1 && Number.isInteger(g.dir[0]) && Number.isInteger(g.dir[1]);
+  if (!ok) { state = 'play'; snakeNewGame(); return; }
+  snakeReset();
+  snake.body = g.body.map(p => ({ x: p[0], y: p[1] }));
+  snake.prev = snake.body.map(p => ({ ...p }));
+  snake.cols = snake.body.map((_, i) => { const c = Array.isArray(g.cols) ? g.cols[i] : 3; return Number.isInteger(c) && c >= 0 && c < 7 ? c : 3; });
+  snake.dir = [g.dir[0], g.dir[1]];
+  // направление «в себя» (голова смотрит на шею) — разворачиваем по шее
+  const h = snake.body[0], n = snake.body[1];
+  if (h.x + snake.dir[0] === n.x && h.y + snake.dir[1] === n.y) snake.dir = [h.x - n.x, h.y - n.y];
+  snake.grow = Math.min(SN * SN, Math.max(0, Math.round(+g.grow) || 0));
+  snake.eaten = Math.max(0, Math.round(+g.eaten) || 0);
+  snake.step = Math.max(SNAKE_STEP_MIN, SNAKE_STEP0 - snake.eaten * 3);
+  snake.gold = null; snake.food = null;
+  if (okCell(g.food) && Number.isInteger(g.food[2]) && g.food[2] >= 0 && g.food[2] < 7 && snakeFree(g.food[0], g.food[1]))
+    snake.food = { x: g.food[0], y: g.food[1], c: g.food[2], t0: performance.now() };
+  else snakeSpawnFood();
+  score = nonNeg(g.score); displayScore = score; banked = score;
+  newBestShown = !!g.nbs; startBest = g.sb != null ? nonNeg(g.sb) : best;
+  linesTotal = nonNeg(g.lines); maxCombo = Math.max(snake.body.length, nonNeg(g.mc));
+  state = 'play'; overT0 = 0;
+  updateHint();
+}
+// Поворот: очередь из двух поворотов, чтобы быстрые свайпы не терялись; разворот на 180° запрещён
+function snakeTurn(dx, dy) {
+  if (mode !== 'snake' || state !== 'play' || snakeBlocked()) return;
+  const last = snake.q.length ? snake.q[snake.q.length - 1] : snake.dir;
+  if ((last[0] === dx && last[1] === dy) || (last[0] === -dx && last[1] === -dy)) {
+    if (!snake.started && !(last[0] === -dx && last[1] === -dy)) { snake.started = true; updateHint(); }
+    return;
+  }
+  if (snake.q.length < 2) snake.q.push([dx, dy]);
+  if (!snake.started) { snake.started = true; snake.el = 0; snake.tPrev = performance.now(); updateHint(); }
+  resetIdle();
+}
+function snakeBlocked() {
+  return paused || document.hidden || !settingsOv.hidden || !lbOv.hidden || !$('statsOv').hidden
+    || !$('dailyOv').hidden || !$('rewardOv').hidden || !overOv.hidden;
+}
+function snakeUpdate(now) {
+  const d = Math.min(100, Math.max(0, now - snake.tPrev));   // после паузы и скрытой вкладки — без рывка
+  snake.tPrev = now;
+  if (state !== 'play' || !snake.started || snakeBlocked()) { if (snake.gold) snake.gold.t0 += d; return; }   // на паузе таймер золотого блока стоит
+  if (snake.gold && now > snake.gold.t0 + SNAKE_GOLD_MS) snake.gold = null;
+  snake.el += d;
+  let guard = 3;
+  while (snake.el >= snake.step && guard-- > 0 && state === 'play') { snake.el -= snake.step; snakeStep(now); }
+  if (guard <= 0) snake.el = 0;
+}
+function snakeStep(now) {
+  if (snake.q.length) snake.dir = snake.q.shift();
+  const b = snake.body, h = b[0], nx = h.x + snake.dir[0], ny = h.y + snake.dir[1];
+  const tailMoves = snake.grow === 0;
+  const hitSelf = b.some((p, i) => p.x === nx && p.y === ny && !(tailMoves && i === b.length - 1));
+  if (nx < 0 || ny < 0 || nx >= SN || ny >= SN || hitSelf) { snakeDie(now); return; }
+  snake.prev = b.map(p => ({ ...p }));
+  b.unshift({ x: nx, y: ny });
+  if (snake.grow > 0) snake.grow--; else b.pop();
+  const f = snake.food, gd = snake.gold;
+  if (f && f.x === nx && f.y === ny) snakeEat(f.c, false, now);
+  else if (gd && gd.x === nx && gd.y === ny) snakeEat(2, true, now);
+}
+function snakeEat(c, gold, now) {
+  const cs = snakeCell(), h = snake.body[0];
+  const cx = boardX + (h.x + 0.5) * cs, cy = boardY + (h.y + 0.5) * cs;
+  snake.grow++; snake.cols.push(c);
+  snake.eaten++; snake.eatT = now;
+  linesTotal++;
+  const pts = gold ? 50 : 10 + Math.floor(snake.eaten / 10) * 5;
+  score += pts;
+  if (gold) snake.gold = null; else snakeSpawnFood();
+  snake.step = Math.max(SNAKE_STEP_MIN, SNAKE_STEP0 - snake.eaten * 3);
+  maxCombo = Math.max(maxCombo, snake.body.length + snake.grow);
+  if (!gold && !snake.gold && snake.eaten % 6 === 0) {
+    const p = snakeSpot();
+    if (p) snake.gold = { x: p.x, y: p.y, t0: now };
+  }
+  const col = COLORS[c].c;
+  for (let i = 0; i < (settings.lite ? 6 : 14); i++) {
+    const a = rand(0, Math.PI * 2), sp = rand(1.5, 4.5) * cs;
+    particles.push({ k: 'spark', x: cx, y: cy, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - cs, g: 0.3, drag: 0.93,
+      s: cs * rand(0.18, 0.32), c: Math.random() < 0.6 ? col : '#ffffff', life: 0, max: rand(350, 650), rot: 0, vr: 0 });
+  }
+  rings.push({ x: cx, y: cy, t0: now, dur: 420, r0: cs * 0.3, r1: cs * (gold ? 3.2 : 1.8), w: cs * 0.18, color: gold ? '#ffd23f' : col });
+  addText('+' + pts, cx, Math.max(boardY + cs, cy - cs), gold ? 'gold' : 'score', 0);
+  if (gold) { sfx('milestone'); vib(30); } else { sfx('clear', 1, Math.min(8, 1 + (snake.eaten / 5 | 0)), (h.x / SN - 0.5) * 1.2); vib(15); }
+  // эффект темы «Змейки»: её частицы, на каждый блок — короткий звук темы, на золотой — полный (у общих тем — как раньше)
+  const th = THEMES[themeIdx], tf = th && th.mode === 'snake' ? TFX[th.fx] : null;
+  if (tf) {
+    try { tf.clear(cx, cy, COLORS[c], settings.lite); } catch (_) {}
+    if (gold) sfx('fxClear', th.fx, 2, 1 + (snake.eaten / 5 | 0)); else sfx('fxPlace', th.fx);
+  }
+  bumpScore(); checkBest(); save();
+}
+function snakeDie(now) {
+  const cs = snakeCell(), h = snake.body[0];
+  shake.t0 = now; shake.amp = Math.min(cs * 0.5, 8);
+  rings.push({ x: boardX + (h.x + 0.5) * cs, y: boardY + (h.y + 0.5) * cs, t0: now, dur: 600, r0: cs * 0.3, r1: cs * 4, w: cs * 0.3, color: '#ff5a4a' });
+  sfx('bad'); vib(60);
+  snake.prev = snake.body.map(p => ({ ...p }));
+  noMovesMsg = 'Врезались!';
+  maxCombo = Math.max(maxCombo, snake.body.length);
+  triggerGameOver(false);
+  updateHint();
+}
+
+/* ---------- Управление змейкой ---------- */
+// Кнопки-стрелки в зоне лотка: 0 — вверх, 1 — вниз, 2 — влево, 3 — вправо
+const SNAKE_DIRS = [[0, -1], [0, 1], [-1, 0], [1, 0]];
+function snakePad() {
+  const s = Math.min(trayH * 0.38, 64, colW * 0.2), cx = W / 2, cy = trayY + trayH * 0.46;
+  return { s, btn: [[cx, cy - s * 0.56], [cx, cy + s * 0.56], [cx - s * 1.3, cy], [cx + s * 1.3, cy]] };
+}
+function snakePadAt(x, y) {
+  const p = snakePad();
+  for (let i = 0; i < 4; i++) if (Math.abs(x - p.btn[i][0]) < p.s * 0.62 && Math.abs(y - p.btn[i][1]) < p.s * 0.56) return i;
+  return -1;
+}
+function snakePointerDown(e) {
+  if (paused || state !== 'play') return;
+  e.preventDefault();
+  const i = snakePadAt(e.clientX, e.clientY);
+  if (i >= 0) { snakePress = i; snakePressT = performance.now(); snakeTurn(...SNAKE_DIRS[i]); sfx('tap'); vib(8); return; }
+  snakeSwipe = { id: e.pointerId, x: e.clientX, y: e.clientY };
+  try { cv.setPointerCapture(e.pointerId); } catch (_) {}
+}
+function snakePointerMove(e) {
+  const sw = snakeSwipe;
+  if (!sw || e.pointerId !== sw.id) return;
+  const dx = e.clientX - sw.x, dy = e.clientY - sw.y;
+  if (Math.hypot(dx, dy) < Math.max(16, snakeCell() * 0.9)) return;
+  if (Math.abs(dx) > Math.abs(dy)) snakeTurn(Math.sign(dx), 0); else snakeTurn(0, Math.sign(dy));
+  sw.x = e.clientX; sw.y = e.clientY;   // можно повернуть ещё раз, не отпуская палец
+}
+window.addEventListener('keydown', e => {
+  if (mode !== 'snake' || e.repeat) return;
+  const k = { ArrowUp: 0, KeyW: 0, ArrowDown: 1, KeyS: 1, ArrowLeft: 2, KeyA: 2, ArrowRight: 3, KeyD: 3 }[e.code];
+  if (k === undefined || e.target && e.target.tagName === 'INPUT') return;
+  e.preventDefault();
+  ensureAudio();
+  snakePress = k; snakePressT = performance.now();
+  snakeTurn(...SNAKE_DIRS[k]);
+});
+
+/* ---------- Рисование змейки ---------- */
+function snakeDraw(now, dt) {
+  const fx = boardX - framePad, fy = boardY - framePad, fs = board + framePad * 2, m = boardMargin();
+  const tp = themeProgress(now), cs = snakeCell();
+  const [sx, sy] = shakeOffset(now);
+  ctx.save();
+  ctx.translate(sx, sy);
+  if (tp < 1) {
+    ctx.drawImage(getBoardImage(themeFx.prev), fx - m, fy - m, fs + m * 2, fs + m * 2);
+    ctx.globalAlpha = easeInOutCubic(tp);
+  }
+  ctx.drawImage(getBoardImage(themeIdx), fx - m, fy - m, fs + m * 2, fs + m * 2);
+  ctx.globalAlpha = 1;
+  // мелкая сетка 16×16 поверх клеток поля
+  ctx.strokeStyle = 'rgba(255,255,255,0.05)'; ctx.lineWidth = 1;
+  ctx.beginPath();
+  for (let k = 1; k < SN; k++) {
+    const o = Math.round(k * cs) + 0.5;
+    ctx.moveTo(boardX + o, boardY); ctx.lineTo(boardX + o, boardY + board);
+    ctx.moveTo(boardX, boardY + o); ctx.lineTo(boardX + board, boardY + o);
+  }
+  ctx.stroke();
+
+  const over = state === 'over';
+  // корм: блок цвета, который получит хвост, слегка «дышит»
+  const f = snake.food;
+  if (f && !over) {
+    const ap = clamp01((now - f.t0) / 260), sc = (0.78 + 0.07 * Math.sin(now / 220)) * easeOutCubic(ap);
+    const s = cs * sc, x = boardX + f.x * cs + (cs - s) / 2, y = boardY + f.y * cs + (cs - s) / 2;
+    ctx.fillStyle = rgba(COLORS[f.c].c, 0.25);
+    ctx.beginPath(); ctx.arc(x + s / 2, y + s / 2, s * 0.8, 0, Math.PI * 2); ctx.fill();
+    ctx.drawImage(getBlock(f.c, cs), x, y, s, s);
+  }
+  const gd = snake.gold;
+  if (gd && !over) {
+    const left = SNAKE_GOLD_MS - (now - gd.t0), blink = left < 2000 && Math.floor(now / 140) % 2;
+    if (!blink) {
+      const s = cs * (0.86 + 0.08 * Math.sin(now / 120)), x = boardX + gd.x * cs + (cs - s) / 2, y = boardY + gd.y * cs + (cs - s) / 2;
+      ctx.strokeStyle = rgba('#ffd23f', 0.5 + 0.3 * Math.sin(now / 160)); ctx.lineWidth = Math.max(2, cs * 0.12);
+      ctx.beginPath(); ctx.arc(x + s / 2, y + s / 2, s * (0.75 + 0.1 * Math.sin(now / 200)), 0, Math.PI * 2); ctx.stroke();
+      ctx.drawImage(getBlock(2, cs), x, y, s, s);
+      ctx.fillStyle = '#fff';
+      drawStar(x + s * 0.5, y + s * 0.5, s * (0.28 + 0.06 * Math.sin(now / 150)));
+    }
+  }
+
+  // змейка: позиции плавно идут от прошлого шага к текущему
+  const b = snake.body, pv = snake.prev, t = snake.started && state === 'play' && !snakeBlocked() ? clamp01(snake.el / snake.step) : 1;
+  const pos = i => {
+    const a = pv[i] || b[i], c = b[i];
+    return [boardX + (a.x + (c.x - a.x) * t) * cs, boardY + (a.y + (c.y - a.y) * t) * cs];
+  };
+  const pulse = clamp01(1 - (now - snake.eatT) / 350);
+  for (let i = b.length - 1; i >= 0; i--) {
+    const [x, y] = pos(i);
+    let c = snake.cols[i] != null ? snake.cols[i] : snake.cols[snake.cols.length - 1];
+    if (over && now >= overT0 + i * 45) c = GREY;
+    // волна «проглоченного» блока бежит от головы к хвосту
+    const wave = pulse > 0 ? Math.max(0, 1 - Math.abs(i - (1 - pulse) * b.length * 0.9) / 2) * 0.12 : 0;
+    const sc = (i === 0 ? 1.04 : 0.92 - Math.min(0.12, i / b.length * 0.12)) + wave;
+    const s = cs * sc, o = (cs - s) / 2;
+    // перемычка к следующему сегменту, чтобы тело было сплошным
+    if (i < b.length - 1) {
+      const [x2, y2] = pos(i + 1);
+      ctx.drawImage(getBlock(c, cs), (x + x2) / 2 + o, (y + y2) / 2 + o, s, s);
+    }
+    ctx.drawImage(getBlock(c, cs), x + o, y + o, s, s);
+  }
+  if (b.length) {
+    // глаза смотрят по направлению движения
+    const [hx, hy] = pos(0), d = snake.dir;
+    const ccx = hx + cs / 2, ccy = hy + cs / 2, px = -d[1], py = d[0];
+    const dead = over;
+    for (const sgn of [-1, 1]) {
+      const ex = ccx + d[0] * cs * 0.12 + px * sgn * cs * 0.2, ey = ccy + d[1] * cs * 0.12 + py * sgn * cs * 0.2;
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(ex, ey, cs * 0.15, 0, Math.PI * 2); ctx.fill();
+      if (dead) {
+        ctx.strokeStyle = '#1a1a1a'; ctx.lineWidth = Math.max(1, cs * 0.06);
+        const r = cs * 0.08;
+        ctx.beginPath(); ctx.moveTo(ex - r, ey - r); ctx.lineTo(ex + r, ey + r); ctx.moveTo(ex + r, ey - r); ctx.lineTo(ex - r, ey + r); ctx.stroke();
+      } else {
+        ctx.fillStyle = '#141414';
+        ctx.beginPath(); ctx.arc(ex + d[0] * cs * 0.05, ey + d[1] * cs * 0.05, cs * 0.075, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+    // язычок мелькает раз в ~1.6 с
+    if (!dead && (now % 1600) < 220) {
+      ctx.strokeStyle = '#ff4d6d'; ctx.lineWidth = Math.max(1.5, cs * 0.07); ctx.lineCap = 'round';
+      const tx = ccx + d[0] * cs * 0.55, ty = ccy + d[1] * cs * 0.55;
+      ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(tx + d[0] * cs * 0.25, ty + d[1] * cs * 0.25);
+      ctx.moveTo(tx + d[0] * cs * 0.25, ty + d[1] * cs * 0.25); ctx.lineTo(tx + (d[0] + px) * cs * 0.18 + d[0] * cs * 0.15, ty + (d[1] + py) * cs * 0.18 + d[1] * cs * 0.15);
+      ctx.moveTo(tx + d[0] * cs * 0.25, ty + d[1] * cs * 0.25); ctx.lineTo(tx + (d[0] - px) * cs * 0.18 + d[0] * cs * 0.15, ty + (d[1] - py) * cs * 0.18 + d[1] * cs * 0.15);
+      ctx.stroke(); ctx.lineCap = 'butt';
+    }
+  }
+  ctx.restore();
+
+  snakeDrawPad(now);
+  drawRings(now);
+  drawParticles(now, dt);
+  drawTexts(now);
+}
+function snakeDrawPad(now) {
+  const p = snakePad(), th = THEMES[themeIdx], s = p.s;
+  const pressed = now - snakePressT < 160 ? snakePress : -1;
+  for (let i = 0; i < 4; i++) {
+    const [cx, cy] = p.btn[i], w = s * 1.15, h = s * 1.0, dn = i === pressed ? s * 0.06 : 0;
+    ctx.fillStyle = rgba(th.panel[3], 0.85);
+    rrPath(ctx, cx - w / 2, cy - h / 2 + s * 0.08, w, h, s * 0.26); ctx.fill();
+    const gr = ctx.createLinearGradient(0, cy - h / 2, 0, cy + h / 2);
+    gr.addColorStop(0, i === pressed ? th.panel[1] : th.panel[0]); gr.addColorStop(1, th.panel[1]);
+    ctx.fillStyle = gr;
+    rrPath(ctx, cx - w / 2, cy - h / 2 + dn, w, h, s * 0.26); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.3)'; ctx.lineWidth = Math.max(1, s * 0.04);
+    rrPath(ctx, cx - w / 2 + 1, cy - h / 2 + dn + 1, w - 2, h - 2, s * 0.24); ctx.stroke();
+    const [dx, dy] = SNAKE_DIRS[i], a = s * 0.24, ax = cx, ay = cy + dn;
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.moveTo(ax + dx * a, ay + dy * a);
+    ctx.lineTo(ax - dx * a * 0.6 - dy * a, ay - dy * a * 0.6 + dx * a);
+    ctx.lineTo(ax - dx * a * 0.6 + dy * a, ay - dy * a * 0.6 - dx * a);
+    ctx.closePath(); ctx.fill();
+  }
+}
+
 /* ---------- Переключение режимов ---------- */
 function switchMode(m, initial) {
   if (m === mode) return;
   drag = null; hint = null; epoch++; undoSnap = null;
-  if (mode === 'sand') stash.sand = snapSand(); else if (mode === 'puzzle') puz.game = puzSnap(); else stash[mode] = snapClassic();
+  if (mode === 'sand') stash.sand = snapSand(); else if (mode === 'puzzle') puz.game = puzSnap();
+  else if (mode === 'snake') stash.snake = snapSnake(); else stash[mode] = snapClassic();
+  snakeSwipe = null; snakePress = -1;
   mode = m; settings.mode = m;
   const t = themeOk(themeByMode[m]) ? themeByMode[m] : defaultTheme(m);   // у каждого режима своя тема
   if (t !== themeIdx) setTheme(t, !initial);
@@ -11998,6 +13094,7 @@ function switchMode(m, initial) {
   layout();
   if (m === 'sand') loadSand(stash.sand || readSandStore());
   else if (m === 'puzzle') puzLoad();
+  else if (m === 'snake') loadSnake(stash.snake || readSnakeStore());
   else if (applyClassic(m === 'bomb' ? stash.bomb || readBombStore() : stash.classic)) {
     refreshFit();
     if (pendingNm || !hand.some(h => h && h.fit)) triggerNoMoves(pendingNm || undefined);
@@ -12014,7 +13111,7 @@ function updateModeUi() {
   updateUndoUi();
   sandBar.classList.toggle('hidden', !sandMode);
   puzBar.classList.toggle('hidden', mode !== 'puzzle');
-  if (sandMode || mode === 'puzzle') comboBadge.classList.add('hidden');
+  if (sandMode || mode === 'puzzle' || mode === 'snake') comboBadge.classList.add('hidden');
   bestBox.querySelector('use').setAttribute('href', mode === 'puzzle' ? '#starIco' : '#crown');
   $('modeName').textContent = MODE_NAME[mode];
   renderThemePicker();
@@ -12127,7 +13224,7 @@ function logGame() {
   r.bs = Math.max(r.bs, score); r.bc = Math.max(r.bc, maxCombo);
   if (better) r.unsent = true;
   lbSave();
-  if (better) lbSubmit(mode);
+  if (better && mode !== 'snake') lbSubmit(mode);   // у «Змейки» общей таблицы на сервере нет
   lbQueueSeason(mode, score);   // в сезон идёт результат каждой партии, не только рекорд
 }
 // старый ключ anon — это JWT (начинается с eyJ) и идёт ещё и в Authorization; новый sb_publishable_ — только в apikey
@@ -12277,10 +13374,10 @@ function lbSegs() {
   document.querySelectorAll('#lbModes button').forEach(b => b.classList.toggle('on', b.dataset.m === lbView.m));
   document.querySelectorAll('#lbSort button').forEach(b => b.classList.toggle('on', b.dataset.s === lbView.sort));
   document.querySelectorAll('#lbScope button').forEach(b => b.classList.toggle('on', b.dataset.g === lbView.scope));
-  $('lbScope').hidden = !lbOnline();
+  $('lbScope').hidden = !lbOnline() || lbView.m === 'snake';   // «Змейка» — только «Мои игры»
   const se = lbView.scope === 'season';
   $('lbHeadName').textContent = lbView.scope === 'me' ? 'Дата' : 'Игрок';
-  $('lbHeadCb').textContent = se ? 'Награда' : 'Комбо';
+  $('lbHeadCb').textContent = se ? 'Награда' : lbView.m === 'snake' ? 'Длина' : 'Комбо';
   $('lbSort').hidden = se;                       // в сезоне только очки
   $('lbHead').classList.toggle('season', se);
   lbList.classList.toggle('season', se);
@@ -12318,6 +13415,7 @@ async function lbSeason(req, m) {
 async function renderLb() {
   const req = ++lbView.req;   // любой новый вид отменяет ожидающий ответ сервера
   lbStopTimer();
+  if (lbView.m === 'snake') lbView.scope = 'me';
   lbSegs();
   const { m, sort, scope } = lbView, key = sort === 'combo' ? 'c' : 's';
   nickForm.hidden = scope === 'me';
@@ -12422,8 +13520,8 @@ function renderStats() {
     ['Сыграно партий', fmtNum(r.g)],
     ['Средний счёт', r.g ? fmtNum(r.sum / r.g) : '—'],
     ['Лучший счёт', fmtNum(Math.max(r.bs, lbRec.bs || 0))],
-    ['Лучшее комбо', '×' + Math.max(r.bc, lbRec.bc || 0)],
-    [m === 'sand' ? 'Всего очисток' : 'Всего линий', fmtNum(r.lines)],
+    m === 'snake' ? ['Самая длинная', String(Math.max(r.bc, lbRec.bc || 0))] : ['Лучшее комбо', '×' + Math.max(r.bc, lbRec.bc || 0)],
+    [m === 'sand' ? 'Всего очисток' : m === 'snake' ? 'Всего блоков' : 'Всего линий', fmtNum(r.lines)],
     ['Всего очков', fmtNum(r.sum)],
     ['Последние партии', r.last5.length ? r.last5.map(fmtK).join(' · ') : '—'],
     ['Темы открыты', own + ' из ' + total],
@@ -12760,6 +13858,7 @@ window.__bb = {
   get grid() { return grid; }, get hand() { return hand; }, get score() { return score; }, get state() { return state; },
   get combo() { return combo; }, get theme() { return themeIdx; }, get hint() { return hint; }, get reviveUsed() { return reviveUsed; },
   get layout() { return { boardX, boardY, cell, trayY, trayH, colX, colW }; },
+  snake, snakeTurn, snakeStep, snakePad, snapSnake, loadSnake,
   place, SHAPES, THEMES, newGame, changeTheme, SoundEngine, generateHand, computeHint, helpLevel, revive, giveUp, frame,
   get mode() { return mode; }, bombs, explode, lb, logGame, openLb, lbQueueSeason, lbSubmitSeason, lbSync, checkSeasonRewards, sand, switchMode, wallet, owned, renderThemePicker, save, setTheme, sandPlace, sandFindSpans, sandComputeTops, sandMaxY, sandCanClear, sandLabel,
   SHAPE_COLS, SCOLS, SROWS, SDANGER,
