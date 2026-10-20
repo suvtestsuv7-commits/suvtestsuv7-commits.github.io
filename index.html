@@ -3994,8 +3994,9 @@ function drawPieceShadow(sh, cx, cy, cs, ox, oy, a) {
 
 // Поле вместе с тенью рисуется один раз в картинку (тень — самая дорогая операция)
 function boardMargin() { return Math.ceil(cell * 1.1); }
-function getBoardImage(ti) {
-  let img = boardCache.get(ti);
+function getBoardImage(ti, plain) {
+  const key = plain ? 'snak' + ti : ti;   // plain — поле без клеток 8×8 (режим «Змейка»)
+  let img = boardCache.get(key);
   if (img) return img;
   const th = THEMES[ti], size = board + framePad * 2, m = boardMargin();
   img = makeCanvas((size + m * 2) * dpr, (size + m * 2) * dpr);
@@ -4010,7 +4011,13 @@ function getBoardImage(ti) {
   g.fillStyle = th.edge; rrPath(g, 0, 0, size, size, R); g.fill();
   g.fillStyle = th.board; rrPath(g, framePad, framePad, board, board, th.square ? 0 : cell * 0.12); g.fill();
   const ins = Math.max(1, cell * 0.045), r = th.square ? 0 : cell * 0.14, s = cell - 2 * ins;
-  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+  if (plain) {
+    g.fillStyle = th.cell; g.fillRect(framePad, framePad, board, board);
+    const lg = g.createLinearGradient(0, framePad, 0, framePad + board);
+    lg.addColorStop(0, 'rgba(0,0,0,0.18)'); lg.addColorStop(1, 'rgba(255,255,255,0.04)');
+    g.fillStyle = lg; g.fillRect(framePad, framePad, board, board);
+  }
+  if (!plain) for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
     const x0 = framePad + x * cell + ins, y0 = framePad + y * cell + ins;
     g.fillStyle = th.cell; rrPath(g, x0, y0, s, s, r); g.fill();
     const lg = g.createLinearGradient(0, y0, 0, y0 + s);
@@ -4025,7 +4032,7 @@ function getBoardImage(ti) {
   hg.addColorStop(1, 'rgba(255,255,255,0.0)');
   g.strokeStyle = hg; g.lineWidth = 2;
   rrPath(g, 1, 1, size - 2, size - 2, R); g.stroke();
-  boardCache.set(ti, img);
+  boardCache.set(key, img);
   return img;
 }
 
@@ -13210,8 +13217,8 @@ function sandDraw(now, dt) {
 
 /* =====================================================================
    Режим «Змейка»: поле 16×16 внутри обычной рамки. Змейка из блоков темы
-   собирает цветные блоки (каждый удлиняет хвост своим цветом), врезалась
-   в стену или в себя — конец игры. Управление: свайп, стрелки/WASD,
+   собирает цветные блоки (каждый удлиняет хвост своим цветом). Стены
+   сквозные (вышла справа — появилась слева), врезалась в себя — конец игры. Управление: свайп, стрелки/WASD,
    кнопки под полем. Скорость растёт с каждым блоком, иногда появляется
    золотой блок (+50, исчезает через 7 с). Рекорд и партия — SNAKE_KEY,
    очки идут в свою копилку wallet.snake.
@@ -13345,10 +13352,10 @@ function snakeUpdate(now) {
 }
 function snakeStep(now) {
   if (snake.q.length) snake.dir = snake.q.shift();
-  const b = snake.body, h = b[0], nx = h.x + snake.dir[0], ny = h.y + snake.dir[1];
+  const b = snake.body, h = b[0], nx = (h.x + snake.dir[0] + SN) % SN, ny = (h.y + snake.dir[1] + SN) % SN;   // сквозь стену — с другой стороны
   const tailMoves = snake.grow === 0;
   const hitSelf = b.some((p, i) => p.x === nx && p.y === ny && !(tailMoves && i === b.length - 1));
-  if (nx < 0 || ny < 0 || nx >= SN || ny >= SN || hitSelf) { snakeDie(now); return; }
+  if (hitSelf) { snakeDie(now); return; }
   snake.prev = b.map(p => ({ ...p }));
   b.unshift({ x: nx, y: ny });
   if (snake.grow > 0) snake.grow--; else b.pop();
@@ -13447,13 +13454,13 @@ function snakeDraw(now, dt) {
   ctx.save();
   ctx.translate(sx, sy);
   if (tp < 1) {
-    ctx.drawImage(getBoardImage(themeFx.prev), fx - m, fy - m, fs + m * 2, fs + m * 2);
+    ctx.drawImage(getBoardImage(themeFx.prev, true), fx - m, fy - m, fs + m * 2, fs + m * 2);
     ctx.globalAlpha = easeInOutCubic(tp);
   }
-  ctx.drawImage(getBoardImage(themeIdx), fx - m, fy - m, fs + m * 2, fs + m * 2);
+  ctx.drawImage(getBoardImage(themeIdx, true), fx - m, fy - m, fs + m * 2, fs + m * 2);
   ctx.globalAlpha = 1;
-  // мелкая сетка 16×16 поверх клеток поля
-  ctx.strokeStyle = 'rgba(255,255,255,0.05)'; ctx.lineWidth = 1;
+  // сетка 16×16 на ровном поле
+  ctx.strokeStyle = 'rgba(255,255,255,0.11)'; ctx.lineWidth = 1;
   ctx.beginPath();
   for (let k = 1; k < SN; k++) {
     const o = Math.round(k * cs) + 0.5;
@@ -13487,10 +13494,23 @@ function snakeDraw(now, dt) {
 
   // змейка: позиции плавно идут от прошлого шага к текущему
   const b = snake.body, pv = snake.prev, t = snake.started && state === 'play' && !snakeBlocked() ? clamp01(snake.el / snake.step) : 1;
+  // шаг через стену: идём от прошлой клетки на 1 клетку за край, копия на той стороне входит в поле
+  const wd = (a, c) => { const d = c - a; return d > 1 ? d - SN : d < -1 ? d + SN : d; };
   const pos = i => {
     const a = pv[i] || b[i], c = b[i];
-    return [boardX + (a.x + (c.x - a.x) * t) * cs, boardY + (a.y + (c.y - a.y) * t) * cs];
+    return [boardX + (a.x + wd(a.x, c.x) * t) * cs, boardY + (a.y + wd(a.y, c.y) * t) * cs];
   };
+  // блок у края рисуется ещё и с другой стороны поля (лишнее обрезает clip)
+  const blk = (img, x, y, s) => {
+    const ox = x < boardX ? board : x + s > boardX + board ? -board : 0;
+    const oy = y < boardY ? board : y + s > boardY + board ? -board : 0;
+    ctx.drawImage(img, x, y, s, s);
+    if (ox) ctx.drawImage(img, x + ox, y, s, s);
+    if (oy) ctx.drawImage(img, x, y + oy, s, s);
+    if (ox && oy) ctx.drawImage(img, x + ox, y + oy, s, s);
+  };
+  ctx.save();
+  ctx.beginPath(); ctx.rect(boardX, boardY, board, board); ctx.clip();
   const pulse = clamp01(1 - (now - snake.eatT) / 350);
   for (let i = b.length - 1; i >= 0; i--) {
     const [x, y] = pos(i);
@@ -13502,15 +13522,21 @@ function snakeDraw(now, dt) {
     const s = cs * sc, o = (cs - s) / 2;
     // перемычка к следующему сегменту, чтобы тело было сплошным
     if (i < b.length - 1) {
-      const [x2, y2] = pos(i + 1);
-      ctx.drawImage(getBlock(c, cs), (x + x2) / 2 + o, (y + y2) / 2 + o, s, s);
+      let [x2, y2] = pos(i + 1);
+      if (x2 - x > board / 2) x2 -= board; else if (x - x2 > board / 2) x2 += board;   // сосед на той стороне стены
+      if (y2 - y > board / 2) y2 -= board; else if (y - y2 > board / 2) y2 += board;
+      blk(getBlock(c, cs), (x + x2) / 2 + o, (y + y2) / 2 + o, s);
     }
-    ctx.drawImage(getBlock(c, cs), x + o, y + o, s, s);
+    blk(getBlock(c, cs), x + o, y + o, s);
   }
   if (b.length) {
     // глаза смотрят по направлению движения
     const [hx, hy] = pos(0), d = snake.dir;
-    const ccx = hx + cs / 2, ccy = hy + cs / 2, px = -d[1], py = d[0];
+    let ccx = hx + cs / 2, ccy = hy + cs / 2;
+    const px = -d[1], py = d[0];
+    // голова наполовину за стеной — глаза на той половине, что уже в поле
+    if (ccx < boardX) ccx += board; else if (ccx > boardX + board) ccx -= board;
+    if (ccy < boardY) ccy += board; else if (ccy > boardY + board) ccy -= board;
     const dead = over;
     for (const sgn of [-1, 1]) {
       const ex = ccx + d[0] * cs * 0.12 + px * sgn * cs * 0.2, ey = ccy + d[1] * cs * 0.12 + py * sgn * cs * 0.2;
@@ -13535,6 +13561,7 @@ function snakeDraw(now, dt) {
       ctx.stroke(); ctx.lineCap = 'butt';
     }
   }
+  ctx.restore();   // clip поля
   ctx.restore();
 
   snakeDrawPad(now);
