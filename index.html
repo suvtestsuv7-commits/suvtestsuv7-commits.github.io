@@ -16684,7 +16684,7 @@ function logGame() {
   r.bs = Math.max(r.bs, score); r.bc = Math.max(r.bc, maxCombo);
   if (better) r.unsent = true;
   lbSave();
-  if (better && mode !== 'snake') lbSubmit(mode);   // у «Змейки» общей таблицы на сервере нет
+  if (better) lbSubmit(mode);
   lbQueueSeason(mode, score);   // в сезон идёт результат каждой партии, не только рекорд
 }
 // старый ключ anon — это JWT (начинается с eyJ) и идёт ещё и в Authorization; новый sb_publishable_ — только в apikey
@@ -16738,7 +16738,7 @@ function lbQueueSeason(m, s) {
   } catch (_) {}
 }
 function lbSync(all) {
-  for (const m of ['classic', 'sand', 'bomb']) if (lb[m] && (all || lb[m].unsent)) lbSubmit(m);
+  for (const m of ['classic', 'sand', 'bomb', 'snake']) if (lb[m] && (all || lb[m].unsent)) lbSubmit(m);
   if (lb.sp && typeof lb.sp === 'object') for (const m of Object.keys(lb.sp)) lbSubmitSeason(m);
 }
 // Награды сезона: топ-3 завершённого сезона по режиму получает очки в копилку этого режима
@@ -16815,7 +16815,7 @@ const fmtDate = t => { const d = new Date(t), z = v => String(v).padStart(2, '0'
 function lbRow(rank, name, s, c, me) {
   const li = document.createElement('li');
   if (me) li.classList.add('me');
-  const cells = [['lb-rank', rank], ['lb-name', name], ['lb-sc', s >= 1e6 ? fmtK(s) : fmtNum(s)], ['lb-cb', c == null ? '—' : '×' + c]];
+  const cells = [['lb-rank', rank], ['lb-name', name], ['lb-sc', s >= 1e6 ? fmtK(s) : fmtNum(s)], ['lb-cb', c == null ? '—' : (lbView.m === 'snake' ? c : '×' + c)]];
   for (const [cls, txt] of cells) {
     const sp = document.createElement('span');
     sp.className = cls + ((cls === 'lb-sc' && lbView.sort === 'score') || (cls === 'lb-cb' && lbView.sort === 'combo') ? ' hot' : '');
@@ -16834,10 +16834,13 @@ function lbSegs() {
   document.querySelectorAll('#lbModes button').forEach(b => b.classList.toggle('on', b.dataset.m === lbView.m));
   document.querySelectorAll('#lbSort button').forEach(b => b.classList.toggle('on', b.dataset.s === lbView.sort));
   document.querySelectorAll('#lbScope button').forEach(b => b.classList.toggle('on', b.dataset.g === lbView.scope));
-  $('lbScope').hidden = !lbOnline() || lbView.m === 'snake';   // «Змейка» — только «Мои игры»
+  $('lbScope').hidden = !lbOnline();
+  const seBtn = document.querySelector('#lbScope button[data-g="season"]');
+  if (seBtn) seBtn.hidden = lbView.m === 'snake';   // у «Змейки» сезона нет — только «Мои игры» и «Все»
   const se = lbView.scope === 'season';
   $('lbHeadName').textContent = lbView.scope === 'me' ? 'Дата' : 'Игрок';
   $('lbHeadCb').textContent = se ? 'Награда' : lbView.m === 'snake' ? 'Длина' : 'Комбо';
+  document.querySelector('#lbSort button[data-s="combo"]').textContent = lbView.m === 'snake' ? 'По длине' : 'По комбо';
   $('lbSort').hidden = se;                       // в сезоне только очки
   $('lbHead').classList.toggle('season', se);
   lbList.classList.toggle('season', se);
@@ -16875,7 +16878,7 @@ async function lbSeason(req, m) {
 async function renderLb() {
   const req = ++lbView.req;   // любой новый вид отменяет ожидающий ответ сервера
   lbStopTimer();
-  if (lbView.m === 'snake') lbView.scope = 'me';
+  if (lbView.m === 'snake' && lbView.scope === 'season') lbView.scope = 'all';
   lbSegs();
   const { m, sort, scope } = lbView, key = sort === 'combo' ? 'c' : 's';
   nickForm.hidden = scope === 'me';
@@ -16937,7 +16940,7 @@ nickForm.addEventListener('submit', e => {
   nickIn.blur();
   if (!nick) return;
   lb.nick = nick;
-  for (const m of ['classic', 'sand', 'bomb']) if (lb[m]) lb[m].unsent = true;
+  for (const m of ['classic', 'sand', 'bomb', 'snake']) if (lb[m]) lb[m].unsent = true;
   lbSave();
   lbSync(false);
   setTimeout(renderLb, 600);
