@@ -1757,7 +1757,7 @@ const lb = (() => {
   let v = null;
   try { v = JSON.parse(localStorage.getItem('blockblast.lb.v1')); } catch (_) {}
   v = v && typeof v === 'object' && !Array.isArray(v) ? v : {};
-  for (const m of ['classic', 'sand', 'bomb']) { const r = v[m]; if (r != null && !(r && Array.isArray(r.score) && Array.isArray(r.combo))) delete v[m]; }
+  for (const m of ['classic', 'sand', 'bomb', 'snake']) { const r = v[m]; if (r != null && !(r && Array.isArray(r.score) && Array.isArray(r.combo))) delete v[m]; }
   return v;
 })();
 let gameLogged = false;                 // результат текущей партии уже записан в таблицу рекордов
@@ -2192,15 +2192,17 @@ let undoSnap = null, undoUsed = 0;
 function undoCost() { return UNDO_BASE * Math.pow(2, undoUsed); }
 function undoPush() {
   if (mode !== 'classic' && mode !== 'bomb') { undoSnap = null; return; }
-  earn();   // копилка в снимке — без очков этого хода
+  earn();   // очки до этого хода уже в копилке: banked == score
   undoSnap = {
     grid: Array.from(grid), hand: hand.map(h => h && { s: h.s, c: h.c, b: h.b, bt: h.bt }),
     score, best, nbs: newBestShown, combo, msc: movesSinceClear, lines: linesTotal, mc: maxCombo,
-    recent: recent.slice(), bombs: [...bombs], bd: bombsDefused, wallet: wallet[mode],
+    recent: recent.slice(), bombs: [...bombs], bd: bombsDefused,
   };
   updateUndoUi();
 }
-function undoReady() { return !!undoSnap && undoSnap.wallet >= undoCost() && (mode === 'classic' || mode === 'bomb'); }
+// Копилка после отмены: текущая минус очки, начисленные за отменяемый ход (покупки и бонусы после хода остаются)
+function undoBase(u) { return wallet[mode] - Math.max(0, banked - u.score); }
+function undoReady() { return !!undoSnap && undoBase(undoSnap) >= undoCost() && (mode === 'classic' || mode === 'bomb'); }
 function updateUndoUi() {
   const on = mode === 'classic' || mode === 'bomb';
   undoBtn.classList.toggle('hidden', !on);
@@ -2216,10 +2218,10 @@ function undoMove() {
   const u = undoSnap;
   if (!u || (state !== 'play' && state !== 'revive') || !undoReady()) {
     sfx('bad'); vib(20);
-    if (u && u.wallet < undoCost() && state === 'play') addText('Мало очков в копилке', boardX + board / 2, boardY + boardH * 0.5, 'praise', 0);
+    if (u && undoBase(u) < undoCost() && state === 'play') addText('Мало очков в копилке', boardX + board / 2, boardY + boardH * 0.5, 'praise', 0);
     return;
   }
-  const cost = undoCost();
+  const cost = undoCost(), left = undoBase(u) - cost;
   epoch++; undoUsed++; undoSnap = null;
   for (let k = 0; k < N * N; k++) grid[k] = u.grid[k];
   placeAnims.clear(); clearAnims = []; flashes = []; rings = [];
@@ -2230,7 +2232,7 @@ function undoMove() {
   score = u.score; banked = score; displayScore = score; scoreEl.textContent = score;
   best = u.best; bestEl.textContent = best; newBestShown = u.nbs;
   combo = u.combo; movesSinceClear = u.msc; linesTotal = u.lines; maxCombo = u.mc; recent = u.recent;
-  wallet[mode] = Math.max(0, u.wallet - cost);
+  wallet[mode] = Math.max(0, left);
   pendingNm = null;
   state = 'play'; drag = null; hint = null; reviveOv.hidden = true;
   if (engine) engine.duck(false);
@@ -16766,7 +16768,6 @@ async function checkSeasonRewards() {
     list.sort((a, b) => a.season - b.season);
     for (const a of list) {
       wallet[a.mode] += a.gain;
-      if (undoSnap && a.mode === mode) undoSnap.wallet += a.gain;   // иначе «Отменить ход» вернёт копилку из старого снимка и сотрёт награду
     }
     if (list.length) { updateUndoUi(); save(); }   // копилка — раньше маркера: сбой между ними может только выдать повторно, но не потерять награду
     if (d.season - 1 > rw) { lb.rw = d.season - 1; lbSave(); }
