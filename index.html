@@ -382,6 +382,9 @@
   .mini.st-coil i.blk { border-radius: 2px; background: linear-gradient(90deg, transparent 46%, #fff 46% 54%, transparent 54%), repeating-linear-gradient(0deg, #d98a42 0 2px, #2a1608 2px 3.5px) 50% 50% / 66% 60% no-repeat, color-mix(in srgb, var(--k) 22%, #14202c); box-shadow: inset 0 0 0 1.5px var(--k); }
   .mini.st-cloud i.blk { border-radius: 38%; background: radial-gradient(circle at 30% 32%, rgba(255,255,255,.8) 0 16%, transparent 22%), radial-gradient(circle at 62% 24%, rgba(255,255,255,.7) 0 18%, transparent 24%), linear-gradient(180deg, color-mix(in srgb, var(--k) 55%, #fff), var(--k) 55%, color-mix(in srgb, var(--k) 65%, #1a2a78)); box-shadow: inset 0 -2px 0 rgba(20,40,120,.3); }
   .mini.st-window i.blk { border-radius: 2px; background: linear-gradient(90deg, transparent 46%, #17121f 46% 54%, transparent 54%), linear-gradient(0deg, transparent 52%, #17121f 52% 60%, transparent 60%), radial-gradient(circle at 50% 55%, color-mix(in srgb, var(--k) 50%, #fff0c0), var(--k) 70%, color-mix(in srgb, var(--k) 60%, #000)); box-shadow: inset 0 0 0 2px #17121f, inset 0 -3px 0 #3a3248; }
+  .mini.st-treasure i.blk { border-radius: 3px; background: radial-gradient(circle at 50% 50%, var(--k) 0 20%, #e2b23e 22% 32%, transparent 34%), linear-gradient(90deg, #e2b23e 0 12%, transparent 12% 88%, #e2b23e 88%), repeating-linear-gradient(180deg, #9a6a38 0 30%, #2e1a0c 30% 34%); box-shadow: inset 0 0 0 1.5px #2e1a0c; }
+  .mini.st-nigiri i.blk { border-radius: 4px; background: linear-gradient(90deg, transparent 40%, #16261e 40% 60%, transparent 60%), linear-gradient(180deg, color-mix(in srgb, var(--k) 70%, #fff), var(--k) 30%, color-mix(in srgb, var(--k) 70%, #000) 58%, #fffdf4 60%, #e6d9bd); box-shadow: inset 0 0 0 1px rgba(60,30,20,.5); }
+  .mini.st-ore i.blk { border-radius: 5px; background: radial-gradient(ellipse 30% 40% at 50% 74%, var(--k) 0 80%, transparent 100%), radial-gradient(circle at 24% 28%, rgba(0,0,0,.3) 0 9%, transparent 11%), linear-gradient(135deg, #b0562e, #5a2414); box-shadow: inset 0 0 0 1.5px rgba(30,10,4,.8), inset 0 0 6px color-mix(in srgb, var(--k) 60%, transparent); }
   .mini.st-wool i.blk { border-radius: 4px; background: repeating-linear-gradient(62deg, rgba(255,255,255,.28) 0 1.5px, transparent 1.5px 4px), repeating-linear-gradient(-62deg, rgba(0,0,0,.3) 0 1.5px, transparent 1.5px 4px), var(--k); box-shadow: inset 0 0 0 1px rgba(0,0,0,.3), inset 0 2px 3px rgba(255,255,255,.2); }
   .mini.st-scale i.blk { border-radius: 5px; background: linear-gradient(180deg, rgba(255,255,255,.3), transparent 50%), linear-gradient(90deg, transparent 42%, rgba(0,0,0,.25) 42% 58%, transparent 58%), repeating-linear-gradient(45deg, rgba(0,0,0,.38) 0 1px, transparent 1px 3.5px), repeating-linear-gradient(-45deg, rgba(0,0,0,.38) 0 1px, transparent 1px 3.5px), var(--k); box-shadow: inset 0 0 0 1px rgba(0,0,0,.4); }
   .mini.st-lcd, .mini.st-lcd i { border-radius: 0; }
@@ -1077,6 +1080,16 @@ const THEMES = [
   { id: 'assembly', mode: 'bomb', cost: 175000, blocks: 'rivet', fx: 'clank', name: 'Конвейер',
     bg: ['#07090d', '#161b23', '#2b323d'], glow: '#ff9a2a', board: '#0e1116', edge: '#e0a020', cell: '#171b22',
     panel: ['#5c6676', '#343b48', '#b4bccb', '#12151b'], ui: '#ffe6bc', decor: 'factory' },
+  // ---- 25.10.2026: три новые платные темы «Классики» ----
+  { id: 'pirates', mode: 'classic', cost: 2750000, blocks: 'treasure', fx: 'cannon', name: 'Пираты',
+    bg: ['#0a1430', '#2a3a6a', '#e08a4a'], glow: '#ffd08a', board: '#1c1410', edge: '#c8963a', cell: '#2a1e16',
+    panel: ['#a8743a', '#6a4220', '#ffe0a8', '#2a1608'], ui: '#fff0d4', decor: 'pirates' },
+  { id: 'sushibar', mode: 'classic', cost: 3500000, blocks: 'nigiri', fx: 'sushibell', name: 'Суши-бар',
+    bg: ['#2a0f12', '#5a1a1e', '#a8452e'], glow: '#ffb070', board: '#1e1210', edge: '#d8b878', cell: '#2c1c18',
+    panel: ['#c8343a', '#8a1c24', '#ffd8c8', '#3a0608'], ui: '#fff4e4', decor: 'sushibar' },
+  { id: 'marsbase', mode: 'classic', cost: 4500000, blocks: 'ore', fx: 'redplanet', name: 'Марс',
+    bg: ['#2a0e0a', '#8a3418', '#e89a5a'], glow: '#ffc890', board: '#1c0e0c', edge: '#c86a3a', cell: '#2a1612',
+    panel: ['#c8582e', '#8a3416', '#ffd0b0', '#3a1006'], ui: '#ffe8d8', decor: 'marsbase' },
 ];
 const PIXEL_FONT = "'Press Start 2P', 'Courier New', monospace";
 // Эффекты текущей темы (только в классике): 'harmonic' | 'pixel' | 'void' | ... | undefined
@@ -13006,6 +13019,264 @@ TFX.clank = xTfx({ mid: '255,190,110', text: { stroke: '#1a1208', glow: '#ff9a2a
     se.noise(t + 0.04, 0.16, se.out(0.06, 0.1, se.sfx, 0), { type: 'bandpass', f: 5200, to: 1800, q: 1.2 });
     for (let k = 0, n = 3 + Math.min(3, lines); k < n; k++) { const f = midi(pentaNote(48, step + k * 2, 72)); se.osc('sawtooth', f, t + 0.1 + k * 0.07, 0.09, se.out(0.03, 0.15, se.sfx, k / n - 0.5), { to: f * 1.25, toT: 0.07, attack: 0.006 }); }
   }, psnd(se, t) { se.fm(midi(67), t, 0.03, { ratio: 5.1, index: 1.2, dur: 0.07, bright: 0.3, send: 0.1 }); se.noise(t, 0.02, se.out(0.03, 0.05), { type: 'highpass', f: 4000, q: 1 }); } });
+
+/* ====================================================================
+   25.10.2026: три новые платные темы «Классики» — «Пираты» (pirates), «Суши-бар» (sushibar), «Марс» (marsbase)
+   ==================================================================== */
+// ---------- блоки ----------
+// «Пираты»: сундучок из досок с золотыми уголками, в центре камень цвета блока; серый — доски с черепом
+BLOCK_STYLES.treasure = (g, col, s) => {
+  const grey = COLORS.indexOf(col) === GREY, rnd = seeded(61 + colIdx(col) * 17), p = Math.max(1, s * 0.03), w = s - 2 * p;
+  g.fillStyle = grey ? '#24242c' : '#2e1a0c'; rrPath(g, p, p, w, w, s * 0.09); g.fill();
+  g.save(); rrPath(g, p, p, w, w, s * 0.09); g.clip();
+  for (let i = 0; i < 3; i++) { const y = p + i * w / 3, pg = g.createLinearGradient(0, y, 0, y + w / 3); pg.addColorStop(0, grey ? '#6a6a76' : '#9a6a38'); pg.addColorStop(1, grey ? '#46464f' : '#5e3a1c'); g.fillStyle = pg; g.fillRect(p, y + s * 0.02, w, w / 3 - s * 0.03); }
+  if (s >= 14) { g.strokeStyle = 'rgba(0,0,0,0.22)'; g.lineWidth = Math.max(0.6, s * 0.018); for (let i = 0; i < 7; i++) { const y = p + w * rnd(), x = p + w * rnd() * 0.6; g.beginPath(); g.moveTo(x, y); g.lineTo(x + w * (0.15 + 0.25 * rnd()), y + (rnd() - 0.5) * s * 0.03); g.stroke(); } }
+  const band = grey ? '#8d94a8' : '#e2b23e', bw = Math.max(1.5, s * 0.12);
+  g.fillStyle = band; g.fillRect(p, p, bw, w); g.fillRect(p + w - bw, p, bw, w); g.fillStyle = 'rgba(255,255,255,0.35)'; g.fillRect(p, p, Math.max(0.6, bw * 0.3), w); g.fillRect(p + w - bw, p, Math.max(0.6, bw * 0.3), w);
+  g.restore();
+  const cx = s / 2, cy = s / 2, R = s * 0.2;
+  if (grey) { if (s >= 14) { g.strokeStyle = '#dfe3ee'; g.lineWidth = Math.max(1, s * 0.06); g.lineCap = 'round'; g.beginPath(); g.moveTo(cx - R, cy - R); g.lineTo(cx + R, cy + R); g.moveTo(cx + R, cy - R); g.lineTo(cx - R, cy + R); g.stroke(); } }
+  else {
+    g.fillStyle = '#e2b23e'; g.beginPath(); g.arc(cx, cy, R * 1.25, 0, Math.PI * 2); g.fill();
+    const gg = g.createLinearGradient(cx - R, cy - R, cx + R, cy + R); gg.addColorStop(0, col.t); gg.addColorStop(0.5, col.c); gg.addColorStop(1, col.b);
+    g.fillStyle = gg; g.beginPath(); g.moveTo(cx, cy - R); g.lineTo(cx + R, cy); g.lineTo(cx, cy + R); g.lineTo(cx - R, cy); g.closePath(); g.fill();
+    if (s >= 14) { g.fillStyle = 'rgba(255,255,255,0.7)'; g.beginPath(); g.moveTo(cx - R * 0.1, cy - R * 0.7); g.lineTo(cx + R * 0.45, cy - R * 0.2); g.lineTo(cx - R * 0.1, cy - R * 0.1); g.closePath(); g.fill(); }
+  }
+  g.lineWidth = Math.max(1, s * 0.03); g.strokeStyle = 'rgba(20,10,4,0.85)'; rrPath(g, p, p, w, w, s * 0.09); g.stroke();
+};
+// «Суши-бар»: ниги́ри — рис с ломтем рыбы цвета блока и полоской нори; серый — тёмная нори с трещиной
+BLOCK_STYLES.nigiri = (g, col, s) => {
+  const grey = COLORS.indexOf(col) === GREY, rnd = seeded(91 + colIdx(col) * 13), p = Math.max(1, s * 0.04), w = s - 2 * p;
+  if (grey) {
+    g.fillStyle = '#1c2a24'; rrPath(g, p, p, w, w, s * 0.14); g.fill();
+    if (s >= 12) { g.strokeStyle = 'rgba(180,200,190,0.35)'; g.lineWidth = Math.max(0.8, s * 0.03); for (let i = 1; i < 5; i++) { g.beginPath(); g.moveTo(p, s * i / 5); g.lineTo(s - p, s * i / 5 + (rnd() - 0.5) * s * 0.05); g.stroke(); } }
+    g.strokeStyle = 'rgba(0,0,0,0.6)'; g.lineWidth = Math.max(1, s * 0.03); rrPath(g, p, p, w, w, s * 0.14); g.stroke(); return;
+  }
+  const rg = g.createLinearGradient(0, s * 0.4, 0, s); rg.addColorStop(0, '#fffdf4'); rg.addColorStop(1, '#e6d9bd');
+  g.fillStyle = rg; rrPath(g, p, p, w, w, s * 0.16); g.fill();
+  if (s >= 14) { g.fillStyle = 'rgba(190,170,130,0.45)'; for (let i = 0; i < 16; i++) { g.beginPath(); g.ellipse(p + w * rnd(), s * (0.58 + 0.36 * rnd()), s * 0.03, s * 0.015, rnd() * 3, 0, Math.PI * 2); g.fill(); } }
+  const tg = g.createLinearGradient(0, p, 0, s * 0.66); tg.addColorStop(0, col.t); tg.addColorStop(0.5, col.c); tg.addColorStop(1, col.b);
+  g.fillStyle = tg; rrPath(g, p, p, w, s * 0.6 - p, s * 0.16); g.fill();
+  g.save(); rrPath(g, p, p, w, s * 0.6 - p, s * 0.16); g.clip();
+  g.strokeStyle = 'rgba(255,255,255,0.4)'; g.lineWidth = Math.max(0.8, s * 0.04); g.lineCap = 'round';
+  for (let i = 0; i < 3; i++) { const x = s * (0.18 + 0.28 * i); g.beginPath(); g.moveTo(x, p); g.quadraticCurveTo(x + s * 0.12, s * 0.28, x - s * 0.04, s * 0.6); g.stroke(); }
+  g.fillStyle = 'rgba(255,255,255,0.28)'; g.fillRect(p, p, w, s * 0.1);
+  g.restore();
+  g.fillStyle = '#16261e'; g.fillRect(s * 0.4, p, s * 0.2, w); g.fillStyle = 'rgba(255,255,255,0.12)'; g.fillRect(s * 0.4, p, s * 0.04, w);
+  g.lineWidth = Math.max(1, s * 0.03); g.strokeStyle = 'rgba(60,30,20,0.55)'; rrPath(g, p, p, w, w, s * 0.16); g.stroke();
+};
+// «Марс»: глыба ржавой породы с кратерами и кристаллами цвета блока; серый — выжженный камень с трещинами
+BLOCK_STYLES.ore = (g, col, s) => {
+  const grey = COLORS.indexOf(col) === GREY, rnd = seeded(131 + colIdx(col) * 19), p = Math.max(1, s * 0.03), w = s - 2 * p;
+  const rg = g.createLinearGradient(0, p, s, s); rg.addColorStop(0, grey ? '#5a5560' : '#b0562e'); rg.addColorStop(1, grey ? '#2e2a34' : '#5a2414');
+  g.fillStyle = rg; rrPath(g, p, p, w, w, s * 0.2); g.fill();
+  g.save(); rrPath(g, p, p, w, w, s * 0.2); g.clip();
+  if (s >= 12) for (let i = 0; i < 4; i++) { const x = s * (0.15 + 0.7 * rnd()), y = s * (0.15 + 0.7 * rnd()), r = s * (0.05 + 0.06 * rnd()); g.fillStyle = 'rgba(0,0,0,0.28)'; g.beginPath(); g.ellipse(x, y, r, r * 0.7, 0, 0, Math.PI * 2); g.fill(); g.strokeStyle = 'rgba(255,200,160,0.25)'; g.lineWidth = Math.max(0.6, s * 0.02); g.beginPath(); g.ellipse(x, y + r * 0.2, r, r * 0.7, 0, 0.1, Math.PI - 0.1); g.stroke(); }
+  const sg = g.createLinearGradient(0, 0, 0, s * 0.4); sg.addColorStop(0, 'rgba(255,220,190,0.3)'); sg.addColorStop(1, 'rgba(255,220,190,0)'); g.fillStyle = sg; g.fillRect(0, 0, s, s * 0.4);
+  if (grey) { if (s >= 12) { g.strokeStyle = 'rgba(0,0,0,0.65)'; g.lineWidth = Math.max(1, s * 0.04); g.lineJoin = 'round'; g.beginPath(); g.moveTo(s * 0.2, s * 0.1); g.lineTo(s * 0.45, s * 0.4); g.lineTo(s * 0.35, s * 0.6); g.lineTo(s * 0.7, s * 0.9); g.moveTo(s * 0.45, s * 0.4); g.lineTo(s * 0.8, s * 0.35); g.stroke(); } }
+  else {
+    const hg = g.createRadialGradient(s * 0.5, s * 0.62, 0, s * 0.5, s * 0.62, s * 0.5); hg.addColorStop(0, rgba(col.c, 0.55)); hg.addColorStop(1, rgba(col.c, 0)); g.fillStyle = hg; g.fillRect(0, 0, s, s);
+    for (const [x, h, wd, tilt] of [[0.32, 0.38, 0.12, -0.22], [0.5, 0.5, 0.15, 0], [0.68, 0.34, 0.11, 0.25]]) {
+      const bx = s * x, by = s * 0.84, cg = g.createLinearGradient(bx - s * wd, by, bx + s * wd, by - s * h);
+      cg.addColorStop(0, col.b); cg.addColorStop(0.5, col.c); cg.addColorStop(1, col.t);
+      g.fillStyle = cg; g.beginPath(); g.moveTo(bx - s * wd, by); g.lineTo(bx - s * wd * 0.6 + s * tilt * 0.3, by - s * h * 0.8); g.lineTo(bx + s * tilt * 0.4, by - s * h); g.lineTo(bx + s * wd * 0.6 + s * tilt * 0.3, by - s * h * 0.8); g.lineTo(bx + s * wd, by); g.closePath(); g.fill();
+      g.fillStyle = 'rgba(255,255,255,0.45)'; g.beginPath(); g.moveTo(bx - s * wd * 0.5, by - s * h * 0.1); g.lineTo(bx - s * wd * 0.3 + s * tilt * 0.3, by - s * h * 0.75); g.lineTo(bx + s * tilt * 0.3, by - s * h * 0.9); g.lineTo(bx - s * wd * 0.1, by - s * h * 0.1); g.closePath(); g.fill();
+    }
+  }
+  g.restore();
+  g.lineWidth = Math.max(1, s * 0.035); g.strokeStyle = 'rgba(30,10,4,0.8)'; rrPath(g, p, p, w, w, s * 0.2); g.stroke();
+};
+
+// ---------- «Пираты» ----------
+function xPirGeo(U) { const fy = H * 0.8; return { fy, moon: { x: W * (W >= H * 1.1 ? 0.8 : 0.76), y: H * 0.11, r: U * 0.045 }, ship: { y: fy - U * 0.005, s: U * 0.11 } }; }
+function xPirShip(g, x, y, s, rock) {   // каравелла: корпус, три паруса, флаг; rock — крен
+  g.save(); g.translate(x, y); g.rotate(rock);
+  g.fillStyle = '#120a06'; g.beginPath(); g.moveTo(-s * 0.9, -s * 0.18); g.lineTo(s * 1, -s * 0.28); g.lineTo(s * 0.8, s * 0.1); g.quadraticCurveTo(0, s * 0.3, -s * 0.7, s * 0.1); g.closePath(); g.fill();
+  g.fillStyle = '#2a170c'; g.fillRect(-s * 0.9, -s * 0.2, s * 1.9, s * 0.04);
+  g.strokeStyle = '#120a06'; g.lineWidth = Math.max(1.2, s * 0.03); g.beginPath(); for (const mx of [-0.45, 0.1, 0.6]) { g.moveTo(s * mx, -s * 0.2); g.lineTo(s * mx, -s * (mx === 0.1 ? 1.15 : 0.95)); } g.stroke();
+  for (const [mx, top, wd] of [[-0.45, 0.88, 0.3], [0.1, 1.08, 0.36], [0.6, 0.88, 0.3]]) {
+    const sg = g.createLinearGradient(s * (mx - wd), 0, s * (mx + wd), 0); sg.addColorStop(0, '#d8cfb4'); sg.addColorStop(1, '#8a8470');
+    g.fillStyle = sg; g.beginPath(); g.moveTo(s * (mx - wd), -s * top); g.quadraticCurveTo(s * mx, -s * (top - 0.1), s * (mx + wd), -s * top); g.quadraticCurveTo(s * (mx + wd * 1.15), -s * (top * 0.55), s * (mx + wd), -s * 0.32); g.quadraticCurveTo(s * mx, -s * 0.24, s * (mx - wd), -s * 0.32); g.quadraticCurveTo(s * (mx - wd * 1.1), -s * (top * 0.55), s * (mx - wd), -s * top); g.fill();
+  }
+  g.fillStyle = '#0a0606'; g.beginPath(); g.moveTo(s * 0.1, -s * 1.15); g.lineTo(s * 0.34, -s * 1.1); g.lineTo(s * 0.1, -s * 1.03); g.fill();
+  g.fillStyle = '#ffe9b0'; g.beginPath(); g.arc(s * 0.8, -s * 0.05, s * 0.025, 0, Math.PI * 2); g.fill();
+  g.restore();
+}
+XDECOR.pirates = { n: 42,
+  scene(g, th, U) {
+    const G = xPirGeo(U), fy = G.fy, rnd = seeded(1707), M = G.moon;
+    xStars(g, rnd, 80, fy * 0.7);
+    xMoon(g, M.x, M.y, M.r, '#fff2d0', 0.45);
+    g.fillStyle = 'rgba(10,18,40,0.55)'; for (let i = 0; i < 5; i++) { g.beginPath(); g.ellipse(W * rnd(), H * (0.05 + 0.3 * rnd()), U * (0.16 + 0.2 * rnd()), U * 0.02, 0, 0, Math.PI * 2); g.fill(); }
+    const hz = g.createLinearGradient(0, fy - H * 0.2, 0, fy); hz.addColorStop(0, 'rgba(255,150,80,0)'); hz.addColorStop(1, 'rgba(255,150,80,0.35)'); g.fillStyle = hz; g.fillRect(0, fy - H * 0.2, W, H * 0.2);
+    const sea = g.createLinearGradient(0, fy, 0, H); sea.addColorStop(0, '#1c4a6a'); sea.addColorStop(0.35, '#0c2e4a'); sea.addColorStop(1, '#030e1c'); g.fillStyle = sea; g.fillRect(0, fy, W, H - fy);
+    const lg = g.createLinearGradient(0, fy, 0, H); lg.addColorStop(0, 'rgba(255,240,200,0.4)'); lg.addColorStop(1, 'rgba(255,240,200,0)'); g.fillStyle = lg;
+    for (let i = 0; i < 16; i++) { const y = fy + (H - fy) * (i / 16) ** 1.3, w = U * (0.012 + 0.07 * rnd()) * (1 + i * 0.12); g.globalAlpha = 0.5 * (1 - i / 18); g.fillRect(M.x - w / 2 + (rnd() - 0.5) * U * 0.02, y, w, Math.max(1.5, (H - fy) / 40)); }
+    g.globalAlpha = 1;
+    // остров с пальмой слева
+    const ix = W * 0.12, iw = U * 0.3; g.fillStyle = '#050a14'; g.beginPath(); g.moveTo(ix - iw, fy + 2); g.quadraticCurveTo(ix - iw * 0.4, fy - U * 0.06, ix, fy - U * 0.07); g.quadraticCurveTo(ix + iw * 0.5, fy - U * 0.06, ix + iw, fy + 2); g.closePath(); g.fill();
+    g.strokeStyle = '#050a14'; g.lineWidth = Math.max(2, U * 0.007); g.lineCap = 'round'; g.beginPath(); g.moveTo(ix + U * 0.02, fy - U * 0.06); g.quadraticCurveTo(ix + U * 0.045, fy - U * 0.13, ix + U * 0.03, fy - U * 0.18); g.stroke();
+    g.lineWidth = Math.max(1.5, U * 0.005); for (const a of [-2.6, -2.1, -1.5, -0.9, -0.4]) { g.beginPath(); g.moveTo(ix + U * 0.03, fy - U * 0.18); g.quadraticCurveTo(ix + U * 0.03 + Math.cos(a) * U * 0.05, fy - U * 0.18 + Math.sin(a) * U * 0.05 - U * 0.02, ix + U * 0.03 + Math.cos(a) * U * 0.09, fy - U * 0.18 + Math.sin(a) * U * 0.05 + U * 0.04); g.stroke(); }
+  },
+  anim(arr, ts, dt, U) {
+    const G = xPirGeo(U), fy = G.fy, sh = G.ship, hh = H - fy;
+    // корабль медленно проплывает слева направо, раз в 100 секунд
+    { const q = (ts % 100) / 100, x = -sh.s + q * (W + sh.s * 2), rock = Math.sin(ts * 0.9) * 0.025, y = sh.y + Math.sin(ts * 1.3) * U * 0.004;
+      ctx.globalAlpha = 1; xPirShip(ctx, x, y, sh.s, rock);
+      const rf = ctx.createLinearGradient(0, fy, 0, fy + hh * 0.3); rf.addColorStop(0, 'rgba(5,10,20,0.4)'); rf.addColorStop(1, 'rgba(5,10,20,0)'); ctx.fillStyle = rf; ctx.fillRect(x - sh.s * 0.8, fy, sh.s * 1.7, hh * 0.3);
+      ctx.globalCompositeOperation = 'lighter'; const lg = ctx.createRadialGradient(x + sh.s * 0.8, y - sh.s * 0.05, 0, x + sh.s * 0.8, y - sh.s * 0.05, sh.s * 0.5); lg.addColorStop(0, 'rgba(255,200,110,0.45)'); lg.addColorStop(1, 'rgba(255,200,110,0)'); ctx.fillStyle = lg; ctx.fillRect(x + sh.s * 0.3, y - sh.s * 0.55, sh.s, sh.s); ctx.globalCompositeOperation = 'source-over';
+      // выстрел пушки раз в 23 секунды
+      const per = 23, q2 = ts % per; if (q2 < 0.7) { const f = 1 - q2 / 0.7; ctx.globalCompositeOperation = 'lighter'; const fx = x + sh.s * 0.2, fy2 = y - sh.s * 0.05, fg = ctx.createRadialGradient(fx, fy2, 0, fx, fy2, sh.s * (0.1 + 0.5 * (1 - f))); fg.addColorStop(0, `rgba(255,230,160,${(0.9 * f).toFixed(3)})`); fg.addColorStop(1, 'rgba(255,120,40,0)'); ctx.fillStyle = fg; ctx.fillRect(fx - sh.s, fy2 - sh.s, sh.s * 2, sh.s * 2); ctx.globalCompositeOperation = 'source-over'; } }
+    // волны: четыре ряда бегущих гребней
+    ctx.lineCap = 'round';
+    for (let r = 0; r < 5; r++) { const y0 = fy + hh * (0.08 + r * 0.2), amp = U * (0.004 + 0.003 * r), sp = (r % 2 ? -1 : 1) * (0.3 + 0.1 * r);
+      ctx.strokeStyle = `rgba(150,215,255,${(0.1 + 0.03 * r).toFixed(3)})`; ctx.lineWidth = Math.max(1, U * (0.002 + 0.0012 * r)); ctx.beginPath();
+      for (let x = -10; x <= W + 10; x += 8) { const y = y0 + Math.sin(x / (U * (0.05 + 0.02 * r)) + ts * sp) * amp; x < 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }
+      ctx.stroke(); }
+    // чайки (0–7) и блики на воде (8–41)
+    ctx.strokeStyle = 'rgba(10,16,30,0.75)'; ctx.lineWidth = Math.max(1, U * 0.0032);
+    for (let i = 0; i < 6; i++) { const d = arr[i], x = ((d.x + ts * 0.012 * d.sp) % 1.2 - 0.1) * W, y = H * (0.05 + 0.25 * d.y) + Math.sin(ts * 0.7 + d.ph) * U * 0.01, s = U * (0.01 + 0.006 * d.s), fl = Math.sin(ts * 5 * d.sp + d.ph) * s * 0.5;
+      ctx.beginPath(); ctx.moveTo(x - s, y + fl); ctx.quadraticCurveTo(x - s * 0.4, y - s * 0.5, x, y); ctx.quadraticCurveTo(x + s * 0.4, y - s * 0.5, x + s, y + fl); ctx.stroke(); }
+    ctx.globalCompositeOperation = 'lighter';
+    for (let i = 8; i < 42; i++) { const d = arr[i]; ctx.globalAlpha = Math.max(0, Math.sin(ts * 1.4 * d.sp + d.ph)) * 0.6; ctx.fillStyle = '#fff4d0'; const x = d.x * W, y = fy + hh * (0.05 + 0.9 * d.y), w = U * (0.006 + 0.012 * d.s); ctx.fillRect(x - w, y, w * 2, Math.max(1, U * 0.0018)); }
+    ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+  } };
+
+// ---------- «Суши-бар» ----------
+function xSushiGeo(U) { const bar = H * 0.84; return { bar, belt: { y: bar + (H - bar) * 0.38, h: Math.max(8, (H - bar) * 0.28) }, lamps: [{ x: W * 0.1, y: H * 0.17, r: U * 0.045 }, { x: W * 0.9, y: H * 0.2, r: U * 0.04 }], noren: H * 0.075 }; }
+function xSushiLamp(g, x, y, r, t) {   // бумажный фонарь с рёбрами и колпачками
+  g.strokeStyle = '#2a1410'; g.lineWidth = Math.max(1, r * 0.06); g.beginPath(); g.moveTo(x, 0); g.lineTo(x, y - r * 1.2); g.stroke();
+  const lg = g.createRadialGradient(x - r * 0.25, y - r * 0.2, 0, x, y, r * 1.1); lg.addColorStop(0, '#ff7a5a'); lg.addColorStop(0.7, '#c8301e'); lg.addColorStop(1, '#7a1410');
+  g.fillStyle = lg; g.beginPath(); g.ellipse(x, y, r * 0.8, r, 0, 0, Math.PI * 2); g.fill();
+  g.strokeStyle = 'rgba(80,10,6,0.55)'; g.lineWidth = Math.max(1, r * 0.04);
+  for (let i = -2; i <= 2; i++) { g.beginPath(); g.moveTo(x - r * 0.75, y + i * r * 0.3); g.quadraticCurveTo(x, y + i * r * 0.3 + r * 0.08, x + r * 0.75, y + i * r * 0.3); g.stroke(); }
+  g.fillStyle = '#1c0c08'; g.fillRect(x - r * 0.35, y - r * 1.05, r * 0.7, r * 0.18); g.fillRect(x - r * 0.35, y + r * 0.87, r * 0.7, r * 0.18);
+  g.fillStyle = '#ffe0b0'; g.font = `700 ${Math.round(r * 0.8)}px serif`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(t, x, y);
+}
+function xSushiPlate(g, x, y, s, k, rot) {   // тарелка на ленте; k — вид суши и цвет каймы
+  const rim = ['#e8e0d0', '#3a6ad0', '#d8363a', '#e8b030'][k % 4], top = ['#ff7a5a', '#ffb070', '#ff5a6a', '#ffd070'][k % 4];
+  g.fillStyle = 'rgba(0,0,0,0.3)'; g.beginPath(); g.ellipse(x, y + s * 0.08, s * 0.62, s * 0.2, 0, 0, Math.PI * 2); g.fill();
+  g.fillStyle = rim; g.beginPath(); g.ellipse(x, y, s * 0.6, s * 0.2, 0, 0, Math.PI * 2); g.fill(); g.fillStyle = '#f7f2e8'; g.beginPath(); g.ellipse(x, y - s * 0.015, s * 0.46, s * 0.14, 0, 0, Math.PI * 2); g.fill();
+  g.fillStyle = '#fffdf4'; rrPath(g, x - s * 0.2, y - s * 0.2, s * 0.4, s * 0.2, s * 0.08); g.fill(); g.fillStyle = top; rrPath(g, x - s * 0.22, y - s * 0.27, s * 0.44, s * 0.14, s * 0.07); g.fill();
+}
+XDECOR.sushibar = { n: 26,
+  scene(g, th, U) {
+    const G = xSushiGeo(U), bar = G.bar, rnd = seeded(2121);
+    // деревянные вертикальные панели стены
+    for (let x = 0, i = 0; x < W; x += U * 0.09, i++) { g.fillStyle = i % 2 ? 'rgba(0,0,0,0.12)' : 'rgba(255,200,140,0.04)'; g.fillRect(x, 0, U * 0.09, bar); }
+    // узор «сэйгайха» (волны) на стене
+    g.strokeStyle = 'rgba(255,220,170,0.07)'; g.lineWidth = Math.max(1, U * 0.0025); const rr = U * 0.05;
+    for (let row = 0, y = bar - rr * 0.5; y > H * 0.3; row++, y -= rr * 0.5) for (let x = (row % 2) * rr; x < W + rr; x += rr * 2) for (let k = 1; k <= 3; k++) { g.beginPath(); g.arc(x, y, rr * k / 3, Math.PI, 0); g.stroke(); }
+    // норэн (занавеска) вверху
+    const nh = G.noren, n = Math.max(4, Math.round(W / (U * 0.17))), nw = W / n;
+    for (let i = 0; i < n; i++) { const x = i * nw + nw * 0.04; g.fillStyle = '#1a1c4a'; g.fillRect(x, 0, nw * 0.92, nh * (1 + 0.06 * (i % 2))); g.fillStyle = 'rgba(255,255,255,0.1)'; g.fillRect(x, 0, nw * 0.06, nh); g.fillStyle = 'rgba(255,255,255,0.78)'; g.beginPath(); g.arc(x + nw * 0.46, nh * 0.5, nh * 0.22, 0, Math.PI * 2); g.fill(); g.fillStyle = '#1a1c4a'; g.beginPath(); g.arc(x + nw * 0.46, nh * 0.5, nh * 0.1, 0, Math.PI * 2); g.fill(); }
+    g.fillStyle = '#2a1608'; g.fillRect(0, 0, W, Math.max(2, U * 0.008));
+    // стойка
+    const wd = g.createLinearGradient(0, bar, 0, H); wd.addColorStop(0, '#8a5a2e'); wd.addColorStop(0.08, '#5a3416'); wd.addColorStop(1, '#2a1608'); g.fillStyle = wd; g.fillRect(0, bar, W, H - bar);
+    g.fillStyle = 'rgba(255,220,160,0.4)'; g.fillRect(0, bar, W, Math.max(1.5, U * 0.004));
+    const belt = G.belt; g.fillStyle = '#12100e'; g.fillRect(0, belt.y, W, belt.h); g.fillStyle = 'rgba(200,200,210,0.35)'; g.fillRect(0, belt.y, W, Math.max(1.2, U * 0.003)); g.fillRect(0, belt.y + belt.h - Math.max(1.2, U * 0.003), W, Math.max(1.2, U * 0.003));
+    // чайник и пиалка слева на стойке
+    const tx = W * 0.2, ty = bar - U * 0.004; g.fillStyle = '#16100e'; g.beginPath(); g.ellipse(tx, ty - U * 0.028, U * 0.034, U * 0.026, 0, 0, Math.PI * 2); g.fill(); g.fillRect(tx - U * 0.02, ty - U * 0.012, U * 0.04, U * 0.012);
+    g.strokeStyle = '#16100e'; g.lineWidth = Math.max(1.5, U * 0.005); g.beginPath(); g.moveTo(tx + U * 0.03, ty - U * 0.03); g.quadraticCurveTo(tx + U * 0.06, ty - U * 0.035, tx + U * 0.055, ty - U * 0.052); g.stroke(); g.beginPath(); g.arc(tx, ty - U * 0.048, U * 0.022, Math.PI, 0); g.stroke();
+    // палочки хаси
+    g.strokeStyle = '#d8b878'; g.lineWidth = Math.max(1.2, U * 0.0035); g.lineCap = 'round'; g.beginPath(); g.moveTo(W * 0.64, bar + U * 0.012); g.lineTo(W * 0.74, bar + U * 0.008); g.moveTo(W * 0.64, bar + U * 0.02); g.lineTo(W * 0.74, bar + U * 0.018); g.stroke();
+    G.lamps.forEach((l, i) => xSushiLamp(g, l.x, l.y, l.r, i ? '福' : '寿'));
+  },
+  anim(arr, ts, dt, U) {
+    const G = xSushiGeo(U), bar = G.bar, belt = G.belt;
+    // бегущие риски ленты и тарелки
+    ctx.save(); ctx.beginPath(); ctx.rect(0, belt.y, W, belt.h); ctx.clip();
+    ctx.fillStyle = 'rgba(255,255,255,0.08)'; const st = U * 0.04; for (let x = -((ts * U * 0.05) % st); x < W; x += st) ctx.fillRect(x, belt.y + belt.h * 0.45, st * 0.5, belt.h * 0.1);
+    ctx.restore();
+    const ps = Math.max(10, belt.h * 1.5), nP = 7, span = W + ps * 2;
+    for (let i = 0; i < nP; i++) { const x = ((i / nP + ts * U * 0.05 / span) % 1) * span - ps; xSushiPlate(ctx, x, belt.y + belt.h * 0.2, ps, i % 4, 0); }
+    // бликование ламп и пар от чайника
+    G.lamps.forEach((l, i) => { const f = 0.8 + 0.2 * Math.sin(ts * 2 + i * 2), sw = Math.sin(ts * 0.8 + i) * U * 0.004; ctx.globalCompositeOperation = 'lighter'; const lg = ctx.createRadialGradient(l.x + sw, l.y, 0, l.x + sw, l.y, l.r * 3.2); lg.addColorStop(0, `rgba(255,120,70,${(0.38 * f).toFixed(3)})`); lg.addColorStop(1, 'rgba(255,120,70,0)'); ctx.fillStyle = lg; ctx.fillRect(l.x - l.r * 3.3, l.y - l.r * 3.3, l.r * 6.6, l.r * 6.6); ctx.globalCompositeOperation = 'source-over'; });
+    const tx = W * 0.2 + U * 0.055, ty = bar - U * 0.058;
+    for (let i = 0; i < 10; i++) { const d = arr[i], p = (d.y + ts * 0.05 * d.sp) % 1; ctx.globalAlpha = 0.28 * Math.sin(p * Math.PI); ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(tx + Math.sin(ts * 1.2 + d.ph + p * 5) * U * 0.012 * p, ty - p * U * 0.1, U * (0.006 + 0.012 * p), 0, Math.PI * 2); ctx.fill(); }
+    ctx.globalAlpha = 1;
+    // золотые искры над стойкой
+    ctx.globalCompositeOperation = 'lighter';
+    for (let i = 10; i < 26; i++) { const d = arr[i]; ctx.globalAlpha = Math.max(0, Math.sin(ts * 0.9 * d.sp + d.ph)) * 0.5; ctx.fillStyle = '#ffd89a'; ctx.beginPath(); ctx.arc(d.x * W, H * (0.1 + 0.7 * d.y) + Math.sin(ts * 0.4 + d.ph) * U * 0.01, 1 + d.s * 1.5, 0, Math.PI * 2); ctx.fill(); }
+    ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+  } };
+
+// ---------- «Марс» ----------
+function xMarsGeo(U) { const fy = H * 0.82; return { fy, sun: { x: W * 0.2, y: H * 0.14, r: U * 0.03 }, dome: { x: W * (W >= H * 1.1 ? 0.84 : 0.8), w: U * 0.15 }, rover: { y: fy + (H - fy) * 0.5, s: U * 0.05 } }; }
+function xMarsRover(g, x, y, s, ts, dir) {
+  g.save(); g.translate(x, y); g.scale(dir, 1);
+  g.fillStyle = '#d8d2c8'; rrPath(g, -s * 0.9, -s * 1.05, s * 1.8, s * 0.65, s * 0.1); g.fill(); g.fillStyle = '#9a948a'; g.fillRect(-s * 0.9, -s * 0.5, s * 1.8, s * 0.08);
+  g.fillStyle = '#1a2a5a'; g.save(); g.transform(1, 0, -0.5, 1, 0, 0); g.fillRect(-s * 0.55, -s * 1.38, s * 0.9, s * 0.3); g.restore(); g.strokeStyle = 'rgba(160,190,255,0.55)'; g.lineWidth = Math.max(0.8, s * 0.03); g.beginPath(); g.moveTo(-s * 0.2, -s * 1.38); g.lineTo(-s * 0.2, -s * 1.08); g.stroke();
+  g.strokeStyle = '#9a948a'; g.lineWidth = Math.max(1.2, s * 0.07); g.beginPath(); g.moveTo(s * 0.55, -s * 1.05); g.lineTo(s * 0.65, -s * 1.6); g.stroke(); g.fillStyle = '#d8d2c8'; rrPath(g, s * 0.5, -s * 1.78, s * 0.4, s * 0.24, s * 0.05); g.fill(); g.fillStyle = '#2a3a5a'; g.beginPath(); g.arc(s * 0.82, -s * 1.66, s * 0.07, 0, Math.PI * 2); g.fill();
+  for (let i = 0; i < 3; i++) { const wx = -s * 0.65 + i * s * 0.65; g.fillStyle = '#1c1816'; g.beginPath(); g.arc(wx, -s * 0.2, s * 0.26, 0, Math.PI * 2); g.fill(); g.strokeStyle = '#8a847a'; g.lineWidth = Math.max(0.8, s * 0.04); const a = ts * 2 * dir + i; g.beginPath(); for (let k = 0; k < 4; k++) { g.moveTo(wx, -s * 0.2); g.lineTo(wx + Math.cos(a + k * Math.PI / 2) * s * 0.24, -s * 0.2 + Math.sin(a + k * Math.PI / 2) * s * 0.24); } g.stroke(); }
+  g.restore();
+}
+XDECOR.marsbase = { n: 52,
+  scene(g, th, U) {
+    const G = xMarsGeo(U), fy = G.fy, rnd = seeded(4004), S = G.sun;
+    xStars(g, rnd, 40, fy * 0.35);
+    const sg = g.createRadialGradient(S.x, S.y, 0, S.x, S.y, S.r * 7); sg.addColorStop(0, 'rgba(255,236,210,0.8)'); sg.addColorStop(0.2, 'rgba(255,200,150,0.35)'); sg.addColorStop(1, 'rgba(255,170,120,0)'); g.fillStyle = sg; g.fillRect(S.x - S.r * 7, S.y - S.r * 7, S.r * 14, S.r * 14);
+    g.fillStyle = '#fff2e0'; g.beginPath(); g.arc(S.x, S.y, S.r, 0, Math.PI * 2); g.fill();
+    // Фобос и Деймос
+    for (const [mx, my, r, c] of [[W * 0.62, H * 0.1, U * 0.028, '#b89a86'], [W * 0.46, H * 0.2, U * 0.014, '#a88c7a']]) { g.fillStyle = c; g.beginPath(); g.ellipse(mx, my, r * 1.25, r, -0.3, 0, Math.PI * 2); g.fill(); g.fillStyle = 'rgba(60,30,20,0.35)'; g.beginPath(); g.arc(mx - r * 0.3, my - r * 0.1, r * 0.3, 0, Math.PI * 2); g.fill(); g.beginPath(); g.arc(mx + r * 0.45, my + r * 0.25, r * 0.2, 0, Math.PI * 2); g.fill(); }
+    const hz = g.createLinearGradient(0, fy - H * 0.3, 0, fy); hz.addColorStop(0, 'rgba(255,170,110,0)'); hz.addColorStop(1, 'rgba(255,170,110,0.4)'); g.fillStyle = hz; g.fillRect(0, fy - H * 0.3, W, H * 0.3);
+    // дальние горы, среди них Олимп с кальдерой
+    g.fillStyle = '#a8502e'; g.beginPath(); g.moveTo(0, fy); let x = 0; while (x < W) { g.lineTo(x, fy - U * (0.02 + 0.04 * rnd())); x += U * 0.06; } g.lineTo(W, fy); g.closePath(); g.fill();
+    const ox = W * 0.42, ow = U * 0.34; g.fillStyle = '#9a4426'; g.beginPath(); g.moveTo(ox - ow, fy); g.lineTo(ox - ow * 0.25, fy - U * 0.085); g.lineTo(ox + ow * 0.25, fy - U * 0.085); g.lineTo(ox + ow, fy); g.closePath(); g.fill(); g.fillStyle = '#6a2c18'; g.beginPath(); g.ellipse(ox, fy - U * 0.085, ow * 0.25, U * 0.008, 0, 0, Math.PI * 2); g.fill();
+    // купол базы с антенной
+    const D = G.dome, dy = fy + (H - fy) * 0.12; g.fillStyle = 'rgba(210,225,240,0.3)'; g.beginPath(); g.moveTo(D.x - D.w / 2, dy); g.bezierCurveTo(D.x - D.w / 2, dy - D.w * 0.62, D.x + D.w / 2, dy - D.w * 0.62, D.x + D.w / 2, dy); g.closePath(); g.fill();
+    g.strokeStyle = 'rgba(230,240,255,0.7)'; g.lineWidth = Math.max(1.2, U * 0.003); g.stroke(); g.beginPath(); g.moveTo(D.x, dy); g.lineTo(D.x, dy - D.w * 0.48); g.moveTo(D.x - D.w * 0.25, dy); g.quadraticCurveTo(D.x - D.w * 0.22, dy - D.w * 0.4, D.x, dy - D.w * 0.48); g.moveTo(D.x + D.w * 0.25, dy); g.quadraticCurveTo(D.x + D.w * 0.22, dy - D.w * 0.4, D.x, dy - D.w * 0.48); g.stroke();
+    g.fillStyle = '#e8e2d8'; g.fillRect(D.x - D.w * 0.62, dy - D.w * 0.1, D.w * 0.3, D.w * 0.1); g.fillRect(D.x + D.w * 0.34, dy - D.w * 0.14, D.w * 0.3, D.w * 0.14);
+    g.strokeStyle = '#e8e2d8'; g.lineWidth = Math.max(1.2, U * 0.003); g.beginPath(); g.moveTo(D.x + D.w * 0.55, dy - D.w * 0.14); g.lineTo(D.x + D.w * 0.55, dy - D.w * 0.55); g.stroke();
+    // барханы переднего плана
+    const dn = g.createLinearGradient(0, fy, 0, H); dn.addColorStop(0, '#8a3c20'); dn.addColorStop(1, '#3a140c'); g.fillStyle = dn; g.beginPath(); g.moveTo(0, H); g.lineTo(0, fy + (H - fy) * 0.1);
+    for (let px = 0; px <= W; px += 10) g.lineTo(px, fy + (H - fy) * (0.1 + 0.08 * Math.sin(px / (U * 0.12)) + 0.04 * Math.sin(px / (U * 0.05) + 1)));
+    g.lineTo(W, H); g.closePath(); g.fill();
+    g.fillStyle = '#2a0e08'; for (let i = 0; i < 14; i++) { const rx = W * rnd(), ry = fy + (H - fy) * (0.35 + 0.6 * rnd()), r = U * (0.004 + 0.012 * rnd()); g.beginPath(); g.ellipse(rx, ry, r * 1.4, r, 0, Math.PI, Math.PI * 2); g.fill(); }
+  },
+  anim(arr, ts, dt, U) {
+    const G = xMarsGeo(U), fy = G.fy, hh = H - fy, D = G.dome, dy = fy + hh * 0.12, R = G.rover;
+    // ровер едет по дну поля раз в 70 секунд
+    { const per = 70, q = (ts % per) / per; if (q < 0.7) { const p = q / 0.7, dir = Math.floor(ts / per) % 2 ? -1 : 1, x = dir > 0 ? -R.s * 2 + p * (W + R.s * 4) : W + R.s * 2 - p * (W + R.s * 4), y = R.y + Math.sin(ts * 5) * R.s * 0.01;
+        xMarsRover(ctx, x, y, R.s, ts, dir);
+        ctx.fillStyle = 'rgba(210,130,90,0.22)'; for (let k = 1; k <= 6; k++) { ctx.beginPath(); ctx.arc(x - dir * (R.s * (0.9 + k * 0.5)), y - R.s * (0.1 + 0.07 * k), R.s * (0.09 + 0.04 * k), 0, Math.PI * 2); ctx.fill(); } } }
+    // мигающие огни базы
+    ctx.globalCompositeOperation = 'lighter';
+    for (const [x, y, c] of [[D.x + D.w * 0.55, dy - D.w * 0.56, '255,60,60'], [D.x, dy - D.w * 0.5, '120,220,255']]) { const f = Math.sin(ts * (c[0] === '2' ? 2.4 : 1.1) + x) > 0.2 ? 1 : 0.15, rr = U * 0.025; const lg = ctx.createRadialGradient(x, y, 0, x, y, rr); lg.addColorStop(0, `rgba(${c},${(0.8 * f).toFixed(3)})`); lg.addColorStop(1, `rgba(${c},0)`); ctx.fillStyle = lg; ctx.fillRect(x - rr, y - rr, rr * 2, rr * 2); }
+    const wg = ctx.createRadialGradient(D.x, dy - D.w * 0.15, 0, D.x, dy - D.w * 0.15, D.w * 0.5); wg.addColorStop(0, 'rgba(255,230,170,0.25)'); wg.addColorStop(1, 'rgba(255,230,170,0)'); ctx.fillStyle = wg; ctx.fillRect(D.x - D.w * 0.5, dy - D.w * 0.65, D.w, D.w * 0.65);
+    // метеор раз в 29 секунд
+    { const per = 29, q = ts % per; if (q < 1.1) { const p = q / 1.1, x0 = W * (0.15 + 0.5 * seeded(Math.floor(ts / per) + 3)()), x = x0 + p * U * 0.3, y = H * 0.04 + p * H * 0.2, mg = ctx.createLinearGradient(x, y, x - U * 0.09, y - U * 0.05); mg.addColorStop(0, `rgba(255,230,190,${(0.9 * (1 - p)).toFixed(3)})`); mg.addColorStop(1, 'rgba(255,230,190,0)'); ctx.strokeStyle = mg; ctx.lineWidth = Math.max(1.5, U * 0.004); ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - U * 0.09, y - U * 0.05); ctx.stroke(); } }
+    ctx.globalCompositeOperation = 'source-over';
+    // пыль уносится ветром у земли (0–39) и пыльный блеск в небе (40–51)
+    for (let i = 0; i < 40; i++) { const d = arr[i], x = ((d.x + ts * 0.02 * (0.5 + d.sp)) % 1.1 - 0.05) * W, y = fy + hh * (0.05 + 0.9 * d.y) + Math.sin(ts * 0.7 + d.ph) * U * 0.004; ctx.globalAlpha = 0.14 + 0.1 * d.s; ctx.fillStyle = '#e8a070'; ctx.fillRect(x, y, U * (0.015 + 0.03 * d.s), Math.max(1, U * 0.0016)); }
+    ctx.globalAlpha = 1;
+  } };
+
+// ---------- эффекты и звук ----------
+TFX.cannon = xTfx({ mid: '255,205,120', text: { stroke: '#2a1204', glow: '#ffc86a', fill: ['#fff6dc', '#ffd070', '#d8862a'] },
+  combo: [{ c1: '#ffe9a0', c2: '#8a4a18', glow: '#ffc86a' }, { c1: '#ffffff', c2: '#1c5a8a', glow: '#9ad8ff' }],
+  cols: ['#ffd23a', '#ffb454', '#e8e0d0', '#9a9aa6', '#fff6dc'], kinds: ['smoke', 'spark', 'spark', 'smoke'], g: 0.2,
+  snd(se, t, lines, step) {   // залп пушки и звон дублонов
+    se.fm(midi(36), t, 0.09, { ratio: 1.4, index: 1.8, dur: 0.35, bright: 0.2, send: 0.25 });
+    se.noise(t, 0.3, se.out(0.09, 0.2, se.sfx, 0), { type: 'lowpass', f: 1400, to: 200, q: 0.8 });
+    for (let k = 0, n = 4 + Math.min(4, lines * 2); k < n; k++) se.fm(midi(pentaNote(84, step + k, 104)), t + 0.2 + k * 0.05, 0.03, { ratio: 3.1, index: 0.5, dur: 0.5, bright: 0.12, send: 0.5, pan: k / n - 0.5 });
+  }, psnd(se, t) { se.fm(midi(91), t, 0.02, { ratio: 3.1, index: 0.4, dur: 0.22, bright: 0.12, send: 0.4 }); se.noise(t, 0.01, se.out(0.015, 0.05), { type: 'highpass', f: 5000, q: 1 }); } });
+TFX.sushibell = xTfx({ mid: '255,160,120', text: { stroke: '#2a0608', glow: '#ff9a6a', fill: ['#ffffff', '#ffd8b8', '#e8503a'] },
+  combo: [{ c1: '#ffd8b8', c2: '#a81e24', glow: '#ff9a6a' }, { c1: '#ffffff', c2: '#1a1c4a', glow: '#b8c0ff' }],
+  cols: ['#fffdf4', '#ff7a5a', '#ffb070', '#ff5a6a', '#16261e'], kinds: ['petal', 'spark', 'bubble'], g: 0.25,
+  snd(se, t, lines, step) {   // деревянный клакер хёси-ги и перебор кото
+    for (let k = 0; k < 2; k++) se.noise(t + k * 0.12, 0.03, se.out(0.08, 0.05, se.sfx, 0), { type: 'bandpass', f: 1500, q: 6 });
+    const sc = [62, 65, 67, 70, 72];
+    for (let k = 0, n = 4 + Math.min(4, lines * 2); k < n; k++) se.fm(midi(sc[(step + k) % 5] + 12 * ((step + k) % 2)), t + 0.25 + k * 0.08, 0.04, { ratio: 2, index: 0.7, dur: 0.9, bright: 0.06, send: 0.5, pan: k / n - 0.5 });
+  }, psnd(se, t) { se.noise(t, 0.02, se.out(0.04, 0.05), { type: 'bandpass', f: 1800, q: 7 }); } });
+TFX.redplanet = xTfx({ mid: '255,170,120', text: { stroke: '#2a0c04', glow: '#ff9a5a', fill: ['#ffffff', '#ffd2b0', '#e8582a'] },
+  combo: [{ c1: '#ffd2b0', c2: '#8a2e12', glow: '#ff9a5a' }, { c1: '#ffffff', c2: '#2a4a8a', glow: '#9ac8ff' }],
+  cols: ['#ff8a4a', '#ffd0a0', '#9ad8ff', '#ffffff', '#c8562e'], kinds: ['smoke', 'spark', 'cog'], g: 0.08,
+  snd(se, t, lines, step) {   // сигнал связи с Землёй и взлёт «ровера»
+    se.noise(t, 0.35, se.out(0.04, 0.2, se.sfx, 0), { type: 'bandpass', f: 400, to: 3000, q: 1.2 });
+    for (let k = 0, n = 3 + Math.min(4, lines); k < n; k++) { const f = midi(pentaNote(72, step + k * 2, 100)); se.osc('square', f, t + 0.1 + k * 0.09, 0.07, se.out(0.025, 0.2, se.sfx, k / n - 0.5), { to: f * 1.005, attack: 0.004 }); }
+    se.fm(midi(pentaNote(48, step, 60)), t, 0.05, { ratio: 1.5, index: 0.8, dur: 0.6, bright: 0.04, send: 0.4 });
+  }, psnd(se, t) { se.osc('square', 1500, t, 0.03, se.out(0.015, 0.1), { to: 1800, toT: 0.02, attack: 0.002 }); } });
 
 /* ---------- Анимированный декор фона ---------- */
 const DECOR_COUNT = { squares: 16, bokeh: 14, bubbles: 20, fireflies: 24, stars: 70, embers: 32, snow: 55,
