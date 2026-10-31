@@ -385,6 +385,8 @@
   .mini.st-treasure i.blk { border-radius: 3px; background: radial-gradient(circle at 50% 50%, var(--k) 0 20%, #e2b23e 22% 32%, transparent 34%), linear-gradient(90deg, #e2b23e 0 12%, transparent 12% 88%, #e2b23e 88%), repeating-linear-gradient(180deg, #9a6a38 0 30%, #2e1a0c 30% 34%); box-shadow: inset 0 0 0 1.5px #2e1a0c; }
   .mini.st-nigiri i.blk { border-radius: 4px; background: linear-gradient(90deg, transparent 40%, #16261e 40% 60%, transparent 60%), linear-gradient(180deg, color-mix(in srgb, var(--k) 70%, #fff), var(--k) 30%, color-mix(in srgb, var(--k) 70%, #000) 58%, #fffdf4 60%, #e6d9bd); box-shadow: inset 0 0 0 1px rgba(60,30,20,.5); }
   .mini.st-ore i.blk { border-radius: 5px; background: radial-gradient(ellipse 30% 40% at 50% 74%, var(--k) 0 80%, transparent 100%), radial-gradient(circle at 24% 28%, rgba(0,0,0,.3) 0 9%, transparent 11%), linear-gradient(135deg, #b0562e, #5a2414); box-shadow: inset 0 0 0 1.5px rgba(30,10,4,.8), inset 0 0 6px color-mix(in srgb, var(--k) 60%, transparent); }
+  .mini.st-aqua i.blk { border-radius: 3px; background: radial-gradient(circle at 68% 26%, rgba(255,255,255,.7) 0 9%, transparent 14%), radial-gradient(circle at 34% 60%, rgba(255,255,255,.4) 0 6%, transparent 10%), linear-gradient(180deg, color-mix(in srgb, var(--k) 55%, #eaffff), var(--k) 48%, color-mix(in srgb, var(--k) 62%, #04202a)); box-shadow: inset 0 0 0 1px rgba(255,255,255,.4), inset 0 -2px 0 rgba(0,0,0,.32); }
+  .mini.st-tile i.blk { border-radius: 2px; background: linear-gradient(135deg, rgba(255,255,255,.5) 0 20%, transparent 42%), linear-gradient(0deg, rgba(8,14,20,.6) 0 13%, transparent 13%), var(--k); box-shadow: inset 0 0 0 1px rgba(8,14,20,.95), inset 0 0 0 1.5px rgba(255,255,255,.14); }
   .mini.st-wool i.blk { border-radius: 4px; background: repeating-linear-gradient(62deg, rgba(255,255,255,.28) 0 1.5px, transparent 1.5px 4px), repeating-linear-gradient(-62deg, rgba(0,0,0,.3) 0 1.5px, transparent 1.5px 4px), var(--k); box-shadow: inset 0 0 0 1px rgba(0,0,0,.3), inset 0 2px 3px rgba(255,255,255,.2); }
   .mini.st-scale i.blk { border-radius: 5px; background: linear-gradient(180deg, rgba(255,255,255,.3), transparent 50%), linear-gradient(90deg, transparent 42%, rgba(0,0,0,.25) 42% 58%, transparent 58%), repeating-linear-gradient(45deg, rgba(0,0,0,.38) 0 1px, transparent 1px 3.5px), repeating-linear-gradient(-45deg, rgba(0,0,0,.38) 0 1px, transparent 1px 3.5px), var(--k); box-shadow: inset 0 0 0 1px rgba(0,0,0,.4); }
   .mini.st-lcd, .mini.st-lcd i { border-radius: 0; }
@@ -1090,6 +1092,13 @@ const THEMES = [
   { id: 'marsbase', mode: 'classic', cost: 4500000, blocks: 'ore', fx: 'redplanet', name: 'Марс',
     bg: ['#2a0e0a', '#8a3418', '#e89a5a'], glow: '#ffc890', board: '#1c0e0c', edge: '#c86a3a', cell: '#2a1612',
     panel: ['#c8582e', '#8a3416', '#ffd0b0', '#3a1006'], ui: '#ffe8d8', decor: 'marsbase' },
+  // ---- 31.10.2026: две новые платные темы «Классики» <Аквариум> и <Метро> ----
+  { id: 'aquarium', mode: 'classic', cost: 5250000, blocks: 'aqua', fx: 'aquabell', name: 'Аквариум',
+    bg: ['#02202c', '#054a5a', '#0f7f86'], glow: '#8dffe8', board: '#04202a', edge: '#0a3a46', cell: '#072a36',
+    panel: ['#1a8a8a', '#0f5e5e', '#a4fff0', '#05302f'], ui: '#cffff6', decor: 'aquarium' },
+  { id: 'metro', mode: 'classic', cost: 6200000, blocks: 'tile', fx: 'metrochime', name: 'Метро',
+    bg: ['#0b1218', '#16242e', '#233642'], glow: '#ffd27a', board: '#0c161c', edge: '#243842', cell: '#122028',
+    panel: ['#2a6a92', '#1a4560', '#c2e8ff', '#081a26'], ui: '#e6f6ff', decor: 'metro' },
 ];
 const PIXEL_FONT = "'Press Start 2P', 'Courier New', monospace";
 // Эффекты текущей темы (только в классике): 'harmonic' | 'pixel' | 'void' | ... | undefined
@@ -13277,6 +13286,215 @@ TFX.redplanet = xTfx({ mid: '255,170,120', text: { stroke: '#2a0c04', glow: '#ff
     for (let k = 0, n = 3 + Math.min(4, lines); k < n; k++) { const f = midi(pentaNote(72, step + k * 2, 100)); se.osc('square', f, t + 0.1 + k * 0.09, 0.07, se.out(0.025, 0.2, se.sfx, k / n - 0.5), { to: f * 1.005, attack: 0.004 }); }
     se.fm(midi(pentaNote(48, step, 60)), t, 0.05, { ratio: 1.5, index: 0.8, dur: 0.6, bright: 0.04, send: 0.4 });
   }, psnd(se, t) { se.osc('square', 1500, t, 0.03, se.out(0.015, 0.1), { to: 1800, toT: 0.02, attack: 0.002 }); } });
+
+/* ====================================================================
+   31.10.2026: две новые платные темы «Классики» — «Аквариум» (aquarium) и «Метро» (metro)
+   ==================================================================== */
+// ---------- блоки ----------
+// «Аквариум»: стеклянная клетка с водой цвета блока, блик на поверхности и пузырьки; серый — мокрый камень с трещинами
+BLOCK_STYLES.aqua = (g, col, s) => {
+  const grey = COLORS.indexOf(col) === GREY, rnd = seeded(311 + colIdx(col) * 29), p = Math.max(1, s * 0.045), w = s - 2 * p, r = s * 0.22;
+  if (grey) {
+    g.fillStyle = '#1a262e'; rrPath(g, p, p, w, w, r); g.fill();
+    if (s >= 12) {
+      g.strokeStyle = 'rgba(170,200,210,0.35)'; g.lineWidth = Math.max(1, s * 0.03); g.lineJoin = 'round';
+      g.beginPath(); g.moveTo(s * 0.22, s * 0.14); g.lineTo(s * 0.44, s * 0.42); g.lineTo(s * 0.34, s * 0.62); g.lineTo(s * 0.62, s * 0.88); g.moveTo(s * 0.44, s * 0.42); g.lineTo(s * 0.78, s * 0.3); g.stroke();
+    }
+    g.strokeStyle = 'rgba(0,0,0,0.7)'; g.lineWidth = Math.max(1, s * 0.035); rrPath(g, p, p, w, w, r); g.stroke();
+    return;
+  }
+  const bgd = g.createLinearGradient(0, p, 0, s - p);
+  bgd.addColorStop(0, mixHex(col.t, '#eaffff', 0.4)); bgd.addColorStop(0.42, col.c); bgd.addColorStop(1, mixHex(col.b, '#04202a', 0.5));
+  g.fillStyle = bgd; rrPath(g, p, p, w, w, r); g.fill();
+  g.save(); rrPath(g, p, p, w, w, r); g.clip();
+  g.strokeStyle = 'rgba(255,255,255,0.45)'; g.lineWidth = Math.max(0.8, s * 0.03);
+  g.beginPath(); g.moveTo(p, s * 0.3); g.quadraticCurveTo(s * 0.35, s * 0.19, s * 0.62, s * 0.29); g.quadraticCurveTo(s * 0.84, s * 0.37, s - p, s * 0.27); g.stroke();
+  if (s >= 13) { g.strokeStyle = 'rgba(255,255,255,0.2)'; g.lineWidth = Math.max(0.7, s * 0.022); g.beginPath(); g.moveTo(p, s * 0.64); g.quadraticCurveTo(s * 0.4, s * 0.54, s * 0.7, s * 0.66); g.quadraticCurveTo(s * 0.86, s * 0.72, s - p, s * 0.62); g.stroke(); }
+  g.fillStyle = 'rgba(255,255,255,0.55)';
+  for (const [bx, by, br] of [[0.34, 0.48, 0.05], [0.62, 0.58, 0.035], [0.5, 0.8, 0.028]]) { g.beginPath(); g.arc(s * bx, s * by, s * br, 0, Math.PI * 2); g.fill(); }
+  g.fillStyle = 'rgba(255,255,255,0.16)'; g.beginPath(); g.arc(s * (0.3 + 0.1 * rnd()), s * (0.42 + 0.06 * rnd()), s * 0.1, 0, Math.PI * 2); g.fill();
+  g.restore();
+  g.strokeStyle = 'rgba(255,255,255,0.32)'; g.lineWidth = Math.max(0.8, s * 0.022); rrPath(g, p + s * 0.03, p + s * 0.03, w - s * 0.06, w - s * 0.06, r * 0.9); g.stroke();
+  g.strokeStyle = 'rgba(8,34,44,0.6)'; g.lineWidth = Math.max(1, s * 0.03); rrPath(g, p, p, w, w, r); g.stroke();
+};
+// «Метро»: глазурованная плитка с тёмным швом, диагональным бликом и линией станции; серый — треснувшая плитка
+BLOCK_STYLES.tile = (g, col, s) => {
+  const grey = COLORS.indexOf(col) === GREY, p = Math.max(1, s * 0.03), w = s - 2 * p, r = s * 0.1;
+  const base = g.createLinearGradient(p, p, s, s);
+  if (grey) { base.addColorStop(0, '#4a5560'); base.addColorStop(1, '#242c34'); }
+  else { base.addColorStop(0, mixHex(col.t, '#ffffff', 0.28)); base.addColorStop(0.55, col.c); base.addColorStop(1, col.b); }
+  g.fillStyle = base; rrPath(g, p, p, w, w, r); g.fill();
+  g.save(); rrPath(g, p, p, w, w, r); g.clip();
+  const gl = g.createLinearGradient(p, p, s * 0.8, s * 0.65);
+  gl.addColorStop(0, 'rgba(255,255,255,0.45)'); gl.addColorStop(0.45, 'rgba(255,255,255,0.07)'); gl.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = gl; g.fillRect(p, p, w, w);
+  if (!grey) {
+    g.fillStyle = 'rgba(8,14,20,0.5)'; g.fillRect(p, s * 0.74, w, s * 0.18);
+    g.fillStyle = mixHex(col.t, '#ffffff', 0.55); g.fillRect(p, s * 0.77, w, Math.max(1, s * 0.055));
+  } else if (s >= 12) {
+    g.strokeStyle = 'rgba(225,240,250,0.4)'; g.lineWidth = Math.max(0.8, s * 0.03); g.lineJoin = 'round';
+    g.beginPath(); g.moveTo(s * 0.2, s * 0.15); g.lineTo(s * 0.4, s * 0.45); g.lineTo(s * 0.32, s * 0.62); g.lineTo(s * 0.56, s * 0.88); g.stroke();
+  }
+  g.restore();
+  g.strokeStyle = 'rgba(8,14,20,0.85)'; g.lineWidth = Math.max(1, s * 0.045); rrPath(g, p, p, w, w, r); g.stroke();
+  if (s >= 16) { g.fillStyle = 'rgba(255,255,255,0.22)'; for (const dx of [0.16, 0.84]) { g.beginPath(); g.arc(s * dx, s * 0.16, s * 0.035, 0, Math.PI * 2); g.fill(); } }
+};
+
+// ---------- «Аквариум» ----------
+function xAqGeo(U) { const fy = H * 0.86; return { fy, shell: { x: W * 0.22, y: fy + (H - fy) * 0.42, r: U * 0.02 } }; }
+function xAqFish(g, x, y, s, dir, ph) {   // рыбка: тело, хвост, спинной плавник
+  g.save(); g.translate(x, y); g.scale(dir, 1);
+  const wag = Math.sin(ph) * 0.4;
+  g.fillStyle = 'rgba(6,34,44,0.78)';
+  g.beginPath(); g.ellipse(0, 0, s, s * 0.5, 0, 0, Math.PI * 2); g.fill();
+  g.beginPath(); g.moveTo(-s * 0.92, 0); g.lineTo(-s * 1.55, -s * 0.4 + wag * s * 0.28); g.lineTo(-s * 1.55, s * 0.4 + wag * s * 0.28); g.closePath(); g.fill();
+  g.beginPath(); g.moveTo(-s * 0.15, -s * 0.36); g.lineTo(s * 0.3, -s * 0.78); g.lineTo(s * 0.46, -s * 0.28); g.closePath(); g.fill();
+  g.restore();
+}
+function xAqWeed(g, x, baseY, h, w, ph, col) {   // водоросль: изогнутая лента
+  g.strokeStyle = col; g.lineWidth = Math.max(2, w); g.lineCap = 'round';
+  g.beginPath(); g.moveTo(x, baseY);
+  for (let i = 1; i <= 6; i++) { const t = i / 6; g.quadraticCurveTo(x + Math.sin(ph + t * 2.2) * w * 2.2, baseY - h * (t - 0.08), x + Math.sin(ph + t * 2.6) * w * 1.4, baseY - h * t); }
+  g.stroke();
+}
+XDECOR.aquarium = { n: 44,
+  scene(g, th, U) {
+    const G = xAqGeo(U), fy = G.fy, rnd = seeded(5150);
+    // свет сверху и лучи
+    const lg = g.createLinearGradient(0, 0, 0, H * 0.5); lg.addColorStop(0, 'rgba(180,255,240,0.35)'); lg.addColorStop(1, 'rgba(120,220,220,0)');
+    g.fillStyle = lg; g.fillRect(0, 0, W, H * 0.5);
+    g.save(); g.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < 5; i++) { const x = W * (0.06 + 0.21 * i + 0.03 * rnd()), wd = U * (0.02 + 0.03 * rnd()); const rg = g.createLinearGradient(x, 0, x + U * 0.08, fy); rg.addColorStop(0, 'rgba(190,255,245,0.22)'); rg.addColorStop(1, 'rgba(190,255,245,0)'); g.fillStyle = rg; g.beginPath(); g.moveTo(x, 0); g.lineTo(x + wd, 0); g.lineTo(x + wd + U * 0.09, fy); g.lineTo(x + U * 0.06, fy); g.closePath(); g.fill(); }
+    g.restore();
+    // песчаное дно
+    const sd = g.createLinearGradient(0, fy - U * 0.04, 0, H); sd.addColorStop(0, '#c8b48a'); sd.addColorStop(0.4, '#9a8560'); sd.addColorStop(1, '#4a3d2a');
+    g.fillStyle = sd; g.beginPath(); g.moveTo(0, H); g.lineTo(0, fy);
+    for (let x = 0; x <= W; x += 8) g.lineTo(x, fy + Math.sin(x / (U * 0.1)) * U * 0.012 + Math.sin(x / (U * 0.04) + 2) * U * 0.006);
+    g.lineTo(W, H); g.closePath(); g.fill();
+    // камешки
+    for (let i = 0; i < 16; i++) { const px = W * rnd(), py = fy + (H - fy) * (0.15 + 0.7 * rnd()), r = U * (0.004 + 0.01 * rnd()); g.fillStyle = i % 3 ? 'rgba(60,48,32,0.6)' : 'rgba(220,205,170,0.35)'; g.beginPath(); g.ellipse(px, py, r * 1.5, r, rnd(), 0, Math.PI * 2); g.fill(); }
+    // водоросли у бортов (в портрете поле закрывает центр экрана)
+    [W * 0.05, W * 0.95].forEach((ex, i) => { for (let k = 0; k < 3; k++) xAqWeed(g, ex + (k - 1) * U * 0.018, fy + U * 0.01, U * (0.08 + 0.05 * rnd()), Math.max(2, U * 0.006), i + k, 'rgba(42,116,92,0.7)'); });
+    // ракушка и морская звезда на песке
+    const S = G.shell; g.fillStyle = 'rgba(250,240,225,0.85)'; g.beginPath(); g.ellipse(S.x, S.y, S.r * 1.4, S.r, -0.3, Math.PI, Math.PI * 2); g.fill();
+    g.strokeStyle = 'rgba(150,130,110,0.5)'; g.lineWidth = Math.max(0.8, U * 0.002); for (let i = -2; i <= 2; i++) { g.beginPath(); g.moveTo(S.x - S.r * 1.2, S.y); g.lineTo(S.x + i * S.r * 0.45, S.y - S.r * 1.1); g.stroke(); }
+    const stx = W * 0.8, sty = fy + (H - fy) * 0.6, sr = U * 0.016;
+    g.fillStyle = 'rgba(230,140,110,0.85)'; g.beginPath();
+    for (let i = 0; i < 5; i++) { const a = -Math.PI / 2 + i * Math.PI * 2 / 5; g.lineTo(stx + Math.cos(a) * sr, sty + Math.sin(a) * sr); const a2 = a + Math.PI / 5; g.lineTo(stx + Math.cos(a2) * sr * 0.42, sty + Math.sin(a2) * sr * 0.42); }
+    g.closePath(); g.fill();
+  },
+  anim(arr, ts, dt, U) {
+    const G = xAqGeo(U), fy = G.fy;
+    // каустика на песке
+    ctx.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < 4; i++) {
+      const y = fy + (H - fy) * (0.14 + 0.26 * i);
+      ctx.strokeStyle = `rgba(190,255,240,${(0.06 + 0.03 * Math.sin(ts * 0.7 + i)).toFixed(3)})`;
+      ctx.lineWidth = Math.max(1.2, U * 0.004); ctx.beginPath();
+      for (let x = -10; x <= W + 10; x += 10) { const yy = y + Math.sin(x / (U * 0.07) + ts * (0.6 + 0.2 * i) + i) * U * 0.006; x < 0 ? ctx.moveTo(x, yy) : ctx.lineTo(x, yy); }
+      ctx.stroke();
+    }
+    // стайка рыб раз в 34 секунды
+    { const per = 34, q = (ts % per) / per; if (q < 0.62) { const p = q / 0.62, dir = Math.floor(ts / per) % 2 ? -1 : 1, s = U * 0.014;
+      for (let i = 0; i < 3; i++) { const x = (dir > 0 ? -s * 4 + p * (W + s * 8) : W + s * 4 - p * (W + s * 8)) - dir * i * s * 2.6, y = H * (0.08 + 0.045 * i) + Math.sin(ts * 1.2 + i) * U * 0.008; xAqFish(ctx, x, y, s * (1 - 0.15 * i), dir, ts * 6 + i); } } }
+    // пузырьки (0–27) и планктон (28–43)
+    ctx.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < 28; i++) { const d = arr[i], p = ((d.y - ts * 0.03 * d.sp) % 1 + 1) % 1, x = d.x * W + Math.sin(ts * 1.6 + d.ph + p * 8) * U * 0.008, y = H * (1.02 - p * 1.04), r = U * (0.003 + 0.006 * d.s);
+      ctx.globalAlpha = 0.55; ctx.fillStyle = 'rgba(220,255,250,0.65)'; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+      ctx.globalAlpha = 0.9; ctx.strokeStyle = 'rgba(255,255,255,0.5)'; ctx.lineWidth = Math.max(0.7, U * 0.0016); ctx.stroke(); }
+    ctx.globalAlpha = 1;
+    for (let i = 28; i < 44; i++) { const d = arr[i]; ctx.globalAlpha = Math.max(0, Math.sin(ts * 1.1 * d.sp + d.ph)) * 0.5; ctx.fillStyle = '#d8fff8'; ctx.beginPath(); ctx.arc(d.x * W, H * (0.05 + 0.8 * d.y) + Math.sin(ts * 0.5 + d.ph) * U * 0.01, 1 + d.s * 1.6, 0, Math.PI * 2); ctx.fill(); }
+    ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+  } };
+
+// ---------- «Метро» ----------
+function xMetroGeo(U) { const plat = H * 0.9; return { plat, track: plat + (H - plat) * 0.42, sign: { x: W * 0.15, y: H * 0.15, w: Math.min(U * 0.28, W * 0.32), h: Math.max(18, U * 0.06) }, lamps: [{ x: W * 0.8, y: H * 0.115, r: U * 0.028 }, { x: W * 0.93, y: H * 0.1, r: U * 0.024 }] }; }
+function xMetroLamp(g, x, y, r) {   // подвесной плафон с абажуром
+  g.strokeStyle = '#0e161c'; g.lineWidth = Math.max(1.5, r * 0.14); g.beginPath(); g.moveTo(x, 0); g.lineTo(x, y - r * 0.9); g.stroke();
+  g.fillStyle = '#0e161c'; g.beginPath(); g.moveTo(x - r * 1.2, y - r * 0.72); g.lineTo(x + r * 1.2, y - r * 0.72); g.lineTo(x + r * 0.85, y - r * 0.34); g.lineTo(x - r * 0.85, y - r * 0.34); g.closePath(); g.fill();
+  const lg = g.createRadialGradient(x, y, 0, x, y, r * 1.5); lg.addColorStop(0, '#fff3c4'); lg.addColorStop(0.6, '#ffd27a'); lg.addColorStop(1, '#e09a3a');
+  g.fillStyle = lg; g.beginPath(); g.ellipse(x, y, r * 0.72, r * 0.58, 0, 0, Math.PI * 2); g.fill();
+}
+XDECOR.metro = { n: 30,
+  scene(g, th, U) {
+    const G = xMetroGeo(U), plat = G.plat, tw = U * 0.085, th2 = U * 0.062;
+    // кафельная стена
+    for (let row = 0, y = 0; y < plat; row++, y += th2) {
+      for (let col = 0, x = -((row % 2) * tw / 2); x < W; col++, x += tw) {
+        g.fillStyle = `rgba(255,250,235,${(0.05 + 0.03 * ((col * 7 + row * 13) % 3 === 0 ? 1 : 0)).toFixed(3)})`;
+        g.fillRect(x + 1, y + 1, tw - 2, th2 - 2);
+      }
+      g.fillStyle = 'rgba(0,0,0,0.18)'; g.fillRect(0, y, W, 1);
+    }
+    g.fillStyle = 'rgba(4,10,14,0.55)'; g.fillRect(0, plat - th2 * 0.6, W, th2 * 0.6);
+    // табличка станции с круглым красным логотипом «М»
+    const S = G.sign, sx = S.x - S.w / 2, sy = S.y;
+    g.fillStyle = '#0e161c'; rrPath(g, sx, sy, S.w, S.h, S.h * 0.22); g.fill();
+    g.strokeStyle = 'rgba(220,235,245,0.5)'; g.lineWidth = Math.max(1, U * 0.0026); rrPath(g, sx, sy, S.w, S.h, S.h * 0.22); g.stroke();
+    g.fillStyle = '#c8102e'; g.beginPath(); g.arc(sx + S.h * 0.6, sy + S.h / 2, S.h * 0.36, 0, Math.PI * 2); g.fill();
+    g.fillStyle = '#ffffff'; g.font = `700 ${Math.round(S.h * 0.5)}px ${FONT}`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('М', sx + S.h * 0.6, sy + S.h * 0.54);
+    g.fillStyle = 'rgba(230,240,250,0.7)';
+    for (let i = 0; i < 5; i++) g.fillRect(sx + S.h * 1.15 + i * S.h * 0.52, sy + S.h * 0.32, S.h * (0.24 + 0.1 * ((i * 5) % 3)), S.h * 0.36);
+    // лампы
+    G.lamps.forEach(l => xMetroLamp(g, l.x, l.y, l.r));
+    // платформа, жёлтая полоса безопасности, пути
+    const pg = g.createLinearGradient(0, plat, 0, H); pg.addColorStop(0, '#3a4a54'); pg.addColorStop(0.25, '#22323c'); pg.addColorStop(1, '#080e12');
+    g.fillStyle = pg; g.fillRect(0, plat, W, H - plat);
+    g.fillStyle = 'rgba(255,240,200,0.55)'; g.fillRect(0, plat, W, Math.max(1.5, U * 0.003));
+    const sy2 = plat + (H - plat) * 0.16, sh = Math.max(3, (H - plat) * 0.12);
+    g.fillStyle = '#d8b23a'; g.fillRect(0, sy2, W, sh);
+    g.fillStyle = 'rgba(10,14,18,0.8)'; for (let x = 0; x < W; x += U * 0.05) g.fillRect(x, sy2, U * 0.025, sh);
+    const ty = G.track;
+    g.fillStyle = 'rgba(0,0,0,0.5)'; g.fillRect(0, ty, W, H - ty);
+    for (let x = 0; x < W; x += U * 0.05) { g.fillStyle = 'rgba(70,60,50,0.9)'; g.fillRect(x, ty + (H - ty) * 0.35, U * 0.03, Math.max(2, (H - ty) * 0.14)); }
+    g.fillStyle = 'rgba(190,200,210,0.65)'; g.fillRect(0, ty + (H - ty) * 0.3, W, Math.max(1.5, U * 0.003));
+  },
+  anim(arr, ts, dt, U) {
+    const G = xMetroGeo(U), ty = G.track;
+    // поезд проносится раз в 26 секунд
+    { const per = 26, q = (ts % per) / per; if (q < 0.5) { const p = q / 0.5, tw2 = U * 0.34, x = -tw2 + p * (W + tw2 * 2), hh = (H - ty) * 0.62;
+        ctx.fillStyle = 'rgba(12,22,30,0.9)'; rrPath(ctx, x - tw2 / 2, ty + (H - ty) * 0.05, tw2, hh, U * 0.01); ctx.fill();
+        ctx.fillStyle = 'rgba(255,225,150,0.85)';
+        for (let i = 0; i < 3; i++) ctx.fillRect(x - tw2 * 0.34 + i * tw2 * 0.25, ty + (H - ty) * 0.12, tw2 * 0.16, hh * 0.32);
+        ctx.globalCompositeOperation = 'lighter';
+        const hg = ctx.createRadialGradient(x + tw2 * 0.5, ty + (H - ty) * 0.3, 0, x + tw2 * 0.5, ty + (H - ty) * 0.3, U * 0.12);
+        hg.addColorStop(0, 'rgba(255,240,190,0.55)'); hg.addColorStop(1, 'rgba(255,240,190,0)');
+        ctx.fillStyle = hg; ctx.fillRect(x + tw2 * 0.5 - U * 0.12, ty - U * 0.05, U * 0.24, U * 0.24);
+        ctx.globalCompositeOperation = 'source-over'; } }
+    // мерцание ламп
+    ctx.globalCompositeOperation = 'lighter';
+    G.lamps.forEach((l, i) => {
+      const f = (Math.sin(ts * 2.2 + i * 1.7) > -0.85 ? 0.55 : 0.18) + 0.1 * Math.sin(ts * 13 + i);
+      const rg = ctx.createRadialGradient(l.x, l.y, 0, l.x, l.y, l.r * 4);
+      rg.addColorStop(0, `rgba(255,225,150,${(0.3 * f).toFixed(3)})`); rg.addColorStop(1, 'rgba(255,225,150,0)');
+      ctx.fillStyle = rg; ctx.fillRect(l.x - l.r * 4, l.y - l.r * 4, l.r * 8, l.r * 8);
+    });
+    ctx.globalCompositeOperation = 'source-over';
+    // пылинки в свете
+    for (let i = 0; i < arr.length; i++) {
+      const d = arr[i], x = ((d.x + ts * 0.004 * d.sp) % 1) * W, y = H * (0.1 + 0.75 * d.y) + Math.sin(ts * 0.4 + d.ph) * U * 0.006;
+      ctx.globalAlpha = 0.1 + 0.12 * Math.abs(Math.sin(ts * 0.6 + d.ph));
+      ctx.fillStyle = '#ffeec0'; ctx.beginPath(); ctx.arc(x, y, Math.max(0.8, U * 0.0016 * (1 + d.s)), 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  } };
+
+// ---------- эффекты и звук ----------
+TFX.aquabell = xTfx({ mid: '140,255,230', text: { stroke: '#04303c', glow: '#8dffe8', fill: ['#ffffff', '#d8fff6', '#5ad8d0'] },
+  combo: [{ c1: '#d8fff6', c2: '#0f6b78', glow: '#8dffe8' }, { c1: '#ffffff', c2: '#e0508a', glow: '#ffd0e4' }],
+  cols: ['#d8fff6', '#8dffe8', '#ffffff', '#7ad8f0', '#ffd8a8'], kinds: ['bubble', 'bubble', 'spark'], g: -0.12,
+  snd(se, t, lines, step) {   // пузырь и мягкий перебор маримбы
+    se.osc('sine', 260, t, 0.12, se.out(0.05, 0.2), { to: 780, toT: 0.09, attack: 0.004 });
+    for (let k = 0, n = 4 + Math.min(3, lines); k < n; k++) se.fm(midi(pentaNote(76, step + k, 100)), t + 0.06 + k * 0.06, 0.03, { ratio: 2, index: 0.35, dur: 1, bright: 0.1, send: 0.8, pan: k / n - 0.5 });
+  }, psnd(se, t) { se.osc('sine', 620 + Math.random() * 120, t, 0.05, se.out(0.03, 0.25), { to: 1400, toT: 0.04, attack: 0.003 }); } });
+TFX.metrochime = xTfx({ mid: '255,215,140', text: { stroke: '#1a1206', glow: '#ffd27a', fill: ['#ffffff', '#ffe6b8', '#e8a03a'] },
+  combo: [{ c1: '#ffe6b8', c2: '#2a6a92', glow: '#ffd27a' }, { c1: '#ffffff', c2: '#c8102e', glow: '#ffb0a0' }],
+  cols: ['#ffe6b8', '#ffd27a', '#c8e8ff', '#ffffff', '#8a94a0'], kinds: ['spark', 'bit', 'spark'], g: 0.35,
+  snd(se, t, lines, step) {   // гонг-объявление станции и шипение тормозов
+    se.noise(t, 0.25, se.out(0.035, 0.12, se.sfx, 0), { type: 'highpass', f: 2600, q: 0.8 });
+    se.fm(midi(pentaNote(60, step, 84)), t, 0.05, { ratio: 2.76, index: 0.7, dur: 1.1, bright: 0.25, send: 0.5 });
+    for (let k = 0, n = 3 + Math.min(3, lines); k < n; k++) { const f = midi(pentaNote(72, step + k, 96)); se.osc('triangle', f, t + 0.18 + k * 0.09, 0.05, se.out(0.03, 0.2, se.sfx, k / n - 0.5), { to: f * 1.01, attack: 0.01 }); }
+  }, psnd(se, t) { se.noise(t, 0.02, se.out(0.03, 0.06), { type: 'bandpass', f: 2200, q: 5 }); } });
 
 /* ---------- Анимированный декор фона ---------- */
 const DECOR_COUNT = { squares: 16, bokeh: 14, bubbles: 20, fireflies: 24, stars: 70, embers: 32, snow: 55,
