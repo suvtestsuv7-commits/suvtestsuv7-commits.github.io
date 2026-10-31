@@ -1,6 +1,7 @@
 // Офлайн-кэш: сначала сеть (чтобы обновления доходили), без сети — из кэша
 // v4: в кэш попадают только удачные ответы; запросы к таблице рекордов (Supabase) идут мимо кэша
-const CACHE = 'blocks-v4';
+// v5 (31.10.2026): сброс кэша после добавления тем «Аквариум» и «Метро»
+const CACHE = 'blocks-v5';
 const CORE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
